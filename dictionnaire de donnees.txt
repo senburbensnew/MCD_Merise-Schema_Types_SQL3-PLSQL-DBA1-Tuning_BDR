@@ -1,0 +1,279 @@
+### Patient
+- **Titre**: Patient
+- **Description**: Informations relatives aux patients.
+- **Propriétés**:
+  1. **Id_Patient**
+     - Description: Identifiant unique du patient.
+     - Format des données: Entier long
+     - Type: Numérique
+     - Identifiant: Oui
+     - Contraintes: Unique, Non nul
+  2. **Nom**
+     - Description: Nom du patient.
+     - Format des données: Caractère variable (50)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  3. **Prénoms**
+     - Description: Prénoms du patient.
+     - Format des données: Tableau de caractères variables
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  4. **Adresse**
+     - Description: Adresse du patient.
+     - Format des données: Adresse_t
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  5. **Email**
+     - Description: Adresse email du patient.
+     - Format des données: Caractère variable (50)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul, Unique
+  6. **Téléphones**
+     - Description: Numéros de téléphone du patient.
+     - Format des données: Tableau de téléphones
+     - Type: Numérique
+     - Identifiant: Non
+     - Contraintes: Non nul
+  7. **Date_naissance**
+     - Description: Date de naissance du patient.
+     - Format des données: Date
+     - Type: Date
+     - Identifiant: Non
+     - Contraintes: Non nul
+  8. **Identifiant_1**
+     - Description: Clé primaire secondaire pour le patient.
+     - Format des données: Variable
+     - Type: Texte
+     - Identifiant: Oui
+     - Contraintes: Unique
+
+### Médecin
+- **Titre**: Médecin
+- **Description**: Informations relatives aux médecins.
+- **Propriétés**:
+  1. **Id_Médecin**
+     - Description: Identifiant unique du médecin.
+     - Format des données: Entier long
+     - Type: Numérique
+     - Identifiant: Oui
+     - Contraintes: Unique, Non nul
+  2. **Nom**
+     - Description: Nom du médecin.
+     - Format des données: Caractère variable (50)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  3. **Prénoms**
+     - Description: Prénoms du médecin.
+     - Format des données: Tableau de caractères variables
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  4. **Spécialité**
+     - Description: Spécialité du médecin.
+     - Format des données: Caractère variable (50)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  5. **Téléphones**
+     - Description: Numéros de téléphone du médecin.
+     - Format des données: Tableau de téléphones
+     - Type: Numérique
+     - Identifiant: Non
+     - Contraintes: Non nul
+  6. **Email**
+     - Description: Adresse email du médecin.
+     - Format des données: Caractère variable (50)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul, Unique
+  7. **CV**
+     - Description: CV du médecin.
+     - Format des données: BFILE
+     - Type: Binaire
+     - Identifiant: Non
+     - Contraintes: Non nul
+  8. **Identifiant_1**
+     - Description: Clé primaire secondaire pour le médecin.
+     - Format des données: Variable
+     - Type: Texte
+     - Identifiant: Oui
+     - Contraintes: Unique
+
+### Consultation
+- **Titre**: Consultation
+- **Description**: Informations relatives aux consultations.
+- **Propriétés**:
+  1. **Id_Consultation**
+     - Description: Identifiant unique de la consultation.
+     - Format des données: Entier long
+     - Type: Numérique
+     - Identifiant: Oui
+     - Contraintes: Unique, Non nul
+  2. **Date_Consultation**
+     - Description: Date de la consultation.
+     - Format des données: Date
+     - Type: Date
+     - Identifiant: Non
+     - Contraintes: Non nul
+  3. **Identifiant_1**
+     - Description: Clé primaire secondaire pour la consultation.
+     - Format des données: Variable
+     - Type: Texte
+     - Identifiant: Oui
+     - Contraintes: Unique
+
+### Facture
+- **Titre**: Facture
+- **Description**: Informations relatives aux factures.
+- **Propriétés**:
+  1. **Id_Facture**
+     - Description: Identifiant unique de la facture.
+     - Format des données: Entier long
+     - Type: Numérique
+     - Identifiant: Oui
+     - Contraintes: Unique, Non nul
+  2. **Montant_Total**
+     - Description: Montant total de la facture.
+     - Format des données: Numérique (15,2)
+     - Type: Numérique
+     - Identifiant: Non
+     - Contraintes: Non nul
+  3. **Date_Facture**
+     - Description: Date de la facture.
+     - Format des données: Date
+     - Type: Date
+     - Identifiant: Non
+     - Contraintes: Non nul
+  4. **Identifiant_1**
+     - Description: Clé primaire secondaire pour la facture.
+     - Format des données: Variable
+     - Type: Texte
+     - Identifiant: Oui
+     - Contraintes: Unique
+
+### Examen
+- **Titre**: Examen
+- **Description**: Informations relatives aux examens médicaux.
+- **Propriétés**:
+  1. **Id_Examen**
+     - Description: Identifiant unique de l'examen.
+     - Format des données: Entier long
+     - Type: Numérique
+     - Identifiant: Oui
+     - Contraintes: Unique, Non nul
+  2. **Détails_Examen**
+     - Description: Détails de l'examen.
+     - Format des données: Texte (200)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  3. **Date_Examen**
+     - Description: Date de l'examen.
+     - Format des données: Date
+     - Type: Date
+     - Identifiant: Non
+     - Contraintes: Non nul
+  4. **Identifiant_1**
+     - Description: Clé primaire secondaire pour l'examen.
+     - Format des données: Variable
+     - Type: Texte
+     - Identifiant: Oui
+     - Contraintes: Unique
+
+### Prescription
+- **Titre**: Prescription
+- **Description**: Informations relatives aux prescriptions médicales.
+- **Propriétés**:
+  1. **Id_Prescription**
+     - Description: Identifiant unique de la prescription.
+     - Format des données: Entier long
+     - Type: Numérique
+     - Identifiant: Oui
+     - Contraintes: Unique, Non nul
+  2. **Détails_Examen**
+     - Description: Détails de l'examen prescrit.
+     - Format des données: Texte (200)
+     - Type: Texte
+     - Identifiant: Non
+     - Contraintes: Non nul
+  3. **Date_Examen**
+     - Description: Date de l'examen prescrit.
+     - Format des données: Date
+     - Type: Date
+     - Identifiant: Non
+     - Contraintes: Non nul
+  4. **Identifiant_1**
+     - Description: Clé primaire secondaire pour la prescription.
+     - Format des données: Variable
+     - Type: Texte
+     - Identifiant: Oui
+     - Contraintes: Unique
+
+### Relations
+
+#### Avoir_Rendez_Vous
+- **Titre**: Avoir_Rendez_Vous
+- **Description**: Relation entre Patient et Consultation pour gérer les rendez-vous.
+- **Propriétés**:
+  1. **Date_Rendez_Vous**
+     - Description: Date du rendez-vous.
+     - Format des données: Date
+     - Type: Date
+     - Identifiant: Non
+     - Contraintes: Non nul
+
+#### Inclure
+- **Titre**: Inclure
+- **Description**: Relation entre Consultation et Examen pour indiquer qu'un examen est inclus dans une consultation.
+- **Propriétés**:
+  - **Consultation**: La consultation qui inclut l'examen.
+  - **Examen**: L'examen qui est inclus dans la consultation.
+
+#### Contenir (Consultation - Prescription)
+- **Titre**: Contenir
+- **Description**: Relation entre Consultation et Prescription pour indiquer qu'une consultation contient une prescription.
+- **Propriétés**:
+  - **Consultation**: La consultation qui contient la prescription.
+  - **Prescription**: La prescription contenue dans la consultation.
+
+#### Effectuer
+- **Titre**: Effectuer
+- **Description**: Relation entre Consultation et Médecin pour indiquer qu'un médecin effectue une consultation.
+- **Propri
+
+étés**:
+  - **Consultation**: La consultation effectuée par le médecin.
+  - **Médecin**: Le médecin qui effectue la consultation.
+
+#### Recevoir
+- **Titre**: Recevoir
+- **Description**: Relation entre Patient et Facture pour indiquer qu'un patient reçoit une facture.
+- **Propriétés**:
+  - **Patient**: Le patient qui reçoit la facture.
+  - **Facture**: La facture reçue par le patient.
+
+#### Passer
+- **Titre**: Passer
+- **Description**: Relation entre Consultation et Facture pour indiquer qu'une facture est passée pour une consultation.
+- **Propriétés**:
+  - **Consultation**: La consultation pour laquelle la facture est passée.
+  - **Facture**: La facture passée pour la consultation.
+
+#### Nécessiter
+- **Titre**: Nécessiter
+- **Description**: Relation entre Consultation et Examen pour indiquer qu'une consultation nécessite un examen.
+- **Propriétés**:
+  - **Consultation**: La consultation nécessitant l'examen.
+  - **Examen**: L'examen nécessaire pour la consultation.
+
+#### Contenir (Prescription - Examen)
+- **Titre**: Contenir
+- **Description**: Relation entre Prescription et Examen pour indiquer qu'une prescription contient un examen.
+- **Propriétés**:
+  - **Prescription**: La prescription qui contient l'examen.
+  - **Examen**: L'examen contenu dans la prescription.
