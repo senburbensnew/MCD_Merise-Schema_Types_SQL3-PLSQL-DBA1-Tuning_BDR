@@ -12,7 +12,10 @@
 		<Model Expanded="Yes" ID="{A46239F5-D943-44C9-832B-DB3CFB8D8586}" Loaded="No" Name="MCD_SQL3" Type="{1E597170-9350-11D1-AB3C-0020AF71E433}" URL="MCD.mcd"/>
 		<Model Expanded="Yes" ID="{0D3ABFD2-3BAD-432D-BAF9-BE66F51E4EDE}" Loaded="No" Name="uml" Type="{18112060-1A4B-11D1-83D9-444553540000}" URL="uml.moo"/>
 		<Model Expanded="Yes" ID="{0D3ABFD2-3BAD-432D-BAF9-BE66F51E4EDE}" Loaded="No" Name="uml" Type="{18112060-1A4B-11D1-83D9-444553540000}" URL="uml.moo"/>
-		<Model Expanded="Yes" ID="{A46239F5-D943-44C9-832B-DB3CFB8D8586}" Name="MCD_SQL3" Selected="Yes" Type="{1E597170-9350-11D1-AB3C-0020AF71E433}" URL="MCD.mcd"/>
+		<Model Expanded="Yes" ID="{A46239F5-D943-44C9-832B-DB3CFB8D8586}" Loaded="No" Name="MCD_SQL3" Type="{1E597170-9350-11D1-AB3C-0020AF71E433}" URL="MCD.mcd"/>
+		<Model Expanded="Yes" ID="{CA72A91E-0EC9-4F4D-B968-A95540D4DCE5}" Loaded="No" Name="schema_de_types" Type="{1E597170-9350-11D1-AB3C-0020AF71E433}" URL="schema_de_types.mcd"/>
+		<Model Expanded="Yes" ID="{A46239F5-D943-44C9-832B-DB3CFB8D8586}" Loaded="No" Name="MCD_SQL3" Type="{1E597170-9350-11D1-AB3C-0020AF71E433}" URL="MCD.mcd"/>
+		<Model Expanded="Yes" ID="{CA72A91E-0EC9-4F4D-B968-A95540D4DCE5}" Name="schema_de_types" Selected="Yes" Type="{1E597170-9350-11D1-AB3C-0020AF71E433}" URL="schema_de_types.mcd"/>
 	</Local>
 	<BrowserModule Name="Référentiel"/>
 </Workspace>
