@@ -85,6 +85,7 @@ CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
 	 listTelephones ListTelephones_t,
 	 listPrenoms ListPrenoms_t,
 	 Adresse Adresse_t,
+	 Sexe varchar2(1),
 	 MAP member FUNCTION match RETURN VARCHAR2 
 ) NOT INSTANTIABLE NOT FINAL;
 /
@@ -224,7 +225,9 @@ CREATE TABLE O_PATIENT OF PATIENT_T(
 	Numero_Securite_Sociale CONSTRAINT o_patient_num_secu_social_not_null NOT NULL,
 	Nom CONSTRAINT o_patient_nom_not_null NOT NULL,
 	Email CONSTRAINT o_patient_email_not_null NOT NULL,
-	Date_naissance CONSTRAINT o_patient_date_naissance_not_null NOT NULL
+	Date_naissance CONSTRAINT o_patient_date_naissance_not_null NOT NULL,
+	Sexe CONSTRAINT o_patient_sexe_not_null NOT NULL,
+	CONSTRAINT o_patient_sexe_check CHECK (Sexe IN ('Masculin', 'Feminin', 'Autre'))
 )
 NESTED TABLE pListRefRendezVous STORE AS o_patient_table_pListRefRendezVous
 NESTED TABLE pListRefConsultations STORE AS o_patient_table_pListRefConsultations
@@ -236,7 +239,10 @@ CREATE TABLE O_MEDECIN OF MEDECIN_T(
 	Numero_Securite_Sociale CONSTRAINT o_medecin_num_secu_social_not_null NOT NULL,
 	Nom CONSTRAINT o_medecin_nom_not_null NOT NULL,
 	Email CONSTRAINT o_medecin_email_not_null NOT NULL,
-	Specialite CONSTRAINT o_medecin_date_naissance_not_null NOT NULL
+	Specialite CONSTRAINT o_medecin_date_naissance_not_null NOT NULL,
+	Sexe CONSTRAINT o_medecin_sexe_not_null NOT NULL,
+	CONSTRAINT o_medecin_sexe_check CHECK (Sexe IN ('Masculin', 'Feminin', 'Autre')),
+	CONSTRAINT o_medecin_specialite_check CHECK (Sexe IN ('Urologue', 'Gynecologue', 'Interniste', 'Cardiologue', 'Pediatre', 'Chirurgien'))
 )
 NESTED TABLE pListRefRendezVous STORE AS o_medecin_table_pListRefRendezVous
 NESTED TABLE pListRefConsultations STORE AS o_medecin_table_pListRefConsultations
