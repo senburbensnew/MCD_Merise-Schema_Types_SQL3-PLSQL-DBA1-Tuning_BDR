@@ -1,10 +1,14 @@
-DROP TABLE PERSONNE CASCADE CONSTRAINTS;
-DROP TABLE EXAMEN CASCADE CONSTRAINTS;
-DROP TABLE CONSULTATION CASCADE CONSTRAINTS;
-DROP TABLE PRESCRIPTION CASCADE CONSTRAINTS;
-DROP TABLE FACTURE CASCADE CONSTRAINTS;
-DROP TABLE RENDEZ_VOUS CASCADE CONSTRAINTS;
+-- SUPPRESSION DES TABLES OBJETS
+DROP TABLE O_PERSONNE CASCADE CONSTRAINTS;
+DROP TABLE O_EXAMEN CASCADE CONSTRAINTS;
+DROP TABLE O_CONSULTATION CASCADE CONSTRAINTS;
+DROP TABLE O_PRESCRIPTION CASCADE CONSTRAINTS;
+DROP TABLE O_FACTURE CASCADE CONSTRAINTS;
+DROP TABLE O_RENDEZ_VOUS CASCADE CONSTRAINTS;
+DROP TABLE O_MEDECIN CASCADE CONSTRAINTS;
+DROP TABLE O_PATIENT CASCADE CONSTRAINTS;
 
+-- SUPPRESSION DES TYPES
 DROP TYPE ADRESSE_T force;
 DROP TYPE ListPrenoms_t force;
 DROP TYPE ListTelephones_t force;
@@ -22,9 +26,7 @@ DROP TYPE FACTURE_T force;
 DROP TYPE CONSULTATION_T force;
 DROP TYPE RENDEZ_VOUS_T force;
 
-
--- Creation des types 
-
+-- CREATION DES TYPES 
 CREATE OR REPLACE TYPE ADRESSE_T AS OBJECT (
 	 Numero NUMBER(4),
 	 Rue VARCHAR2(20),
@@ -69,15 +71,15 @@ CREATE OR REPLACE TYPE PRESCRIPTION_T;
 CREATE OR REPLACE TYPE ListRefPrescriptions_t AS TABLE OF REF PRESCRIPTION_T;
 /
 
--- Pour l'heritage
- CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
+CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
 	 Id_Personne# NUMBER(4),
+	 Numero_Securite_Sociale NUMBER(30),
 	 Nom VARCHAR2(12),
 	 Email VARCHAR2(30),
 	 listTelephones ListTelephones_t,
 	 listPrenoms ListPrenoms_t,
 	 Adresse Adresse_t,
-	 MAP member FUNCTION match RETURN VARCHAR2
+	 MAP member FUNCTION match RETURN VARCHAR2 
 ) NOT INSTANTIABLE NOT FINAL;
 /
 
@@ -86,7 +88,6 @@ CREATE OR REPLACE TYPE PATIENT_T UNDER PERSONNE_T(
 	 pListRefRendezVous ListRefRendezVous_t,
 	 pListRefConsultations ListRefConsultations_t,
 	 pListRefFactures ListRefFactures_t,
-	 OVERRIDING  MAP MEMBER FUNCTION match RETURN VARCHAR2,
 	 MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T),
      MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T),
      STATIC PROCEDURE listerRendezVous,
@@ -110,7 +111,6 @@ CREATE OR REPLACE TYPE MEDECIN_T UNDER PERSONNE_T(
 	 CV CLOB,
 	 pListRefRendezVous ListRefRendezVous_t,
 	 pListRefConsultations ListRefConsultations_t,
-	 OVERRIDING MAP member FUNCTION match RETURN VARCHAR2,	 
 	 MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF Rendez_Vous_T),
 	 MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF Rendez_Vous_T),
 	 STATIC PROCEDURE listerRendezVous,
@@ -127,9 +127,10 @@ CREATE OR REPLACE TYPE MEDECIN_T UNDER PERSONNE_T(
 /
 
 CREATE OR REPLACE TYPE RENDEZ_VOUS_T AS OBJECT(
+    Id_Rendez_Vous# NUMBER(8),
 	refPatient REF PATIENT_T,
 	refMedecin REF MEDECIN_T,
-	Date_Rendez_Vous Date,
+	Date_Rendez_Vous DATE,
 	Motif VARCHAR2(200),
 	MAP member FUNCTION match RETURN VARCHAR2,
 	STATIC PROCEDURE listerRendezVous,
@@ -143,6 +144,7 @@ CREATE OR REPLACE TYPE RENDEZ_VOUS_T AS OBJECT(
 
 CREATE OR REPLACE TYPE EXAMEN_T AS OBJECT(
 	Id_Examen# NUMBER(8),
+	refConsultation REF CONSULTATION_T,
 	Details_Examen VARCHAR2(200),
 	Date_Examen DATE,	
 	MAP MEMBER FUNCTION match RETURN VARCHAR2,
@@ -156,8 +158,8 @@ CREATE OR REPLACE TYPE EXAMEN_T AS OBJECT(
 /
 
 CREATE OR REPLACE TYPE PRESCRIPTION_T AS OBJECT(
-	refConsultation REF CONSULTATION_T,
 	Id_Prescription# NUMBER(8),
+	refConsultation REF CONSULTATION_T,
 	Details_Prescription VARCHAR2(200),
 	Date_Prescription DATE,	
 	MAP MEMBER FUNCTION match RETURN VARCHAR2,
@@ -188,10 +190,10 @@ CREATE OR REPLACE TYPE FACTURE_T AS OBJECT(
 /
 
 CREATE OR REPLACE TYPE CONSULTATION_T AS OBJECT(
-	Id_Consultation# number(8),
-	Raison varchar2(200),
-	Diagnostic varchar2(200),
-	Date_Consultation Date,
+	Id_Consultation# NUMBER(8),
+	Raison VARCHAR2(200),
+	Diagnostic VARCHAR2(200),
+	Date_Consultation DATE,
 	pListRefExamens ListRefExamens_t,
 	pListRefPrescriptions ListRefPrescriptions_t,
 	MAP MEMBER FUNCTION match RETURN VARCHAR2,
@@ -210,18 +212,181 @@ CREATE OR REPLACE TYPE CONSULTATION_T AS OBJECT(
 )
 /
 
--- Implementation des corps des types (A completer)
+-- CREATION DES TABLES OBJETS A PARTIR DES TYPES
 
-CREATE OR REPLACE TYPE BODY PERSONNE_T AS
-	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
-	BEGIN
-		RETURN NOM||Id_Personne#;
-	END;
+-- CREATE TABLE O_PERSONNE OF PERSONNE_T(
+--	CONSTRAINT pk_o_personne_id_personne PRIMARY KEY(Id_Personne#),
+--	Nom CONSTRAINT nom_not_null NOT NULL,
+--	Email CONSTRAINT email_not_null NOT NULL,
+	-- TREAT(object_value AS PATIENT_T).Date_naissance CONSTRAINT patient_date_naissance_not_null NOT NULL,
+	-- TREAT(object_value AS MEDECIN_T).Specialite CONSTRAINT medecin_specialite_not_null NOT NULL
+-- )
+-- NESTED TABLE pListRefRendezVous STORE AS table_pListRefRendezVous
+-- NESTED TABLE pListRefConsultations STORE AS table_pListRefConsultations
+-- NESTED TABLE pListRefFactures STORE AS table_pListRefFactures
+-- LOB(CV) STORE AS storeCV(PCTVERSION 30)
+-- /
+
+CREATE TABLE O_PATIENT OF PATIENT_T(
+	CONSTRAINT pk_o_patient_id_personne PRIMARY KEY(Id_Personne#),
+	Numero_Securite_Sociale CONSTRAINT o_patient_num_secu_social_not_null NOT NULL,
+	Nom CONSTRAINT o_patient_nom_not_null NOT NULL,
+	Email CONSTRAINT o_patient_email_not_null NOT NULL,
+	Date_naissance CONSTRAINT o_patient_date_naissance_not_null NOT NULL
+)
+NESTED TABLE pListRefRendezVous STORE AS o_patient_table_pListRefRendezVous
+NESTED TABLE pListRefConsultations STORE AS o_patient_table_pListRefConsultations
+NESTED TABLE pListRefFactures STORE AS o_patient_table_pListRefFactures
+/
+
+CREATE TABLE O_MEDECIN OF MEDECIN_T(
+	CONSTRAINT pk_o_medecin_id_personne PRIMARY KEY(Id_Personne#),
+	Numero_Securite_Sociale CONSTRAINT o_medecin_num_secu_social_not_null NOT NULL,
+	Nom CONSTRAINT o_medecin_nom_not_null NOT NULL,
+	Email CONSTRAINT o_medecin_email_not_null NOT NULL,
+	Specialite CONSTRAINT o_medecin_date_naissance_not_null NOT NULL
+)
+NESTED TABLE pListRefRendezVous STORE AS o_medecin_table_pListRefRendezVous
+NESTED TABLE pListRefConsultations STORE AS o_medecin_table_pListRefConsultations
+/
+
+
+CREATE TABLE O_EXAMEN OF EXAMEN_T(
+	CONSTRAINT pk_o_examen_id_examen PRIMARY KEY(Id_Examen#),
+	Details_Examen CONSTRAINT details_examen_not_null NOT NULL,
+	Date_Examen CONSTRAINT date_examen_not_null NOT NULL
+)
+/
+
+CREATE TABLE O_PRESCRIPTION OF PRESCRIPTION_T(
+	CONSTRAINT pk_o_prescription_id_prescription PRIMARY KEY(Id_Prescription#),
+	refConsultation CONSTRAINT o_prescription_ref_consultation_not_null NOT NULL,
+	Details_Prescription CONSTRAINT details_prescription_not_null NOT NULL,
+	Date_Prescription CONSTRAINT date_prescription_not_null NOT NULL
+)
+/
+
+CREATE TABLE O_FACTURE OF FACTURE_T(	
+	CONSTRAINT pk_o_facture_id_facture PRIMARY KEY(Id_Facture#),
+	refPatient CONSTRAINT o_facture_ref_patient_not_null NOT NULL,
+	refConsultation CONSTRAINT o_facture_ref_consultation_not_null NOT NULL,
+	Montant_Total CONSTRAINT montant_total_not_null NOT NULL,
+	Date_Facture CONSTRAINT date_facture_not_null NOT NULL
+)
+/
+
+CREATE TABLE O_RENDEZ_VOUS OF RENDEZ_VOUS_T(
+	CONSTRAINT pk_o_rendez_vous_id_rendez_vous PRIMARY KEY(Id_Rendez_Vous#),
+	refPatient CONSTRAINT o_rendez_vous_ref_patient_not_null NOT NULL,
+	refMedecin CONSTRAINT o_rendez_vous_ref_medecin_not_null NOT NULL,
+	Date_Rendez_Vous CONSTRAINT date_rendez_vous_not_null NOT NULL,
+	Motif CONSTRAINT motif_not_null NOT NULL
+)
+/
+
+CREATE TABLE O_CONSULTATION OF CONSULTATION_T(
+	CONSTRAINT pk_o_consultation_id_consultation PRIMARY KEY(Id_Consultation#),
+	Raison CONSTRAINT raison_not_null NOT NULL,
+	Diagnostic CONSTRAINT diagnostic_not_null NOT NULL,
+	Date_Consultation CONSTRAINT date_consultation_not_null NOT NULL
+) 
+NESTED TABLE pListRefExamens STORE AS table_pListRefExamens
+NESTED TABLE pListRefPrescriptions STORE AS table_pListRefPrescriptions
+/
+
+-- CREATION DES INDEX
+ALTER TABLE O_RENDEZ_VOUS ADD (SCOPE FOR (refPatient) IS O_PATIENT);
+ALTER TABLE O_RENDEZ_VOUS ADD (SCOPE FOR (refMedecin) IS O_MEDECIN);
+ALTER TABLE O_FACTURE ADD (SCOPE FOR (refPatient) IS O_PATIENT);
+ALTER TABLE O_FACTURE ADD (SCOPE FOR (refConsultation) IS O_CONSULTATION);
+ALTER TABLE O_PRESCRIPTION ADD (SCOPE FOR (refConsultation) IS O_CONSULTATION);
+ALTER TABLE O_EXAMEN ADD (SCOPE FOR (refConsultation) IS O_CONSULTATION);
+ALTER TABLE o_medecin_table_pListRefConsultations ADD (SCOPE FOR (column_value) IS O_CONSULTATION);
+ALTER TABLE o_medecin_table_pListRefRendezVous ADD (SCOPE FOR (column_value) IS O_RENDEZ_VOUS);
+ALTER TABLE o_patient_table_pListRefConsultations ADD (SCOPE FOR (column_value) IS O_CONSULTATION);
+ALTER TABLE o_patient_table_pListRefRendezVous ADD (SCOPE FOR (column_value) IS O_RENDEZ_VOUS);
+ALTER TABLE o_patient_table_pListRefFactures ADD (SCOPE FOR (column_value) IS O_FACTURE);
+ALTER TABLE table_pListRefExamens ADD (SCOPE FOR (column_value) IS O_EXAMEN);
+ALTER TABLE table_pListRefPrescriptions ADD (SCOPE FOR (column_value) IS O_PRESCRIPTION);
+
+DROP INDEX idx_o_rendez_vous_ref_patient_ref_medecin_date_unique;
+CREATE UNIQUE INDEX idx_o_rendez_vous_ref_patient_ref_medecin_date_unique ON O_RENDEZ_VOUS(refPatient, refMedecin, Date_Rendez_Vous);
+
+DROP INDEX idx_o_patient_email_unique;
+CREATE UNIQUE INDEX idx_o_patient_email_unique ON O_PATIENT(Email);
+
+DROP INDEX idx_o_patient_num_sec_social_unique;
+CREATE UNIQUE INDEX idx_o_patient_num_sec_social_unique ON O_PATIENT(Numero_Securite_Sociale);
+
+DROP INDEX idx_o_medecin_email_unique;
+CREATE UNIQUE INDEX idx_o_medecin_email_unique ON O_MEDECIN(Email);
+
+DROP INDEX idx_o_medecin_num_sec_social_unique;
+CREATE UNIQUE INDEX idx_o_medecin_num_sec_social_unique ON O_MEDECIN(Numero_Securite_Sociale);
+
+DROP INDEX idx_o_medecin_specialite;
+CREATE INDEX idx_o_medecin_specialite ON O_MEDECIN(Specialite);
+
+DROP INDEX idx_o_facture_montant_total;
+CREATE INDEX idx_o_facture_montant_total ON O_FACTURE(Montant_Total);
+
+
+-- INSERTION DES LIGNES DANS LES TABLES OBJETS
+
+-- TABLE O_PATIENT
+BEGIN
+    FOR i IN 1..100 LOOP
+        INSERT INTO O_PATIENT VALUES (
+            PATIENT_T(
+                Id_Personne# => i,
+                Numero_Securite_Sociale => 
+                    TRUNC(DBMS_RANDOM.VALUE(1, 3)) || -- Gender (1 or 2)
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(50, 99)), 2, '0') || -- Year of birth (50-99)
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 12)), 2, '0') || -- Month of birth (01-12)
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 96)), 2, '0') || -- Department of birth (01-96)
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 999)), 3, '0') || -- Commune code (001-999)
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 999)), 3, '0') || -- Order number (001-999)
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 97)), 2, '0'), -- Control key (01-97)
+                Nom => 'Nom' || i,
+                Email => 'patient' || i || '@example.com',
+                listTelephones => ListTelephones_t(
+                    '01' || LPAD(TRUNC(DBMS_RANDOM.VALUE(0, 10000)), 8, '0'),
+                    '02' || LPAD(TRUNC(DBMS_RANDOM.VALUE(0, 10000)), 8, '0'),
+                    NULL
+                ),
+                listPrenoms => ListPrenoms_t(
+                    'Prenom' || TRUNC(DBMS_RANDOM.VALUE(1, 10)),
+                    'Second' || TRUNC(DBMS_RANDOM.VALUE(1, 10)),
+                    NULL
+                ),
+                Adresse => ADRESSE_T(
+                    TRUNC(DBMS_RANDOM.VALUE(1, 100)),
+                    'Rue ' || TRUNC(DBMS_RANDOM.VALUE(1, 100)),
+                    TRUNC(DBMS_RANDOM.VALUE(10000, 99999)),
+                    'Ville' || TRUNC(DBMS_RANDOM.VALUE(1, 20))
+                ),
+                Date_naissance => TO_DATE(
+                    TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1950, 2000))) || '-' ||
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 12)), 2, '0') || '-' ||
+                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 28)), 2, '0'),
+                    'YYYY-MM-DD'
+                ),
+                pListRefRendezVous => ListRefRendezVous_t(),
+                pListRefConsultations => ListRefConsultations_t(),
+                pListRefFactures => ListRefFactures_t()
+            )
+        );
+    END LOOP;
 END;
 /
 
+COMMIT;
+
+
+
+-- IMPLEMENTATION DES CORPS DES TYPES
 CREATE OR REPLACE TYPE BODY PATIENT_T AS
-	OVERRIDING MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
+	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
 	BEGIN
 		RETURN NOM||Date_naissance;
 	END;
@@ -351,37 +516,6 @@ CREATE OR REPLACE TYPE BODY FACTURE_T AS
 END;
 /
 
--- Creation des TABLEs objets a partir des types crees (A completer)
 
-CREATE TABLE PERSONNE OF PERSONNE_T(
-)
-/
-
-CREATE TABLE EXAMEN OF EXAMEN_T(
-)
-/
-
-CREATE TABLE FACTURE OF FACTURE_T(
-)
-/
-
-CREATE TABLE PRESCRIPTION OF PRESCRIPTION_T(
-)
-/
-
-CREATE TABLE CONSULTATION OF CONSULTATION_T(
-)
-/
-
-CREATE TABLE RENDEZ_VOUS OF RENDEZ_VOUS_T(
-)
-/
-
--- Creation des indexes (A completer)
-
-
--- Insertion des lignes dans les tables objets
-
-
--- Test des methodes
+-- TEST DES METHODES
 
