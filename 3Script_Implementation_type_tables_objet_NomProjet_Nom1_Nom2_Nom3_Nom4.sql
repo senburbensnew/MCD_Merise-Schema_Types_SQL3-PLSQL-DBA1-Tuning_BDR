@@ -1,5 +1,11 @@
+-- CREATION DE L'UTILISATEUR ORACLE ICI
+-- sqlplus SYS AS SYSDBA;
+-- CREATE USER Oracle IDENTIFIED BY password;
+-- GRANT CONNECT, RESOURCE TO Oracle;
+-- GRANT UNLIMITED TABLESPACE TO Oracle;
+-- sqlplus Oracle/password@your_database
+
 -- SUPPRESSION DES TABLES OBJETS
-DROP TABLE O_PERSONNE CASCADE CONSTRAINTS;
 DROP TABLE O_EXAMEN CASCADE CONSTRAINTS;
 DROP TABLE O_CONSULTATION CASCADE CONSTRAINTS;
 DROP TABLE O_PRESCRIPTION CASCADE CONSTRAINTS;
@@ -213,20 +219,6 @@ CREATE OR REPLACE TYPE CONSULTATION_T AS OBJECT(
 /
 
 -- CREATION DES TABLES OBJETS A PARTIR DES TYPES
-
--- CREATE TABLE O_PERSONNE OF PERSONNE_T(
---	CONSTRAINT pk_o_personne_id_personne PRIMARY KEY(Id_Personne#),
---	Nom CONSTRAINT nom_not_null NOT NULL,
---	Email CONSTRAINT email_not_null NOT NULL,
-	-- TREAT(object_value AS PATIENT_T).Date_naissance CONSTRAINT patient_date_naissance_not_null NOT NULL,
-	-- TREAT(object_value AS MEDECIN_T).Specialite CONSTRAINT medecin_specialite_not_null NOT NULL
--- )
--- NESTED TABLE pListRefRendezVous STORE AS table_pListRefRendezVous
--- NESTED TABLE pListRefConsultations STORE AS table_pListRefConsultations
--- NESTED TABLE pListRefFactures STORE AS table_pListRefFactures
--- LOB(CV) STORE AS storeCV(PCTVERSION 30)
--- /
-
 CREATE TABLE O_PATIENT OF PATIENT_T(
 	CONSTRAINT pk_o_patient_id_personne PRIMARY KEY(Id_Personne#),
 	Numero_Securite_Sociale CONSTRAINT o_patient_num_secu_social_not_null NOT NULL,
@@ -248,6 +240,7 @@ CREATE TABLE O_MEDECIN OF MEDECIN_T(
 )
 NESTED TABLE pListRefRendezVous STORE AS o_medecin_table_pListRefRendezVous
 NESTED TABLE pListRefConsultations STORE AS o_medecin_table_pListRefConsultations
+LOB(CV) STORE AS storeCV(PCTVERSION 30)
 /
 
 
@@ -309,76 +302,51 @@ ALTER TABLE o_patient_table_pListRefFactures ADD (SCOPE FOR (column_value) IS O_
 ALTER TABLE table_pListRefExamens ADD (SCOPE FOR (column_value) IS O_EXAMEN);
 ALTER TABLE table_pListRefPrescriptions ADD (SCOPE FOR (column_value) IS O_PRESCRIPTION);
 
+
 DROP INDEX idx_o_rendez_vous_ref_patient_ref_medecin_date_unique;
-CREATE UNIQUE INDEX idx_o_rendez_vous_ref_patient_ref_medecin_date_unique ON O_RENDEZ_VOUS(refPatient, refMedecin, Date_Rendez_Vous);
-
 DROP INDEX idx_o_patient_email_unique;
-CREATE UNIQUE INDEX idx_o_patient_email_unique ON O_PATIENT(Email);
-
 DROP INDEX idx_o_patient_num_sec_social_unique;
-CREATE UNIQUE INDEX idx_o_patient_num_sec_social_unique ON O_PATIENT(Numero_Securite_Sociale);
-
 DROP INDEX idx_o_medecin_email_unique;
-CREATE UNIQUE INDEX idx_o_medecin_email_unique ON O_MEDECIN(Email);
-
 DROP INDEX idx_o_medecin_num_sec_social_unique;
-CREATE UNIQUE INDEX idx_o_medecin_num_sec_social_unique ON O_MEDECIN(Numero_Securite_Sociale);
-
 DROP INDEX idx_o_medecin_specialite;
-CREATE INDEX idx_o_medecin_specialite ON O_MEDECIN(Specialite);
-
 DROP INDEX idx_o_facture_montant_total;
+DROP INDEX IDX_O_RENDEZ_VOUS_refPatient;
+DROP INDEX IDX_O_RENDEZ_VOUS_refMedecin;
+DROP INDEX IDX_O_FACTURE_refPatient;
+DROP INDEX IDX_O_FACTURE_refConsultation;
+DROP INDEX IDX_O_PRESCRIPTION_refConsultation;
+DROP INDEX IDX_O_EXAMEN_refConsultation;
+DROP INDEX idx_o_medecin_table_pListRefConsultations_Nested_table_id_Column_value;
+DROP INDEX idx_o_medecin_table_pListRefRendezVous_Nested_table_id_Column_value;
+DROP INDEX idx_o_patient_table_pListRefConsultations_Nested_table_id_Column_value;
+DROP INDEX idx_o_patient_table_pListRefRendezVous_Nested_table_id_Column_value;
+DROP INDEX idx_o_patient_table_pListRefFactures_Nested_table_id_Column_value;
+DROP INDEX idx_table_pListRefExamens_Nested_table_id_Column_value;
+DROP INDEX idx_table_pListRefPrescriptions_Nested_table_id_Column_value;
+
+CREATE UNIQUE INDEX idx_o_rendez_vous_ref_patient_ref_medecin_date_unique ON O_RENDEZ_VOUS(refPatient, refMedecin, Date_Rendez_Vous);
+CREATE UNIQUE INDEX idx_o_patient_email_unique ON O_PATIENT(Email);
+CREATE UNIQUE INDEX idx_o_patient_num_sec_social_unique ON O_PATIENT(Numero_Securite_Sociale);
+CREATE UNIQUE INDEX idx_o_medecin_email_unique ON O_MEDECIN(Email);
+CREATE UNIQUE INDEX idx_o_medecin_num_sec_social_unique ON O_MEDECIN(Numero_Securite_Sociale);
+CREATE INDEX idx_o_medecin_specialite ON O_MEDECIN(Specialite);
 CREATE INDEX idx_o_facture_montant_total ON O_FACTURE(Montant_Total);
+CREATE INDEX IDX_O_RENDEZ_VOUS_refPatient ON O_RENDEZ_VOUS(refPatient);
+CREATE INDEX IDX_O_RENDEZ_VOUS_refMedecin ON O_RENDEZ_VOUS(refMedecin);
+CREATE INDEX IDX_O_FACTURE_refPatient ON O_FACTURE(refPatient);
+CREATE INDEX IDX_O_FACTURE_refConsultation ON O_FACTURE(refConsultation);
+CREATE INDEX IDX_O_PRESCRIPTION_refConsultation ON O_PRESCRIPTION(refConsultation);
+CREATE INDEX IDX_O_EXAMEN_refConsultation ON O_EXAMEN(refConsultation);
+CREATE UNIQUE INDEX idx_o_medecin_table_pListRefConsultations_Nested_table_id_Column_value ON o_medecin_table_pListRefConsultations(Nested_table_id, Column_value);
+CREATE UNIQUE INDEX idx_o_medecin_table_pListRefRendezVous_Nested_table_id_Column_value ON o_medecin_table_pListRefRendezVous(Nested_table_id, Column_value);
+CREATE UNIQUE INDEX idx_o_patient_table_pListRefConsultations_Nested_table_id_Column_value ON o_patient_table_pListRefConsultations(Nested_table_id, Column_value);
+CREATE UNIQUE INDEX idx_o_patient_table_pListRefRendezVous_Nested_table_id_Column_value ON o_patient_table_pListRefRendezVous(Nested_table_id, Column_value);
+CREATE UNIQUE INDEX idx_o_patient_table_pListRefFactures_Nested_table_id_Column_value ON o_patient_table_pListRefFactures(Nested_table_id, Column_value);
+CREATE UNIQUE INDEX idx_table_pListRefExamens_Nested_table_id_Column_value ON table_pListRefExamens(Nested_table_id, Column_value);
+CREATE UNIQUE INDEX idx_table_pListRefPrescriptions_Nested_table_id_Column_value ON table_pListRefPrescriptions(Nested_table_id, Column_value);
 
 
 -- INSERTION DES LIGNES DANS LES TABLES OBJETS
-
--- TABLE O_PATIENT
-BEGIN
-    FOR i IN 1..100 LOOP
-        INSERT INTO O_PATIENT VALUES (
-            PATIENT_T(
-                Id_Personne# => i,
-                Numero_Securite_Sociale => 
-                    TRUNC(DBMS_RANDOM.VALUE(1, 3)) || -- Gender (1 or 2)
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(50, 99)), 2, '0') || -- Year of birth (50-99)
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 12)), 2, '0') || -- Month of birth (01-12)
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 96)), 2, '0') || -- Department of birth (01-96)
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 999)), 3, '0') || -- Commune code (001-999)
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 999)), 3, '0') || -- Order number (001-999)
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 97)), 2, '0'), -- Control key (01-97)
-                Nom => 'Nom' || i,
-                Email => 'patient' || i || '@example.com',
-                listTelephones => ListTelephones_t(
-                    '01' || LPAD(TRUNC(DBMS_RANDOM.VALUE(0, 10000)), 8, '0'),
-                    '02' || LPAD(TRUNC(DBMS_RANDOM.VALUE(0, 10000)), 8, '0'),
-                    NULL
-                ),
-                listPrenoms => ListPrenoms_t(
-                    'Prenom' || TRUNC(DBMS_RANDOM.VALUE(1, 10)),
-                    'Second' || TRUNC(DBMS_RANDOM.VALUE(1, 10)),
-                    NULL
-                ),
-                Adresse => ADRESSE_T(
-                    TRUNC(DBMS_RANDOM.VALUE(1, 100)),
-                    'Rue ' || TRUNC(DBMS_RANDOM.VALUE(1, 100)),
-                    TRUNC(DBMS_RANDOM.VALUE(10000, 99999)),
-                    'Ville' || TRUNC(DBMS_RANDOM.VALUE(1, 20))
-                ),
-                Date_naissance => TO_DATE(
-                    TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1950, 2000))) || '-' ||
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 12)), 2, '0') || '-' ||
-                    LPAD(TRUNC(DBMS_RANDOM.VALUE(1, 28)), 2, '0'),
-                    'YYYY-MM-DD'
-                ),
-                pListRefRendezVous => ListRefRendezVous_t(),
-                pListRefConsultations => ListRefConsultations_t(),
-                pListRefFactures => ListRefFactures_t()
-            )
-        );
-    END LOOP;
-END;
-/
 
 COMMIT;
 
