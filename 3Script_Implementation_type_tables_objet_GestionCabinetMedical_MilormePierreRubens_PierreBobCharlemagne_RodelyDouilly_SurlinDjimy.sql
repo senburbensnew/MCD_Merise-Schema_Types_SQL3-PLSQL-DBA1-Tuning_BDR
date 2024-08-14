@@ -1,9 +1,11 @@
 -- CREATION DE L'UTILISATEUR ORACLE ICI
--- sqlplus SYS AS SYSDBA;
--- CREATE USER Oracle IDENTIFIED BY password;
--- GRANT CONNECT, RESOURCE TO Oracle;
--- GRANT UNLIMITED TABLESPACE TO Oracle;
--- sqlplus Oracle/password@your_database
+CREATE USER Oracle IDENTIFIED BY PASS123;
+ALTER USER Oracle QUOTA UNLIMITED  ON USERS;
+GRANT CREATE SESSION TO Oracle;
+GRANT CREATE TABLE TO Oracle WITH ADMIN OPTION;
+GRANT CREATE  VIEW TO Oracle WITH ADMIN OPTION;
+GRANT CREATE PROCEDURE TO Oracle WITH ADMIN OPTION;
+GRANT CREATE TYPE TO Oracle WITH ADMIN OPTION;
 
 -- SUPPRESSION DES TABLES OBJETS
 DROP TABLE O_EXAMEN CASCADE CONSTRAINTS;
@@ -86,7 +88,7 @@ CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
 	 listPrenoms ListPrenoms_t,
 	 Adresse Adresse_t,
 	 Sexe varchar2(1),
-	 MAP member FUNCTION match RETURN VARCHAR2 
+	 MAP MEMBER FUNCTION match RETURN VARCHAR2 
 ) NOT INSTANTIABLE NOT FINAL;
 /
 
@@ -97,7 +99,7 @@ CREATE OR REPLACE TYPE PATIENT_T UNDER PERSONNE_T(
 	 pListRefFactures ListRefFactures_t,
 	 MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T),
      MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T),
-     STATIC PROCEDURE listerRendezVous,
+     MEMBER PROCEDURE listerRendezVous,
      MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T),
      MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T),
      STATIC PROCEDURE listerConsultations,
@@ -359,94 +361,120 @@ COMMIT;
 
 
 -- IMPLEMENTATION DES CORPS DES TYPES
-CREATE OR REPLACE TYPE BODY PATIENT_T AS
+
+CREATE OR REPLACE TYPE BODY PERSONNE_T AS
 	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
 	BEGIN
-		RETURN NOM||Date_naissance;
-	END;
-	
-	MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE listerRendezVous IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE listerConsultations IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE ajouterFacture(refFacture REF FACTURE_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE supprimerFacture(refFacture REF FACTURE_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE listerFactures IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE listerPatients IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE rechercherPatientParNom(nom VARCHAR2) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE ajouterPatient(patient PATIENT_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE lirePatient(patientId NUMBER) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE modifierPatient(patientId NUMBER, patient PATIENT_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-    MEMBER PROCEDURE supprimerPatient(patientId NUMBER) IS
-	BEGIN
-		NULL;
+		RETURN NOM||Sexe||Numero_Securite_Sociale;
 	END;
 END;
 /
 
-CREATE OR REPLACE TYPE BODY MEDECIN_T AS
-	MAP member FUNCTION match RETURN varchar2 IS
-	BEGIN
-		RETURN Specialite||NOM;
+--	   MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T),
+--     MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T),
+--     MEMBER PROCEDURE listerRendezVous,
+--     MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T),
+--     MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T),
+--     STATIC PROCEDURE listerConsultations,
+--     MEMBER PROCEDURE ajouterFacture(refFacture REF FACTURE_T),
+--     MEMBER PROCEDURE supprimerFacture(refFacture REF FACTURE_T),
+--     STATIC PROCEDURE listerFactures,
+--     STATIC PROCEDURE listerPatients,
+--     STATIC PROCEDURE rechercherPatientParNom(nom VARCHAR2),
+--     STATIC PROCEDURE ajouterPatient(patient PATIENT_T),
+--     STATIC PROCEDURE lirePatient(patientId NUMBER),
+--     STATIC PROCEDURE modifierPatient(patientId NUMBER, patient PATIENT_T),
+--     STATIC PROCEDURE supprimerPatient(patientId NUMBER)
+
+CREATE OR REPLACE TYPE BODY PATIENT_T AS	
+	MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
+	BEGIN		
+		INSERT INTO TABLE(
+			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne# = self.Id_Personne#
+		) list_ref_rendez_vous_to_table
+        VALUES(refRendezVous);
+        EXCEPTION 
+          WHEN OTHERS THEN RAISE; 
 	END;
+	
+--  MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
+--	BEGIN
+--		DELETE FROM TABLE(
+--			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne# = self.Id_Personne#
+--		) list_ref_rendez_vous_to_table
+--        WHERE list_ref_rendez_vous_to_table.column_value = refRendezVous;
+--		EXCEPTION 
+--			WHEN OTHERS THEN RAISE;
+--	END;
+	
+--    MEMBER PROCEDURE listerRendezVous IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE listerConsultations IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE ajouterFacture(refFacture REF FACTURE_T) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--   MEMBER PROCEDURE supprimerFacture(refFacture REF FACTURE_T) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE listerFactures IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE listerPatients IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE rechercherPatientParNom(nom VARCHAR2) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE ajouterPatient(patient PATIENT_T) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE lirePatient(patientId NUMBER) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE modifierPatient(patientId NUMBER, patient PATIENT_T) IS
+--	BEGIN
+--		NULL;
+--	END;
+	
+--    MEMBER PROCEDURE supprimerPatient(patientId NUMBER) IS
+--	BEGIN
+--		NULL;
+--	END;
+END;
+/
+
+CREATE OR REPLACE TYPE BODY MEDECIN_T AS
 END;
 /
 
