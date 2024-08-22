@@ -654,6 +654,40 @@ BEGIN
     INSERT INTO O_CONSULTATION OC VALUES(CONSULTATION_T(10, refPatient10, refMedecin5, 'Shortness of breath', 'Asthma', TO_DATE('19/01/2024', 'DD/MM/YYYY'), ListRefExamens_t(), ListRefPrescriptions_t()))
     RETURNING REF(OC) INTO refConsultation10;
 	
+    -- MISE A JOUR DES LISTES DES CONSULTATIONS
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient1) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient1;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient2) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient2;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient3) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient3;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient4) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient4;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient5) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient5;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient6) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient6;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient7) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient7;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient8) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient8;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient9) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient9;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient10) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient10;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient11) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient11;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient12) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient12;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient13) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient13;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient14) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient14;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient15) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient15;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient16) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient16;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient17) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient17;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient18) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient18;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient19) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient19;
+	INSERT INTO TABLE(SELECT OP.pListRefConsultations FROM O_PATIENT OP WHERE REF(OP)=refPatient20) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refPatient = refPatient20;
+	
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin1) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin1;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin2) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin2;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin3) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin3;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin4) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin4;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin5) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin5;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin6) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin6;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin7) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin7;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin8) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin8;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin9) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin9;
+	INSERT INTO TABLE(SELECT OM.pListRefConsultations FROM O_MEDECIN OM WHERE REF(OM)=refMedecin10) SELECT REF(OC) FROM O_CONSULTATION OC WHERE OC.refMedecin = refMedecin10;
+
+	
    -- INSERTION DES FACTURES
     INSERT INTO O_FACTURE OFA VALUES(FACTURE_T(1, refPatient1, refConsultation3, 95.8, TO_DATE('19/01/2024', 'DD/MM/YYYY')))
     RETURNING REF(OFA) INTO refFacture1;
@@ -685,6 +719,29 @@ BEGIN
     INSERT INTO O_FACTURE OFA VALUES(FACTURE_T(10, refPatient10, refConsultation10, 105.5, TO_DATE('28/01/2024', 'DD/MM/YYYY')))
     RETURNING REF(OFA) INTO refFacture10;
 	
+	-- MISE A JOUR DES LISTES DES FACTURES
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient1) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient1;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient2) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient2;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient3) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient3;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient4) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient4;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient5) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient5;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient6) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient6;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient7) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient7;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient8) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient8;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient9) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient9;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient10) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient10;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient11) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient11;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient12) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient12;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient13) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient13;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient14) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient14;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient15) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient15;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient16) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient16;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient17) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient17;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient18) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient18;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient19) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient19;
+	INSERT INTO TABLE(SELECT OP.pListRefFactures FROM O_PATIENT OP WHERE REF(OP)=refPatient20) SELECT REF(OFA) FROM O_FACTURE OFA WHERE OFA.refPatient = refPatient20;
+	
+	
 	-- INSERTION DES EXAMENS	
     INSERT INTO O_EXAMEN OE VALUES(EXAMEN_T(1, refConsultation3, 'Blood Test', TO_DATE('28/01/2024', 'DD/MM/YYYY')))
     RETURNING REF(OE) INTO refExamen1;
@@ -715,6 +772,19 @@ BEGIN
 
     INSERT INTO O_EXAMEN OE VALUES(EXAMEN_T(10, refConsultation10, 'Liver Function Test', TO_DATE('06/02/2024', 'DD/MM/YYYY')))
     RETURNING REF(OE) INTO refExamen10;
+	
+    -- MISE A JOUR DES LISTES DES EXAMENS
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation1) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation1;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation2) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation2;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation3) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation3;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation4) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation4;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation5) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation5;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation6) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation6;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation7) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation7;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation8) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation8;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation9) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation9;
+	INSERT INTO TABLE(SELECT OC.pListRefExamens FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation10) SELECT REF(OE) FROM O_EXAMEN OE WHERE OE.refConsultation = refConsultation10;
+	
    
     -- INSERTION DES PRESCRIPTIONS	
     INSERT INTO O_PRESCRIPTION OPR VALUES(PRESCRIPTION_T(1, refConsultation1, 'Take 1 tablet of Aspirin daily', TO_DATE('01/02/2024', 'DD/MM/YYYY')))
@@ -746,10 +816,205 @@ BEGIN
 
     INSERT INTO O_PRESCRIPTION OPR VALUES(PRESCRIPTION_T(10, refConsultation10, 'Avoid alcohol consumption', TO_DATE('10/02/2024', 'DD/MM/YYYY')))
     RETURNING REF(OPR) INTO refPrescription10;
+	
+	-- MISE A JOUR DES LISTES DES PRESCRIPTIONS
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation1) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation1;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation2) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation2;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation3) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation3;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation4) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation4;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation5) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation5;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation6) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation6;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation7) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation7;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation8) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation8;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation9) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation9;
+	INSERT INTO TABLE(SELECT OC.pListRefPrescriptions FROM O_CONSULTATION OC WHERE REF(OC)=refConsultation10) SELECT REF(OP) FROM O_PRESCRIPTION OP WHERE OP.refConsultation = refConsultation10;	
 END;
 /
 
 COMMIT;
+
+-- MISE A JOUR ET CONSULTATION DES DONNEES DANS VOS TABLES OBJETS
+
+-- REQUETES DE MISE A JOUR
+
+-- 2 REQUETES IMPLIQUANT 1 TABLE
+
+-- Cette requete modifie la date de naissance du patient dont l’adresse mail est maria.martinez@orange.fr. La nouvelle date de naissance sera 22-AUG-1986. Seules les
+-- lignes correspondant a l’adresse mail specifiee seront affectees.
+UPDATE O_PATIENT OP SET OP.DATE_NAISSANCE=TO_DATE('22/08/1986', 'DD/MM/YYYY') WHERE OP.EMAIL='maria.martinez@orange.fr';
+ROLLBACK;
+
+-- Cette requete modifie l’adresse du patient dont l’identifiant est 1. La nouvelle adresse sera 90, DELMAS 75. Seule la ligne correspondant a l’identifiant specifie sera affectee.
+UPDATE O_PATIENT OP SET OP.ADRESSE=ADRESSE_T(5, 'DELMAS 75', 75008, 'PORT-AU-PRINCE') WHERE OP.ID_PERSONNE#=1;
+ROLLBACK;
+
+-- 2 REQUETES IMPLIQUANT 2 TABLES
+
+-- Cette requete SQL permet de modifier la date de rendez-vous des patients dont le
+-- rendez-vous est pr´evu entre le 14-FEB-2024 et le 18-FEB-2024 dans la table virtuelle
+-- issue de la jointure entre PATIENT et RENDEZ VOUS. La nouvelle date de rendezvous sera le 01-MAR-24.
+UPDATE O_RENDEZ_VOUS ORV SET ORV.Date_Rendez_Vous=TO_DATE('01/03/2024', 'DD/MM/YYYY') 
+WHERE ORV.refPatient.DATE_NAISSANCE > TO_DATE('12/12/1994', 'DD/MM/YYYY') AND ORV.Date_Rendez_Vous BETWEEN TO_DATE('14/02/2024', 'DD/MM/YYYY') AND TO_DATE('18/02/2024', 'DD/MM/YYYY')
+ROLLBACK;
+
+-- Cette requete parcourt toutes les factures dont le montant total est inferieur a 200
+-- et pour lesquelles un patient correspondant existe. Pour chacune de ces factures, elle
+-- augmente le montant total de 10
+UPDATE O_FACTURE OFA SET OFA.Montant_Total = OFA.Montant_Total + OFA.Montant_Total * 0.10 
+WHERE OFA.Montant_Total < 200 AND OFA.refPatient IS NOT DANGLING;
+ROLLBACK;
+
+-- 2 requetes impliquant plus de 2 tables
+
+-- Cette requete met a jour la colonne DETAILS PRESCRIPTION de la table PRESCRIPTION pour les enregistrements associes a des consultations de patients ayant
+-- un identifiant de patient egal a 1 et ou la date de consultation est le 5 f´evrier 2024.
+-- La nouvelle valeur de la colonne DETAILS PRESCRIPTION sera Zinoboost.
+UPDATE O_PRESCRIPTION OPR SET OPR.Details_Prescription='Zinoboost'
+WHERE OPR.refConsultation.Date_Consultation = TO_DATE('05/02/2024', 'DD/MM/YYYY') 
+AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne#=1);
+ROLLBACK;
+
+-- Cette requete met a jour la colonne DETAILS EXAMEN de la table EXAMEN pour
+-- les enregistrements associes a des consultations de patients ayant un identifiant de
+-- patient egal a 1 et ou la date de consultation est le 5 fevrier 2024. La nouvelle valeur
+-- de la colonne DETAILS EXAMEN sera HAC1
+UPDATE O_EXAMEN OE SET OE.Details_Examen='HAC1' 
+WHERE OE.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY')
+AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne#=1);
+ROLLBACK;
+
+-- REQUETES DE SUPPRESSION
+
+-- 2 requetes impliquant 1 table
+
+-- Cette requete supprime toutes les lignes de la table EXAMEN ou la valeur de la
+-- colonne DATE EXAMEN est egale a la date du 5 fevrier 2024.
+DELETE FROM O_EXAMEN OE WHERE OE.Date_Examen=TO_DATE('05/02/2024', 'DD/MM/YYYY');
+ROLLBACK;
+
+-- Cette requete supprime toutes les lignes de la table PRESCRIPTION ou la valeur
+-- de la colonne DATE PRESCRIPTION est egale a la date du 5 fevrier 2024.
+DELETE FROM O_PRESCRIPTION OP WHERE OP.Date_Prescription=TO_DATE('05/02/2024', 'DD/MM/YYYY');
+ROLLBACK;
+
+-- 2 requetes impliquant 2 tables
+
+-- Cette requete supprime tous les rendez-vous des patients dont l’adresse e-mail est
+-- thomas.leclerc@email.com.
+DELETE FROM O_RENDEZ_VOUS ORV WHERE ORV.refPatient.EMAIL='thomas.leclerc@email.com';
+ROLLBACK;
+
+-- Cette requete supprime tous les rendez-vous du patient dont l’identifiant est 3.
+DELETE FROM O_RENDEZ_VOUS ORV WHERE ORV.refPatient.ID_PERSONNE#=3;
+ROLLBACK;
+
+-- 2 requetes impliquant plus de 2 tables
+
+-- Cette requete supprime tous les examens associ´es `a une consultation qui a eu lieu le
+-- fevrier 2024 et qui est liee a un patient dont l’identifiant est 1.
+DELETE FROM O_EXAMEN OE 
+WHERE OE.refConsultation.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY') AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=1;
+ROLLBACK;
+
+-- Cette requete supprime tous les examens associ´es `a une consultation qui a eu lieu le
+-- 6 fevrier 2024 et qui est liee a un patient dont l’identifiant est 2.
+DELETE FROM O_EXAMEN OE 
+WHERE OE.refConsultation.Date_Consultation=TO_DATE('06/02/2024', 'DD/MM/YYYY') AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=2;
+ROLLBACK;
+
+-- Description textuelles des requˆetes de consultation
+
+-- 5 requetes impliquant 1 table dont 1 avec un group By
+-- et une avec un Order By
+
+-- Cette requete r´ecup`ere toutes les informations (toutes les colonnes) stock´ees dans la
+-- table PATIENT, ce qui signifie qu’elle retournera toutes les lignes de cette table.
+SELECT
+
+-- Cette requˆete r´ecup`ere toutes les informations (toutes les colonnes) stock´ees dans la
+-- table CONSULTATION, ce qui signifie qu’elle retournera toutes les lignes de cette
+-- table.
+SELECT
+
+-- Cette requˆete compte le nombre de lignes dans chaque groupe de donn´ees regroup´ees
+-- selon les valeurs uniques de la colonne DETAILS EXAMEN. Chaque groupe dans
+-- le r´esultat final repr´esente une valeur unique de DETAILS EXAMEN, et le nombre
+-- de lignes dans chaque groupe est renvoy´e.
+SELECT
+
+-- Cette requˆete compte le nombre de lignes dans chaque groupe de donn´ees regroup´ees
+-- selon les valeurs uniques de la colonne DETAILS EXAMEN, et les pr´esente dans
+-- l’ordre croissant bas´e sur ces valeurs.
+SELECT
+
+-- Cette requete renvoie le nombre total de factures, la somme totale des montants
+-- de toutes les factures pour chaque patient, regroup´ees par ID PATIENT , et les
+-- pr´esente dans l’ordre croissant des ID PATIENT .
+SELECT
+
+--5 requˆetes impliquant 2 tables avec jointures internes
+-- dont 1 externe + 1 group by + 1 tri
+
+-- Cette requˆete retourne toutes les colonnes des consultations, jointes avec les informations des patients correspondants o`u les ID PATIENT sont ´egaux dans les deux
+-- tables. Cela permet d’obtenir des donn´ees combin´ees sur les consultations et les
+-- patients dans une seule table r´esultante.
+SELECT
+
+-- Cette requˆete retourne toutes les colonnes des factures, jointes avec les informations
+-- des patients correspondants o`u les ID PATIENT sont ´egaux dans les deux tables.
+-- Cela permet d’obtenir des donn´ees combin´ees sur les factures et les patients dans
+-- une seule table r´esultante.
+SELECT
+
+-- Cette requˆete renvoie toutes les colonnes des consultations, jointes avec les informations des patients correspondants, et les ordonne par date de consultation croissante.
+-- Cela permet d’obtenir une liste de consultations associ´ees `a leurs patients, tri´ees par
+-- date de consultation.
+SELECT
+
+-- Cette requˆete retourne l’identifiant du patient, son adresse e-mail, et la somme des
+-- montants totaux de ses factures, regroup´es par identifiant de patient et e-mail, et
+-- tri´es par identifiant de patient puis par e-mail. Cela permet d’obtenir une vue agr´eg´ee
+-- des montants totaux de factures pour chaque patient avec leurs adresses email correspondantes.
+SELECT
+
+-- Cette requˆete retourne toutes les colonnes des consultations et des patients, incluant tous les patients et seulement les consultations qui leur sont associ´ees, tri´ees
+-- par date de consultation croissante. Les consultations sans patients associ´es apparaˆıtront avec des valeurs NULL dans les colonnes correspondantes de la table
+-- ”CONSULTATION”.
+SELECT
+
+-- 5 requˆetes impliquant plus de 2 tables avec jointures
+-- internes dont 1 externe + 1 group by + 1 tri
+
+-- Cette requˆete retourne toutes les colonnes des consultations, des patients et des
+-- examens associ´es, o`u chaque consultation est li´ee `a son patient correspondant via
+-- la jointure avec la table ”PATIENT”, et chaque consultation est li´ee `a ses examens
+-- correspondants via la jointure avec la table ”EXAMEN”.
+SELECT
+
+-- Cette requˆete retourne toutes les colonnes des factures, des patients et des consultations associ´ees, o`u chaque facture est li´ee `a son patient correspondant via la jointure
+-- avec la table ”PATIENT”, et chaque facture est li´ee `a sa consultation correspondante
+-- via la jointure avec la table ”CONSULTATION”.
+SELECT
+
+-- Cette requˆete renvoie toutes les colonnes des consultations, des patients et des examens associ´es, o`u chaque consultation est li´ee `a son patient correspondant via7 la
+-- jointure avec la table ”PATIENT”, et chaque consultation est li´ee `a ses examens
+-- correspondants via la jointure avec la table ”EXAMEN”. Les r´esultats sont ensuite
+-- tri´es par date de consultation croissante.
+SELECT
+
+-- Cette requˆete retourne l’identifiant du patient, son adresse e-mail, la somme des
+-- montants totaux de ses factures, ainsi que les dates de la facture et de la consultation
+-- correspondantes, regroup´es par identifiant de patient, adresse e-mail, date de facture
+-- et date de consultation, et tri´es dans cet ordre. Cela permet d’obtenir une vue agr´eg´ee
+-- des montants totaux de factures pour chaque patient, avec les d´etails des factures
+-- et des consultations.
+SELECT
+
+-- Cette requˆete retourne toutes les colonnes des consultations, des examens et des
+-- patients, o`u chaque consultation est li´ee `a ses examens correspondants et chaque
+-- consultation est ´egalement li´ee `a son patient correspondant. Les r´esultats sont tri´es
+-- par date de consultation croissante. Les patients pour lesquels il n’y a pas de consultation correspondante apparaˆıtront avec des valeurs NULL dans les colonnes correspondantes de la table ”CONSULTATION”.
+SELECT
 
 
 -- IMPLEMENTATION DES CORPS DES TYPES
