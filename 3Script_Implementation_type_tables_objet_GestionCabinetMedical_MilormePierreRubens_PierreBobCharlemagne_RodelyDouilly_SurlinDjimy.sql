@@ -836,16 +836,23 @@ COMMIT;
 -- MISE A JOUR ET CONSULTATION DES DONNEES DANS VOS TABLES OBJETS
 
 -- REQUETES DE MISE A JOUR
-
 -- 2 REQUETES IMPLIQUANT 1 TABLE
 
--- Cette requete modifie la date de naissance du patient dont l’adresse mail est maria.martinez@orange.fr. La nouvelle date de naissance sera 22-AUG-1986. Seules les
+-- Cette requete modifie la date de naissance du patient dont l’adresse mail est maria.martinez@orange.fr. 
+-- La nouvelle date de naissance sera 22-AUG-1986. Seules les
 -- lignes correspondant a l’adresse mail specifiee seront affectees.
-UPDATE O_PATIENT OP SET OP.DATE_NAISSANCE=TO_DATE('22/08/1986', 'DD/MM/YYYY') WHERE OP.EMAIL='maria.martinez@orange.fr';
+UPDATE O_PATIENT OP 
+SET OP.DATE_NAISSANCE=TO_DATE('22/08/1986', 'DD/MM/YYYY') 
+WHERE OP.EMAIL='maria.martinez@orange.fr';
+
 ROLLBACK;
 
--- Cette requete modifie l’adresse du patient dont l’identifiant est 1. La nouvelle adresse sera 90, DELMAS 75. Seule la ligne correspondant a l’identifiant specifie sera affectee.
-UPDATE O_PATIENT OP SET OP.ADRESSE=ADRESSE_T(5, 'DELMAS 75', 75008, 'PORT-AU-PRINCE') WHERE OP.ID_PERSONNE#=1;
+-- Cette requete modifie l’adresse du patient dont l’identifiant est 1. La nouvelle adresse sera 90, DELMAS 75. 
+-- Seule la ligne correspondant a l’identifiant specifie sera affectee.
+UPDATE O_PATIENT OP 
+SET OP.ADRESSE=ADRESSE_T(5, 'DELMAS 75', 75008, 'PORT-AU-PRINCE') 
+WHERE OP.ID_PERSONNE#=1;
+
 ROLLBACK;
 
 -- 2 REQUETES IMPLIQUANT 2 TABLES
@@ -853,34 +860,45 @@ ROLLBACK;
 -- Cette requete SQL permet de modifier la date de rendez-vous des patients dont le
 -- rendez-vous est pr´evu entre le 14-FEB-2024 et le 18-FEB-2024 dans la table virtuelle
 -- issue de la jointure entre PATIENT et RENDEZ VOUS. La nouvelle date de rendezvous sera le 01-MAR-24.
-UPDATE O_RENDEZ_VOUS ORV SET ORV.Date_Rendez_Vous=TO_DATE('01/03/2024', 'DD/MM/YYYY') 
-WHERE ORV.refPatient.DATE_NAISSANCE > TO_DATE('12/12/1994', 'DD/MM/YYYY') AND ORV.Date_Rendez_Vous BETWEEN TO_DATE('14/02/2024', 'DD/MM/YYYY') AND TO_DATE('18/02/2024', 'DD/MM/YYYY')
+UPDATE O_RENDEZ_VOUS ORV 
+SET ORV.Date_Rendez_Vous=TO_DATE('01/03/2024', 'DD/MM/YYYY') 
+WHERE ORV.refPatient.DATE_NAISSANCE > TO_DATE('12/12/1994', 'DD/MM/YYYY') 
+AND ORV.Date_Rendez_Vous BETWEEN TO_DATE('14/02/2024', 'DD/MM/YYYY') AND TO_DATE('18/02/2024', 'DD/MM/YYYY')
+
 ROLLBACK;
 
 -- Cette requete parcourt toutes les factures dont le montant total est inferieur a 200
 -- et pour lesquelles un patient correspondant existe. Pour chacune de ces factures, elle
 -- augmente le montant total de 10
-UPDATE O_FACTURE OFA SET OFA.Montant_Total = OFA.Montant_Total + OFA.Montant_Total * 0.10 
-WHERE OFA.Montant_Total < 200 AND OFA.refPatient IS NOT DANGLING;
+UPDATE O_FACTURE OFA 
+SET OFA.Montant_Total = OFA.Montant_Total + OFA.Montant_Total * 0.10 
+WHERE OFA.Montant_Total < 200 
+AND (OFA.refPatient IS NOT DANGLING OR OFA.refPatient IS NULL);
+
 ROLLBACK;
 
 -- 2 requetes impliquant plus de 2 tables
 
--- Cette requete met a jour la colonne DETAILS PRESCRIPTION de la table PRESCRIPTION pour les enregistrements associes a des consultations de patients ayant
+-- Cette requete met a jour la colonne DETAILS PRESCRIPTION de la table PRESCRIPTION pour les enregistrements associes a 
+-- des consultations de patients ayant
 -- un identifiant de patient egal a 1 et ou la date de consultation est le 5 f´evrier 2024.
 -- La nouvelle valeur de la colonne DETAILS PRESCRIPTION sera Zinoboost.
-UPDATE O_PRESCRIPTION OPR SET OPR.Details_Prescription='Zinoboost'
+UPDATE O_PRESCRIPTION OPR 
+SET OPR.Details_Prescription='Zinoboost'
 WHERE OPR.refConsultation.Date_Consultation = TO_DATE('05/02/2024', 'DD/MM/YYYY') 
 AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne#=1);
+
 ROLLBACK;
 
 -- Cette requete met a jour la colonne DETAILS EXAMEN de la table EXAMEN pour
 -- les enregistrements associes a des consultations de patients ayant un identifiant de
 -- patient egal a 1 et ou la date de consultation est le 5 fevrier 2024. La nouvelle valeur
 -- de la colonne DETAILS EXAMEN sera HAC1
-UPDATE O_EXAMEN OE SET OE.Details_Examen='HAC1' 
+UPDATE O_EXAMEN OE 
+SET OE.Details_Examen='HAC1' 
 WHERE OE.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY')
 AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne#=1);
+
 ROLLBACK;
 
 -- REQUETES DE SUPPRESSION
@@ -889,37 +907,55 @@ ROLLBACK;
 
 -- Cette requete supprime toutes les lignes de la table EXAMEN ou la valeur de la
 -- colonne DATE EXAMEN est egale a la date du 5 fevrier 2024.
-DELETE FROM O_EXAMEN OE WHERE OE.Date_Examen=TO_DATE('05/02/2024', 'DD/MM/YYYY');
+DELETE 
+FROM O_EXAMEN OE 
+WHERE OE.Date_Examen=TO_DATE('05/02/2024', 'DD/MM/YYYY');
+
 ROLLBACK;
 
 -- Cette requete supprime toutes les lignes de la table PRESCRIPTION ou la valeur
 -- de la colonne DATE PRESCRIPTION est egale a la date du 5 fevrier 2024.
-DELETE FROM O_PRESCRIPTION OP WHERE OP.Date_Prescription=TO_DATE('05/02/2024', 'DD/MM/YYYY');
+DELETE 
+FROM O_PRESCRIPTION OP 
+WHERE OP.Date_Prescription=TO_DATE('05/02/2024', 'DD/MM/YYYY');
+
 ROLLBACK;
 
 -- 2 requetes impliquant 2 tables
 
 -- Cette requete supprime tous les rendez-vous des patients dont l’adresse e-mail est
 -- thomas.leclerc@email.com.
-DELETE FROM O_RENDEZ_VOUS ORV WHERE ORV.refPatient.EMAIL='thomas.leclerc@email.com';
+DELETE 
+FROM O_RENDEZ_VOUS ORV 
+WHERE ORV.refPatient.EMAIL='thomas.leclerc@email.com';
+
 ROLLBACK;
 
 -- Cette requete supprime tous les rendez-vous du patient dont l’identifiant est 3.
-DELETE FROM O_RENDEZ_VOUS ORV WHERE ORV.refPatient.ID_PERSONNE#=3;
+DELETE 
+FROM O_RENDEZ_VOUS ORV 
+WHERE ORV.refPatient.ID_PERSONNE#=3;
+
 ROLLBACK;
 
 -- 2 requetes impliquant plus de 2 tables
 
 -- Cette requete supprime tous les examens associ´es `a une consultation qui a eu lieu le
 -- fevrier 2024 et qui est liee a un patient dont l’identifiant est 1.
-DELETE FROM O_EXAMEN OE 
-WHERE OE.refConsultation.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY') AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=1;
+DELETE 
+FROM O_EXAMEN OE 
+WHERE OE.refConsultation.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY') 
+AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=1;
+
 ROLLBACK;
 
 -- Cette requete supprime tous les examens associ´es `a une consultation qui a eu lieu le
 -- 6 fevrier 2024 et qui est liee a un patient dont l’identifiant est 2.
-DELETE FROM O_EXAMEN OE 
-WHERE OE.refConsultation.Date_Consultation=TO_DATE('06/02/2024', 'DD/MM/YYYY') AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=2;
+DELETE 
+FROM O_EXAMEN OE 
+WHERE OE.refConsultation.Date_Consultation=TO_DATE('06/02/2024', 'DD/MM/YYYY') 
+AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=2;
+
 ROLLBACK;
 
 -- Description textuelles des requˆetes de consultation
@@ -927,93 +963,139 @@ ROLLBACK;
 -- 5 requetes impliquant 1 table dont 1 avec un group By
 -- et une avec un Order By
 
--- Cette requete r´ecup`ere toutes les informations (toutes les colonnes) stock´ees dans la
+-- Cette requete r´ecup`ere toutes les informations (toutes les colonnes) stockees dans la
 -- table PATIENT, ce qui signifie qu’elle retournera toutes les lignes de cette table.
-SELECT
+SELECT * FROM O_PATIENT OP;
 
--- Cette requˆete r´ecup`ere toutes les informations (toutes les colonnes) stock´ees dans la
+-- Cette requete recupere toutes les informations (toutes les colonnes) stockees dans la
 -- table CONSULTATION, ce qui signifie qu’elle retournera toutes les lignes de cette
 -- table.
-SELECT
+SELECT * FROM O_CONSULTATION OC;
 
 -- Cette requˆete compte le nombre de lignes dans chaque groupe de donn´ees regroup´ees
 -- selon les valeurs uniques de la colonne DETAILS EXAMEN. Chaque groupe dans
 -- le r´esultat final repr´esente une valeur unique de DETAILS EXAMEN, et le nombre
 -- de lignes dans chaque groupe est renvoy´e.
-SELECT
+SELECT E.details_examens, COUNT(*) AS NB_LIGNES
+FROM (SELECT DISTINCT oe.Details_Examen AS details_examens FROM O_EXAMEN oe) E 
+GROUP BY E.details_examens;
 
 -- Cette requˆete compte le nombre de lignes dans chaque groupe de donn´ees regroup´ees
 -- selon les valeurs uniques de la colonne DETAILS EXAMEN, et les pr´esente dans
 -- l’ordre croissant bas´e sur ces valeurs.
-SELECT
+SELECT E.details_examens, COUNT(*) AS NB_LIGNES
+FROM (SELECT DISTINCT oe.Details_Examen AS details_examens FROM O_EXAMEN oe) E 
+GROUP BY E.details_examens 
+ORDER BY E.details_examens ASC;
 
 -- Cette requete renvoie le nombre total de factures, la somme totale des montants
 -- de toutes les factures pour chaque patient, regroup´ees par ID PATIENT , et les
 -- pr´esente dans l’ordre croissant des ID PATIENT .
-SELECT
+SELECT COUNT(*) nb_total_factures, SUM(OFA.Montant_Total) somme_montants_totaux
+FROM O_FACTURE OFA 
+GROUP BY OFA.refPatient.ID_PERSONNE# 
+ORDER BY OFA.refPatient.ID_PERSONNE#;  
 
---5 requˆetes impliquant 2 tables avec jointures internes
+--5 requetes impliquant 2 tables avec jointures internes
 -- dont 1 externe + 1 group by + 1 tri
 
--- Cette requˆete retourne toutes les colonnes des consultations, jointes avec les informations des patients correspondants o`u les ID PATIENT sont ´egaux dans les deux
--- tables. Cela permet d’obtenir des donn´ees combin´ees sur les consultations et les
--- patients dans une seule table r´esultante.
-SELECT
+-- Cette requete retourne toutes les colonnes des consultations, jointes avec les informations des patients correspondants 
+-- ou les ID PATIENT sont egaux dans les deux
+-- tables. Cela permet d’obtenir des donnees combinees sur les consultations et les
+-- patients dans une seule table resultante.
+SELECT OC.*, DEREF(OC.refPatient) AS PATIENT FROM O_CONSULTATION OC;
 
--- Cette requˆete retourne toutes les colonnes des factures, jointes avec les informations
+-- Cette requete retourne toutes les colonnes des factures, jointes avec les informations
 -- des patients correspondants o`u les ID PATIENT sont ´egaux dans les deux tables.
 -- Cela permet d’obtenir des donn´ees combin´ees sur les factures et les patients dans
--- une seule table r´esultante.
-SELECT
+-- une seule table resultante.
+SELECT OFA.*, DEREF(OFA.refPatient) AS PATIENT FROM O_FACTURE OFA;
 
--- Cette requˆete renvoie toutes les colonnes des consultations, jointes avec les informations des patients correspondants, et les ordonne par date de consultation croissante.
+-- Cette requete renvoie toutes les colonnes des consultations, jointes avec les informations des patients correspondants, 
+-- et les ordonne par date de consultation croissante.
 -- Cela permet d’obtenir une liste de consultations associ´ees `a leurs patients, tri´ees par
 -- date de consultation.
-SELECT
+SELECT OC.*, DEREF(OC.refPatient) AS PATIENT 
+FROM O_CONSULTATION OC 
+ORDER BY OC.Date_Consultation ASC;
 
--- Cette requˆete retourne l’identifiant du patient, son adresse e-mail, et la somme des
+-- Cette requete retourne l’identifiant du patient, son adresse e-mail, et la somme des
 -- montants totaux de ses factures, regroup´es par identifiant de patient et e-mail, et
--- tri´es par identifiant de patient puis par e-mail. Cela permet d’obtenir une vue agr´eg´ee
+-- tries par identifiant de patient puis par e-mail. Cela permet d’obtenir une vue agr´eg´ee
 -- des montants totaux de factures pour chaque patient avec leurs adresses email correspondantes.
-SELECT
+SELECT OFA.refPatient.ID_PERSONNE# AS ID_PATIENT, OFA.refPatient.EMAIL AS EMAIL, SUM(OFA.Montant_Total) AS MONTANT_TOTAL
+FROM O_FACTURE OFA 
+GROUP BY OFA.refPatient.ID_PERSONNE#, OFA.refPatient.EMAIL
+ORDER BY OFA.refPatient.ID_PERSONNE#, OFA.refPatient.EMAIL DESC;
 
--- Cette requˆete retourne toutes les colonnes des consultations et des patients, incluant tous les patients et seulement les consultations qui leur sont associ´ees, tri´ees
--- par date de consultation croissante. Les consultations sans patients associ´es apparaˆıtront avec des valeurs NULL dans les colonnes correspondantes de la table
+-- Cette requete retourne toutes les colonnes des consultations et des patients, incluant tous les patients et seulement les consultations qui leur sont associ´ees, tri´ees
+-- par date de consultation croissante. Les consultations sans patients associes apparaıtront avec des valeurs NULL dans les colonnes correspondantes de la table
 -- ”CONSULTATION”.
-SELECT
+SELECT 
 
--- 5 requˆetes impliquant plus de 2 tables avec jointures
+-- 5 requetes impliquant plus de 2 tables avec jointures
 -- internes dont 1 externe + 1 group by + 1 tri
 
--- Cette requˆete retourne toutes les colonnes des consultations, des patients et des
--- examens associ´es, o`u chaque consultation est li´ee `a son patient correspondant via
--- la jointure avec la table ”PATIENT”, et chaque consultation est li´ee `a ses examens
--- correspondants via la jointure avec la table ”EXAMEN”.
-SELECT
+-- Cette requete retourne toutes les colonnes des consultations, des patients et des
+-- examens associes, ou chaque consultation est liee a son patient correspondant via
+-- la jointure avec la table "PATIENT", et chaque consultation est liee a ses examens
+-- correspondants via la jointure avec la table "EXAMEN".
+SELECT 
+OE.*, 
+DEREF(OE.refConsultation) AS CONSULTATION, 
+DEREF(DEREF(OE.refConsultation).refPatient) AS PATIENT
+FROM O_EXAMEN OE;
 
--- Cette requˆete retourne toutes les colonnes des factures, des patients et des consultations associ´ees, o`u chaque facture est li´ee `a son patient correspondant via la jointure
+-- Cette requete retourne toutes les colonnes des factures, des patients et des consultations associ´ees, o`u chaque facture est li´ee `a son patient correspondant via la jointure
 -- avec la table ”PATIENT”, et chaque facture est li´ee `a sa consultation correspondante
 -- via la jointure avec la table ”CONSULTATION”.
-SELECT
+SELECT 
+OFA.*, 
+OFA.refPatient AS PATIENT, 
+OFA.refConsultation AS CONSULTATION 
+FROM O_FACTURE OFA;
 
--- Cette requˆete renvoie toutes les colonnes des consultations, des patients et des examens associ´es, o`u chaque consultation est li´ee `a son patient correspondant via7 la
--- jointure avec la table ”PATIENT”, et chaque consultation est li´ee `a ses examens
--- correspondants via la jointure avec la table ”EXAMEN”. Les r´esultats sont ensuite
+-- Cette requete renvoie toutes les colonnes des consultations, des patients et des examens associes, 
+-- ou chaque consultation est liee a son patient correspondant via la
+-- jointure avec la table ”PATIENT”, et chaque consultation est liee a ses examens
+-- correspondants via la jointure avec la table ”EXAMEN”. Les resultats sont ensuite
 -- tri´es par date de consultation croissante.
-SELECT
+SELECT 
+OE.*, 
+DEREF(OE.refConsultation) AS CONSULTATION, 
+DEREF(DEREF(OE.refConsultation).refPatient) AS PATIENT
+FROM O_EXAMEN OE 
+ORDER BY OE.refConsultation.Date_Consultation ASC;
 
--- Cette requˆete retourne l’identifiant du patient, son adresse e-mail, la somme des
+-- Cette requete retourne l’identifiant du patient, son adresse e-mail, la somme des
 -- montants totaux de ses factures, ainsi que les dates de la facture et de la consultation
 -- correspondantes, regroup´es par identifiant de patient, adresse e-mail, date de facture
 -- et date de consultation, et tri´es dans cet ordre. Cela permet d’obtenir une vue agr´eg´ee
 -- des montants totaux de factures pour chaque patient, avec les d´etails des factures
 -- et des consultations.
-SELECT
+SELECT 
+OFA.refPatient.ID_PERSONNE# AS ID_PATIENT,
+OFA.refPatient.Email AS EMAIL,
+OFA.Date_Facture AS Date_Facture,
+OFA.refConsultation.Date_Consultation AS Date_Consultation,
+SUM(OFA.MONTANT_TOTAL) AS SOMME_MONTANTS
+FROM O_FACTURE OFA
+GROUP BY 
+OFA.refPatient.ID_PERSONNE#,
+OFA.refPatient.Email,
+OFA.Date_Facture,
+OFA.refConsultation.Date_Consultation
+ORDER BY 
+OFA.refPatient.ID_PERSONNE#,
+OFA.refPatient.Email,
+OFA.Date_Facture,
+OFA.refConsultation.Date_Consultation;
 
--- Cette requˆete retourne toutes les colonnes des consultations, des examens et des
--- patients, o`u chaque consultation est li´ee `a ses examens correspondants et chaque
--- consultation est ´egalement li´ee `a son patient correspondant. Les r´esultats sont tri´es
--- par date de consultation croissante. Les patients pour lesquels il n’y a pas de consultation correspondante apparaˆıtront avec des valeurs NULL dans les colonnes correspondantes de la table ”CONSULTATION”.
+-- Cette requete retourne toutes les colonnes des consultations, des examens et des
+-- patients, ou chaque consultation est liee a ses examens correspondants et chaque
+-- consultation est ´egalement liee a son patient correspondant. Les resultats sont tries
+-- par date de consultation croissante. Les patients pour lesquels il n’y a pas de consultation 
+-- correspondante apparaitront avec des valeurs NULL dans les colonnes correspondantes de la table ”CONSULTATION”.
 SELECT
 
 
@@ -1161,15 +1243,58 @@ END;
 CREATE OR REPLACE TYPE BODY PRESCRIPTION_T AS
 	MAP member FUNCTION match RETURN varchar2 IS
 	BEGIN
-		RETURN Date_Prescription;
+		NULL;
 	END;
 END;
 /
-
+	
 CREATE OR REPLACE TYPE BODY FACTURE_T AS
-	MAP member FUNCTION match RETURN varchar2 IS
+--  MAP MEMBER FUNCTION match RETURN VARCHAR2,
+	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
 	BEGIN
 		RETURN Date_Facture||Montant_Total;
+	END;
+	
+--  STATIC PROCEDURE listerFactures	
+	STATIC PROCEDURE listerFactures IS
+	BEGIN
+		NULL;
+	END;
+	
+--	STATIC PROCEDURE rechercherFactureParMontant(montant NUMBER)
+	STATIC PROCEDURE rechercherFactureParMontant IS
+	BEGIN
+		NULL;
+	END;
+	
+--	STATIC PROCEDURE rechercherFactureParDate(date DATE)
+	STATIC PROCEDURE rechercherFactureParDate IS
+	BEGIN
+		NULL;
+	END;
+	
+--  STATIC PROCEDURE ajouterFacture(facture FACTURE_T)
+	STATIC PROCEDURE ajouterFacture IS
+	BEGIN
+		NULL;
+	END;
+	
+--  STATIC PROCEDURE lireFacture(factureId NUMBER)
+	STATIC PROCEDURE lireFacture IS
+	BEGIN
+		NULL;
+	END;
+	
+--	STATIC PROCEDURE modifierFacture(facture FACTURE_T)
+	STATIC PROCEDURE modifierFacture IS
+	BEGIN
+		NULL;
+	END;
+	
+--	STATIC PROCEDURE supprimerFacture(factureId NUMBER)
+	STATIC PROCEDURE supprimerFacture IS
+	BEGIN
+		NULL;
 	END;
 END;
 /
