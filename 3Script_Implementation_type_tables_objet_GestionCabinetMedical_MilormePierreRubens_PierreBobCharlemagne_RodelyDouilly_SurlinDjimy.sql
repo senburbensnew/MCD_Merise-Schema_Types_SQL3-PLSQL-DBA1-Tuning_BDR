@@ -91,7 +91,7 @@ CREATE OR REPLACE TYPE MEDECIN_T
 /
 
 CREATE OR REPLACE TYPE RENDEZ_VOUS_T AS OBJECT(
-    Id_Rendez_Vous# NUMBER(8),
+    Id_Rendez_Vous NUMBER(8),
 	refPatient REF PATIENT_T,
 	refMedecin REF MEDECIN_T,
 	Date_Rendez_Vous DATE,
@@ -110,7 +110,7 @@ CREATE OR REPLACE TYPE setRENDEZ_VOUS_T AS TABLE OF RENDEZ_VOUS_T
 /   
 
 CREATE OR REPLACE TYPE EXAMEN_T AS OBJECT(
-	Id_Examen# NUMBER(8),
+	Id_Examen NUMBER(8),
 	refConsultation REF CONSULTATION_T,
 	Details_Examen VARCHAR2(200),
 	Date_Examen DATE,	
@@ -125,7 +125,7 @@ CREATE OR REPLACE TYPE EXAMEN_T AS OBJECT(
 /
 
 CREATE OR REPLACE TYPE PRESCRIPTION_T AS OBJECT(
-	Id_Prescription# NUMBER(8),
+	Id_Prescription NUMBER(8),
 	refConsultation REF CONSULTATION_T,
 	Details_Prescription VARCHAR2(200),
 	Date_Prescription DATE,	
@@ -140,19 +140,19 @@ CREATE OR REPLACE TYPE PRESCRIPTION_T AS OBJECT(
 /
 
 CREATE OR REPLACE TYPE FACTURE_T AS OBJECT(
-	Id_Facture# NUMBER(8),
+	Id_Facture NUMBER(8),
 	refPatient REF PATIENT_T,
 	refConsultation REF CONSULTATION_T,
 	Montant_Total NUMBER(7,2),
-	Date_Facture DATE,	
+	Date_Facture DATE,		
 	MAP MEMBER FUNCTION match RETURN VARCHAR2,
-	STATIC PROCEDURE listerFactures,
-	STATIC PROCEDURE rechercherFactureParMontant(montant NUMBER),
-	STATIC PROCEDURE rechercherFactureParDate(date DATE),
-	STATIC PROCEDURE ajouterFacture(facture FACTURE_T),
-	STATIC PROCEDURE lireFacture(factureId NUMBER),
-	STATIC PROCEDURE modifierFacture(facture FACTURE_T),
-	STATIC PROCEDURE supprimerFacture(factureId NUMBER)
+	STATIC FUNCTION rechercherFactureParMontant(montant NUMBER) RETURN FACTURE_T,
+	STATIC FUNCTION rechercherFactureParDate(date DATE) RETURN FACTURE_T,
+	STATIC FUNCTION lireFacture(factureId NUMBER) RETURN FACTURE_T,
+	-- STATIC FUNCTION listerFactures,
+	-- STATIC PROCEDURE ajouterFacture(facture FACTURE_T),
+	-- STATIC PROCEDURE modifierFacture(facture FACTURE_T),
+	-- STATIC PROCEDURE supprimerFacture(factureId NUMBER)
 )
 /
 
@@ -160,7 +160,7 @@ CREATE OR REPLACE TYPE setFACTURES_T AS TABLE OF FACTURE_T
 / 
 
 CREATE OR REPLACE TYPE CONSULTATION_T AS OBJECT(
-	Id_Consultation# NUMBER(8),
+	Id_Consultation NUMBER(8),
 	refPatient REF PATIENT_T,
 	refMedecin REF MEDECIN_T,
 	Raison VARCHAR2(200),
@@ -188,7 +188,7 @@ CREATE OR REPLACE TYPE setCONSULTATIONS_T AS TABLE OF CONSULTATION_T
 /   
 
 CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
-	 ID_PERSONNE# NUMBER(8),
+	 ID_PERSONNE NUMBER(8),
 	 NUMERO_SECURITE_SOCIALE VARCHAR2(12),
 	 NOM VARCHAR2(12),
 	 EMAIL VARCHAR2(30),
@@ -255,7 +255,7 @@ CREATE OR REPLACE TYPE setMEDECINS_T AS TABLE OF MEDECIN_T
 
 -- CREATION DES TABLES OBJETS A PARTIR DES TYPES 	 
 CREATE TABLE O_PATIENT OF PATIENT_T(
-	CONSTRAINT pk_o_patient_id_personne PRIMARY KEY(ID_PERSONNE#),
+	CONSTRAINT pk_o_patient_id_personne PRIMARY KEY(ID_PERSONNE),
 	NUMERO_SECURITE_SOCIALE CONSTRAINT o_patient_num_secu_social_not_null NOT NULL,
 	NOM CONSTRAINT o_patient_nom_not_null NOT NULL,
 	EMAIL CONSTRAINT o_patient_email_not_null NOT NULL,
@@ -271,7 +271,7 @@ NESTED TABLE pListRefFactures STORE AS o_patient_table_pListRefFactures
 /
 
 CREATE TABLE O_MEDECIN OF MEDECIN_T(
-	CONSTRAINT pk_o_medecin_id_personne PRIMARY KEY(Id_Personne#),
+	CONSTRAINT pk_o_medecin_id_personne PRIMARY KEY(Id_Personne),
 	Numero_Securite_Sociale CONSTRAINT o_medecin_num_secu_social_not_null NOT NULL,
 	Nom CONSTRAINT o_medecin_nom_not_null NOT NULL,
 	Email CONSTRAINT o_medecin_email_not_null NOT NULL,
@@ -288,7 +288,7 @@ LOB(CV) STORE AS storeCV(PCTVERSION 30)
 
 
 CREATE TABLE O_EXAMEN OF EXAMEN_T(
-	CONSTRAINT pk_o_examen_id_examen PRIMARY KEY(Id_Examen#),
+	CONSTRAINT pk_o_examen_id_examen PRIMARY KEY(Id_Examen),
 	refConsultation CONSTRAINT o_examen_ref_consultation_not_null NOT NULL,
 	Details_Examen CONSTRAINT details_examen_not_null NOT NULL,
 	Date_Examen CONSTRAINT date_examen_not_null NOT NULL
@@ -296,7 +296,7 @@ CREATE TABLE O_EXAMEN OF EXAMEN_T(
 /
 
 CREATE TABLE O_PRESCRIPTION OF PRESCRIPTION_T(
-	CONSTRAINT pk_o_prescription_id_prescription PRIMARY KEY(Id_Prescription#),
+	CONSTRAINT pk_o_prescription_id_prescription PRIMARY KEY(Id_Prescription),
 	refConsultation CONSTRAINT o_prescription_ref_consultation_not_null NOT NULL,
 	Details_Prescription CONSTRAINT details_prescription_not_null NOT NULL,
 	Date_Prescription CONSTRAINT date_prescription_not_null NOT NULL
@@ -304,7 +304,7 @@ CREATE TABLE O_PRESCRIPTION OF PRESCRIPTION_T(
 /
 
 CREATE TABLE O_FACTURE OF FACTURE_T(	
-	CONSTRAINT pk_o_facture_id_facture PRIMARY KEY(Id_Facture#),
+	CONSTRAINT pk_o_facture_id_facture PRIMARY KEY(Id_Facture),
 	refPatient CONSTRAINT o_facture_ref_patient_not_null NOT NULL,
 	refConsultation CONSTRAINT o_facture_ref_consultation_not_null NOT NULL,
 	Montant_Total CONSTRAINT montant_total_not_null NOT NULL,
@@ -313,7 +313,7 @@ CREATE TABLE O_FACTURE OF FACTURE_T(
 /
 
 CREATE TABLE O_RENDEZ_VOUS OF RENDEZ_VOUS_T(
-	CONSTRAINT pk_o_rendez_vous_id_rendez_vous PRIMARY KEY(Id_Rendez_Vous#),
+	CONSTRAINT pk_o_rendez_vous_id_rendez_vous PRIMARY KEY(Id_Rendez_Vous),
 	refPatient CONSTRAINT o_rendez_vous_ref_patient_not_null NOT NULL,
 	refMedecin CONSTRAINT o_rendez_vous_ref_medecin_not_null NOT NULL,
 	Date_Rendez_Vous CONSTRAINT date_rendez_vous_not_null NOT NULL,
@@ -322,7 +322,7 @@ CREATE TABLE O_RENDEZ_VOUS OF RENDEZ_VOUS_T(
 /
 
 CREATE TABLE O_CONSULTATION OF CONSULTATION_T(
-	CONSTRAINT pk_o_consultation_id_consultation PRIMARY KEY(Id_Consultation#),
+	CONSTRAINT pk_o_consultation_id_consultation PRIMARY KEY(Id_Consultation),
 	refPatient CONSTRAINT o_consultation_ref_patient_not_null NOT NULL,
 	refMedecin CONSTRAINT o_consultation_ref_medecin_not_null NOT NULL,
 	Raison CONSTRAINT raison_not_null NOT NULL,
@@ -851,7 +851,7 @@ ROLLBACK;
 -- Seule la ligne correspondant a l’identifiant specifie sera affectee.
 UPDATE O_PATIENT OP 
 SET OP.ADRESSE=ADRESSE_T(5, 'DELMAS 75', 75008, 'PORT-AU-PRINCE') 
-WHERE OP.ID_PERSONNE#=1;
+WHERE OP.ID_PERSONNE=1;
 
 ROLLBACK;
 
@@ -886,7 +886,7 @@ ROLLBACK;
 UPDATE O_PRESCRIPTION OPR 
 SET OPR.Details_Prescription='Zinoboost'
 WHERE OPR.refConsultation.Date_Consultation = TO_DATE('05/02/2024', 'DD/MM/YYYY') 
-AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne#=1);
+AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne=1);
 
 ROLLBACK;
 
@@ -897,7 +897,7 @@ ROLLBACK;
 UPDATE O_EXAMEN OE 
 SET OE.Details_Examen='HAC1' 
 WHERE OE.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY')
-AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne#=1);
+AND (DEREF(OPR.refConsultation)).refPatient = (SELECT REF(OP) FROM O_PATIENT OP WHERE OP.Id_Personne=1);
 
 ROLLBACK;
 
@@ -934,7 +934,7 @@ ROLLBACK;
 -- Cette requete supprime tous les rendez-vous du patient dont l’identifiant est 3.
 DELETE 
 FROM O_RENDEZ_VOUS ORV 
-WHERE ORV.refPatient.ID_PERSONNE#=3;
+WHERE ORV.refPatient.ID_PERSONNE=3;
 
 ROLLBACK;
 
@@ -945,7 +945,7 @@ ROLLBACK;
 DELETE 
 FROM O_EXAMEN OE 
 WHERE OE.refConsultation.Date_Consultation=TO_DATE('05/02/2024', 'DD/MM/YYYY') 
-AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=1;
+AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE=1;
 
 ROLLBACK;
 
@@ -954,7 +954,7 @@ ROLLBACK;
 DELETE 
 FROM O_EXAMEN OE 
 WHERE OE.refConsultation.Date_Consultation=TO_DATE('06/02/2024', 'DD/MM/YYYY') 
-AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE#=2;
+AND DEREF(OE.refConsultation).refPatient.ID_PERSONNE=2;
 
 ROLLBACK;
 
@@ -993,8 +993,8 @@ ORDER BY E.details_examens ASC;
 -- pr´esente dans l’ordre croissant des ID PATIENT .
 SELECT COUNT(*) nb_total_factures, SUM(OFA.Montant_Total) somme_montants_totaux
 FROM O_FACTURE OFA 
-GROUP BY OFA.refPatient.ID_PERSONNE# 
-ORDER BY OFA.refPatient.ID_PERSONNE#;  
+GROUP BY OFA.refPatient.ID_PERSONNE
+ORDER BY OFA.refPatient.ID_PERSONNE;  
 
 --5 requetes impliquant 2 tables avec jointures internes
 -- dont 1 externe + 1 group by + 1 tri
@@ -1023,10 +1023,10 @@ ORDER BY OC.Date_Consultation ASC;
 -- montants totaux de ses factures, regroup´es par identifiant de patient et e-mail, et
 -- tries par identifiant de patient puis par e-mail. Cela permet d’obtenir une vue agr´eg´ee
 -- des montants totaux de factures pour chaque patient avec leurs adresses email correspondantes.
-SELECT OFA.refPatient.ID_PERSONNE# AS ID_PATIENT, OFA.refPatient.EMAIL AS EMAIL, SUM(OFA.Montant_Total) AS MONTANT_TOTAL
+SELECT OFA.refPatient.ID_PERSONNE AS ID_PATIENT, OFA.refPatient.EMAIL AS EMAIL, SUM(OFA.Montant_Total) AS MONTANT_TOTAL
 FROM O_FACTURE OFA 
-GROUP BY OFA.refPatient.ID_PERSONNE#, OFA.refPatient.EMAIL
-ORDER BY OFA.refPatient.ID_PERSONNE#, OFA.refPatient.EMAIL DESC;
+GROUP BY OFA.refPatient.ID_PERSONNE, OFA.refPatient.EMAIL
+ORDER BY OFA.refPatient.ID_PERSONNE, OFA.refPatient.EMAIL DESC;
 
 -- Cette requete retourne toutes les colonnes des consultations et des patients, incluant tous les patients et seulement les consultations qui leur sont associ´ees, tri´ees
 -- par date de consultation croissante. Les consultations sans patients associes apparaıtront avec des valeurs NULL dans les colonnes correspondantes de la table
@@ -1074,19 +1074,19 @@ ORDER BY OE.refConsultation.Date_Consultation ASC;
 -- des montants totaux de factures pour chaque patient, avec les d´etails des factures
 -- et des consultations.
 SELECT 
-OFA.refPatient.ID_PERSONNE# AS ID_PATIENT,
+OFA.refPatient.ID_PERSONNE AS ID_PATIENT,
 OFA.refPatient.Email AS EMAIL,
 OFA.Date_Facture AS Date_Facture,
 OFA.refConsultation.Date_Consultation AS Date_Consultation,
 SUM(OFA.MONTANT_TOTAL) AS SOMME_MONTANTS
 FROM O_FACTURE OFA
 GROUP BY 
-OFA.refPatient.ID_PERSONNE#,
+OFA.refPatient.ID_PERSONNE,
 OFA.refPatient.Email,
 OFA.Date_Facture,
 OFA.refConsultation.Date_Consultation
 ORDER BY 
-OFA.refPatient.ID_PERSONNE#,
+OFA.refPatient.ID_PERSONNE,
 OFA.refPatient.Email,
 OFA.Date_Facture,
 OFA.refConsultation.Date_Consultation;
@@ -1128,7 +1128,7 @@ CREATE OR REPLACE TYPE BODY PATIENT_T AS
 	MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
 	BEGIN		
 		INSERT INTO TABLE(
-			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne# = self.Id_Personne#
+			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne = self.Id_Personne
 		) list_ref_rendez_vous_to_table
         VALUES(refRendezVous);
         EXCEPTION 
@@ -1138,7 +1138,7 @@ CREATE OR REPLACE TYPE BODY PATIENT_T AS
 --  MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
 --	BEGIN
 --		DELETE FROM TABLE(
---			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne# = self.Id_Personne#
+--			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne = self.Id_Personne
 --		) list_ref_rendez_vous_to_table
 --        WHERE list_ref_rendez_vous_to_table.column_value = refRendezVous;
 --		EXCEPTION 
@@ -1247,58 +1247,83 @@ CREATE OR REPLACE TYPE BODY PRESCRIPTION_T AS
 	END;
 END;
 /
+
+/* 
+	CREATE OR REPLACE TYPE FACTURE_T AS OBJECT(
+		MAP MEMBER FUNCTION match RETURN VARCHAR2,
+		STATIC FUNCTION rechercherFactureParMontant(montant NUMBER) RETURN FACTURE_T,
+		STATIC FUNCTION rechercherFactureParDate(date DATE) RETURN FACTURE_T,
+		STATIC FUNCTION lireFacture(factureId NUMBER) RETURN FACTURE_T,
+		-- STATIC FUNCTION listerFactures,
+		-- STATIC PROCEDURE ajouterFacture(facture FACTURE_T),
+		-- STATIC PROCEDURE modifierFacture(facture FACTURE_T),
+		-- STATIC PROCEDURE supprimerFacture(factureId NUMBER)
+	)
+*/
 	
 CREATE OR REPLACE TYPE BODY FACTURE_T AS
---  MAP MEMBER FUNCTION match RETURN VARCHAR2,
 	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
 	BEGIN
 		RETURN Date_Facture||Montant_Total;
 	END;
 	
---  STATIC PROCEDURE listerFactures	
-	STATIC PROCEDURE listerFactures IS
+	STATIC FUNCTION rechercherFactureParMontant(montant NUMBER) RETURN FACTURE_T IS
+		v_facture FACTURE_T;
+	BEGIN
+		SELECT VALUE(OFA) INTO v_facture FROM O_FACTURE OFA WHERE OFA.MONTANT_TOTAL = montant;
+		RETURN v_facture;
+	EXCEPTION 
+		WHEN no_data_found THEN
+			RAISE;
+		WHEN OTHERS THEN
+			RAISE; 
+	END;
+	
+	STATIC FUNCTION rechercherFactureParDate(date DATE) RETURN FACTURE_T IS
+		v_facture FACTURE_T;
+	BEGIN
+		SELECT VALUE(OFA) INTO v_facture FROM O_FACTURE OFA WHERE OFA.Date_Facture = date;
+		RETURN v_facture;
+	EXCEPTION 
+		WHEN no_data_found THEN
+			RAISE;
+		WHEN OTHERS THEN
+			RAISE; 
+	END;
+	
+	STATIC FUNCTION lireFacture(factureId NUMBER) RETURN FACTURE_T IS
+		v_facture FACTURE_T;
+	BEGIN
+		SELECT VALUE(OFA) INTO v_facture FROM O_FACTURE OFA WHERE OFA.Id_Facture = factureId;
+		RETURN v_facture;
+	EXCEPTION 
+		WHEN no_data_found THEN
+			RAISE;
+		WHEN OTHERS THEN
+			RAISE; 
+	END;
+	
+	/* 	STATIC FUNCTION listerFactures IS
 	BEGIN
 		NULL;
 	END;
 	
---	STATIC PROCEDURE rechercherFactureParMontant(montant NUMBER)
-	STATIC PROCEDURE rechercherFactureParMontant IS
+	STATIC PROCEDURE ajouterFacture(facture FACTURE_T) IS
 	BEGIN
 		NULL;
 	END;
 	
---	STATIC PROCEDURE rechercherFactureParDate(date DATE)
-	STATIC PROCEDURE rechercherFactureParDate IS
+	STATIC PROCEDURE modifierFacture(facture FACTURE_T) IS
 	BEGIN
 		NULL;
 	END;
 	
---  STATIC PROCEDURE ajouterFacture(facture FACTURE_T)
-	STATIC PROCEDURE ajouterFacture IS
+	STATIC PROCEDURE supprimerFacture(factureId NUMBER) IS
 	BEGIN
 		NULL;
 	END;
-	
---  STATIC PROCEDURE lireFacture(factureId NUMBER)
-	STATIC PROCEDURE lireFacture IS
-	BEGIN
-		NULL;
-	END;
-	
---	STATIC PROCEDURE modifierFacture(facture FACTURE_T)
-	STATIC PROCEDURE modifierFacture IS
-	BEGIN
-		NULL;
-	END;
-	
---	STATIC PROCEDURE supprimerFacture(factureId NUMBER)
-	STATIC PROCEDURE supprimerFacture IS
-	BEGIN
-		NULL;
-	END;
+	*/
 END;
 /
 
-
 -- TEST DES METHODES
-
