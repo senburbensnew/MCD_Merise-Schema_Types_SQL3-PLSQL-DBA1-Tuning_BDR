@@ -1,6 +1,8 @@
 package org.gestioncabinetmedical;
 
 import oracle.sql.REF;
+
+import java.io.IOException;
 import java.sql.SQLData;
 import java.sql.SQLException;
 import java.sql.SQLInput;
@@ -84,5 +86,19 @@ public class Examen implements SQLData {
         stream.writeRef(this.refConsultation);
         stream.writeString(this.Details_Examen);
         stream.writeDate((java.sql.Date) this.Date_Examen);
+    }
+
+    public void display() throws SQLException, IOException {
+        System.out.println(this.getSql_type());
+        System.out.println(this.getId_Examen());
+        // this.displayInfoConsultationFromRef();
+        System.out.println(this.getDetails_Examen());
+        System.out.println(this.getDate_Examen());
+    }
+
+    public void displayInfoConsultationFromRef() throws SQLException{
+        REF refConsultation = this.getRefConsultation();
+        Consultation consultation = (Consultation) refConsultation.getObject();
+        System.out.println("Consultation = " + consultation.toString());
     }
 }
