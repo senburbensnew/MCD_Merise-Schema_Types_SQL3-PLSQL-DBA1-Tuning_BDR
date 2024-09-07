@@ -40,8 +40,7 @@ public class Main{
 
                 System.out.println(adresse.getNUMERO() + ", " + adresse.getRUE() +  ", " + adresse.getVILLE() + ", " + adresse.getCODE_POSTAL());
             }
-
-
+            
             String sqlPatients = "SELECT value(op) FROM o_patient op";
             ResultSet resultsetPatients = stmt.executeQuery(sqlPatients);
             System.out.println("********INFOS PATIENTS ******************");
