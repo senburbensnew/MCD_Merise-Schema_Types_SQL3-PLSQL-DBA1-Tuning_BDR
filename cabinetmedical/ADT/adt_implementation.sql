@@ -29,6 +29,57 @@ DROP TYPE FACTURE_T FORCE;
 DROP TYPE CONSULTATION_T FORCE;
 DROP TYPE RENDEZ_VOUS_T FORCE;
 
+-- CREATION DES TYPES 
+CREATE OR REPLACE TYPE ADRESSE_T AS OBJECT (
+	 NUMERO NUMBER(4),
+	 RUE VARCHAR2(40),
+	 CODE_POSTAL NUMBER(5),
+	 VILLE VARCHAR2(30)
+)
+/
+
+CREATE OR REPLACE TYPE LIST_PRENOMS_T AS VARRAY(3) OF VARCHAR2(30)
+/
+
+CREATE OR REPLACE TYPE LIST_TELEPHONES_T AS VARRAY(3) OF VARCHAR2(30)
+/
+
+CREATE OR REPLACE TYPE RENDEZ_VOUS_T
+/
+
+CREATE OR REPLACE TYPE ListRefRendezVous_t AS TABLE OF REF RENDEZ_VOUS_T
+/
+
+CREATE OR REPLACE TYPE CONSULTATION_T
+/
+
+CREATE OR REPLACE TYPE ListRefConsultations_t AS TABLE OF REF CONSULTATION_T
+/
+
+CREATE OR REPLACE TYPE FACTURE_T
+/
+
+CREATE OR REPLACE TYPE ListRefFactures_t AS TABLE OF REF FACTURE_T
+/
+
+CREATE OR REPLACE TYPE EXAMEN_T
+/
+
+CREATE OR REPLACE TYPE ListRefExamens_t AS TABLE OF REF EXAMEN_T
+/
+
+CREATE OR REPLACE TYPE PRESCRIPTION_T
+/
+
+CREATE OR REPLACE TYPE ListRefPrescriptions_t AS TABLE OF REF PRESCRIPTION_T
+/  
+
+CREATE OR REPLACE TYPE PATIENT_T
+/
+
+CREATE OR REPLACE TYPE MEDECIN_T
+/
+
 -- Declarer le Type RENDEZ_VOUS_T
 CREATE OR REPLACE TYPE RENDEZ_VOUS_T AS OBJECT(
     Id_Rendez_Vous NUMBER(8),
@@ -41,7 +92,7 @@ CREATE OR REPLACE TYPE RENDEZ_VOUS_T AS OBJECT(
     MEMBER FUNCTION getId RETURN NUMBER,
     MEMBER FUNCTION getDate RETURN DATE,
     -- Méthode d'ordre
-    MAP MEMBER FUNCTION compareTo(otherRendezVous REF RENDEZ_VOUS_T) RETURN NUMBER, 
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
     -- Gestion des liens
     MEMBER PROCEDURE linkToPatient(p REF PATIENT_T),
     -- Gestion des liens
@@ -83,16 +134,10 @@ CREATE OR REPLACE TYPE BODY RENDEZ_VOUS_T AS
     END getDate;
 
     -- Méthode d'ordre : compare deux rendez-vous par date
-    MAP MEMBER FUNCTION compareTo(otherRendezVous REF RENDEZ_VOUS_T) RETURN NUMBER IS
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
     BEGIN
-        IF SELF.Date_Rendez_Vous < otherRendez_Vous.Date_Rendez_Vous THEN
-            RETURN -1; -- Rendez-vous courant est antérieur
-        ELSIF SELF.Date_Rendez_Vous > otherRendez_Vous.Date_Rendez_Vous THEN
-            RETURN 1;  -- Rendez-vous courant est postérieur
-        ELSE
-            RETURN 0;  -- Les deux rendez-vous ont la même date
-        END IF;
-    END compareTo;
+        RETURN Date_Rendez_Vous;
+    END compareDate;
 
     -- Gestion des liens : associe un rendez-vous à un patient
     MEMBER PROCEDURE linkToPatient(p REF PATIENT_T) IS
@@ -145,7 +190,7 @@ CREATE OR REPLACE TYPE EXAMEN_T AS OBJECT(
     MEMBER FUNCTION getId RETURN NUMBER,
     MEMBER FUNCTION getDate RETURN DATE,
     -- Méthode d'ordre
-    MAP MEMBER FUNCTION compareTo(otherExamen REF EXAMEN_T) RETURN NUMBER, 
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
     -- Gestion des liens
     MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T), 
     -- Consultation
@@ -182,16 +227,10 @@ CREATE OR REPLACE TYPE BODY EXAMEN_T AS
     END getDate;
 
     -- Méthode d'ordre : compare deux examens par date
-    MAP MEMBER FUNCTION compareTo(otherExamen REF EXAMEN_T) RETURN NUMBER IS
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
     BEGIN
-        IF SELF.Date_Examen < otherExamen.Date_Examen THEN
-            RETURN -1; -- Examen courant est antérieur
-        ELSIF SELF.Date_Examen > otherExamen.Date_Examen THEN
-            RETURN 1;  -- Examen courant est postérieur
-        ELSE
-            RETURN 0;  -- Les deux examens ont la même date
-        END IF;
-    END compareTo;
+        RETURN Date_Examen;
+    END compareDate;
 
     -- Gestion des liens : associe un examen à une consultation
     MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T) IS
@@ -232,7 +271,7 @@ CREATE OR REPLACE TYPE PRESCRIPTION_T AS OBJECT(
     MEMBER FUNCTION getId RETURN NUMBER,
     MEMBER FUNCTION getDate RETURN DATE,
     -- Méthode d'ordre
-    MAP MEMBER FUNCTION compareTo(otherPrescription REF PRESCRIPTION_T) RETURN NUMBER, 
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
     -- Gestion des liens
     MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T), 
     -- Méthode de consultation : retourne la référence de la consultation associée
@@ -269,16 +308,10 @@ CREATE OR REPLACE TYPE BODY PRESCRIPTION_T AS
     END getDate;
 
     -- Méthode d'ordre : compare deux prescriptions par date
-    MAP MEMBER FUNCTION compareTo(otherPrescription REF PRESCRIPTION_T) RETURN NUMBER IS
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
     BEGIN
-        IF SELF.Date_Prescription < otherPrescription.Date_Prescription THEN
-            RETURN -1; -- Prescription courante est antérieure
-        ELSIF SELF.Date_Prescription > otherPrescription.Date_Prescription THEN
-            RETURN 1;  -- Prescription courante est postérieure
-        ELSE
-            RETURN 0;  -- Les deux prescriptions ont la même date
-        END IF;
-    END compareTo;
+        RETURN Date_Prescription;
+    END compareDate;
 
     -- Gestion des liens : associe une prescription à une consultation
     MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T) IS
@@ -320,7 +353,7 @@ CREATE OR REPLACE TYPE FACTURE_T AS OBJECT(
     MEMBER FUNCTION getId RETURN NUMBER,
     MEMBER FUNCTION getDate RETURN DATE,
     -- Méthode d'ordre 
-    MAP MEMBER FUNCTION compareTo(otherFacture REF FACTURE_T) RETURN NUMBER, 
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
     -- Gestion des liens
     MEMBER PROCEDURE linkToPatient(p REF PATIENT_T), 
     -- Gestion des liens
@@ -362,16 +395,10 @@ CREATE OR REPLACE TYPE BODY FACTURE_T AS
     END getDate;
 
     -- Méthode d'ordre : compare deux factures par date
-    MAP MEMBER FUNCTION compareTo(otherFacture REF FACTURE_T) RETURN NUMBER IS
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
     BEGIN
-        IF SELF.Date_Facture < otherFacture.Date_Facture THEN
-            RETURN -1; -- La facture courante est antérieure
-        ELSIF SELF.Date_Facture > otherFacture.Date_Facture THEN
-            RETURN 1;  -- La facture courante est postérieure
-        ELSE
-            RETURN 0;  -- Les deux factures ont la même date
-        END IF;
-    END compareTo;
+        RETURN Date_Facture;
+    END compareDate;
 
     -- Gestion des liens : associe une facture à un patient
     MEMBER PROCEDURE linkToPatient(p REF PATIENT_T) IS
@@ -427,7 +454,7 @@ CREATE OR REPLACE TYPE CONSULTATION_T AS OBJECT(
     MEMBER FUNCTION getId RETURN NUMBER,
     MEMBER FUNCTION getDate RETURN DATE,
     -- Méthode d'ordre
-    MAP MEMBER FUNCTION compareTo(otherConsultation REF CONSULTATION_T) RETURN NUMBER, 
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
     -- Gestion des liens
     MEMBER PROCEDURE linkToPatient(p REF PATIENT_T), 
     -- Gestion des liens
@@ -475,16 +502,10 @@ CREATE OR REPLACE TYPE BODY CONSULTATION_T AS
     END getDate;
 
     -- Méthode d'ordre : compare deux consultations par date
-    MAP MEMBER FUNCTION compareTo(otherConsultation REF CONSULTATION_T) RETURN NUMBER IS
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
     BEGIN
-        IF SELF.Date_Consultation < otherConsultation.Date_Consultation THEN
-            RETURN -1; -- La consultation courante est antérieure
-        ELSIF SELF.Date_Consultation > otherConsultation.Date_Consultation THEN
-            RETURN 1;  -- La consultation courante est postérieure
-        ELSE
-            RETURN 0;  -- Les deux consultations ont la même date
-        END IF;
-    END compareTo;
+        RETURN SELF.Date_Consultation;
+    END compareDate;
 
     -- Gestion des liens : associe un patient à la consultation
     MEMBER PROCEDURE linkToPatient(p REF PATIENT_T) IS
@@ -551,7 +572,17 @@ CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
     DATE_NAISSANCE DATE,
     LIST_TELEPHONES LIST_TELEPHONES_T,
     LIST_PRENOMS LIST_PRENOMS_T,
+     -- Méthode d'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE
 ) NOT INSTANTIABLE NOT FINAL;
+/
+CREATE OR REPLACE TYPE BODY PERSONNE_T AS
+ -- Méthode de comparaison pour l'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
+    BEGIN
+        RETURN SELF.DATE_NAISSANCE;
+    END compareDate;
+END;
 /
 
 -- Type PATIENT_T
@@ -564,8 +595,6 @@ CREATE OR REPLACE TYPE PATIENT_T UNDER PERSONNE_T(
 
     -- Méthodes
     MEMBER FUNCTION getId RETURN NUMBER,
-    -- Méthode d'ordre
-    MAP MEMBER FUNCTION compareTo(otherPatient REF PATIENT_T) RETURN NUMBER, 
     -- Gestion des liens
     MEMBER PROCEDURE addRendezVous(refRendezVous REF RENDEZ_VOUS_T), 
     -- Gestion des liens
@@ -610,18 +639,6 @@ CREATE OR REPLACE TYPE BODY PATIENT_T AS
     BEGIN
         RETURN SELF.ID_PERSONNE;
     END getId;
-
-    -- Méthode de comparaison pour l'ordre
-    MAP MEMBER FUNCTION compareTo(otherPatient REF PATIENT_T) RETURN NUMBER IS
-    BEGIN
-        IF SELF.ID_PERSONNE < otherPatient.ID_PERSONNE THEN
-            RETURN -1;
-        ELSIF SELF.ID_PERSONNE > otherPatient.ID_PERSONNE THEN
-            RETURN 1;
-        ELSE
-            RETURN 0;
-        END IF;
-    END compareTo;
 
     -- Méthode pour ajouter un rendez-vous
     MEMBER PROCEDURE addRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
@@ -694,8 +711,6 @@ CREATE OR REPLACE TYPE MEDECIN_T UNDER PERSONNE_T(
 
     -- Méthodes
     MEMBER FUNCTION getId RETURN NUMBER,
-    -- Méthode d'ordre
-    MAP MEMBER FUNCTION compareTo(otherMedecin REF MEDECIN_T) RETURN NUMBER, 
     -- Gestion des liens
     MEMBER PROCEDURE addRendezVous(rv REF RENDEZ_VOUS_T), 
     -- Gestion des liens
@@ -734,18 +749,6 @@ CREATE OR REPLACE TYPE BODY MEDECIN_T AS
     BEGIN
         RETURN SELF.ID_PERSONNE;
     END getId;
-
-    -- Méthode de comparaison pour l'ordre des médecins
-    MAP MEMBER FUNCTION compareTo(otherMedecin REF MEDECIN_T) RETURN NUMBER IS
-    BEGIN
-        IF SELF.ID_PERSONNE < otherMedecin.ID_PERSONNE THEN
-            RETURN -1;
-        ELSIF SELF.ID_PERSONNE > otherMedecin.ID_PERSONNE THEN
-            RETURN 1;
-        ELSE
-            RETURN 0;
-        END IF;
-    END compareTo;
 
     -- Méthode pour ajouter un rendez-vous à la liste du médecin
     MEMBER PROCEDURE addRendezVous(rv REF RENDEZ_VOUS_T) IS
