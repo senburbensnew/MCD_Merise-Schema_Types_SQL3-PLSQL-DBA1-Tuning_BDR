@@ -1,0 +1,3 @@
+member PROCEDURE addLinkListeConsultations(refConsultation REF CONSULTATION_T),
+member PROCEDURE deleteLinkListeConsultations(refConsultation REF CONSULTATION_T),
+member PROCEDURE updateLinkListeConsultations(refConsultation1 REF CONSULTATION_T, refConsultation2 REF CONSULTATION_T),
