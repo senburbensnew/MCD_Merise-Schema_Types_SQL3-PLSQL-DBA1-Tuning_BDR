@@ -126,7 +126,7 @@ public abstract class Personne {
 
     private void displayAdresse() throws SQLException{
         if(this.getADRESSE() == null) return;
-        System.out.println(this.getADRESSE().toString());
+        this.getADRESSE().display();
     }
 
     public void displayListTelephones() throws SQLException{
