@@ -13,31 +13,36 @@
 -- 1. Tablespaces pour stocker les données des tables
 --     Création :
     CREATE TABLESPACE DATA_TS
-    DATAFILE 'datafile_data_ts.dbf'
+    DATAFILE '%ORACLE_BASE%\oradata\XE\hopitalpdb\datafile_data_ts.dbf'
     SIZE 100M
     AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
     EXTENT MANAGEMENT LOCAL
     AUTOALLOCATE;
+
+    -- Tablespace created.
 
 -- 2. Tablespaces pour stocker les données d’indexes
 --     Création :
 
     CREATE TABLESPACE INDEX_TS
-    DATAFILE 'datafile_index_ts.dbf'
+    DATAFILE '%ORACLE_BASE%\oradata\XE\hopitalpdb\datafile_index_ts.dbf'
     SIZE 100M
     AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
     EXTENT MANAGEMENT LOCAL
     AUTOALLOCATE;
+
+    -- Tablespace created.
 
 -- 3. Tablespace pour stocker les segments temporaires
 --     Création :
 
     CREATE TEMPORARY TABLESPACE TEMP_TS
-    TEMPFILE 'tempfile_temp_ts.dbf'
+    TEMPFILE '%ORACLE_BASE%\oradata\XE\hopitalpdb\tempfile_temp_ts.dbf'
     SIZE 100M
     AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
-    EXTENT MANAGEMENT LOCAL
-    AUTOALLOCATE;
+    EXTENT MANAGEMENT LOCAL;
+
+    -- Tablespace created.
 
 -- ** En résumé ** :
     -- Tablespaces dédiés pour les tables et les indexes permettent une meilleure gestion
@@ -67,17 +72,9 @@
     QUOTA UNLIMITED ON data_ts;
 
 -- 2. Attribution des droits
-   /* GRANT CONNECT, RESOURCE TO Hopital;
+    GRANT CONNECT, RESOURCE TO Hopital;
     GRANT CREATE SESSION TO Hopital;
-    GRANT CREATE TABLE TO Hopital;
-    GRANT CREATE INDEX TO Hopital;
-    GRANT CREATE VIEW TO Hopital;
-    GRANT CREATE PROCEDURE TO Hopital;
-    GRANT CREATE SEQUENCE TO Hopital;
-    GRANT CREATE TRIGGER TO Hopital;
-    GRANT CREATE SYNONYM TO Hopital;
-    GRANT CREATE TYPE TO Hopital;*/
-    GRANT ALL PRIVILEGES TO Hopital;
+    GRANT DBA TO Hopital;
 
 -- 3. Créer le schéma de données en séparant les données des tables et les index  
 --  Vous  dimensionnerez  de  façon  pertinente  les  segments.  Pour  cela  vous  devez 
@@ -134,9 +131,11 @@
     END;
     /
 
+    -- PL/SQL procedure successfully completed.
     -- used bytes =  516096 bytes
     -- allocated bytes = 524288 bytes
 
+    DROP TABLE O_PATIENT CASCADE CONSTRAINTS;
     CREATE TABLE O_PATIENT OF PATIENT_T(
 	CONSTRAINT pk_o_patient_id_personne PRIMARY KEY(ID_PERSONNE),
 	NUMERO_SECURITE_SOCIALE CONSTRAINT o_patient_num_secu_social_not_null NOT NULL,
@@ -151,8 +150,8 @@
     NESTED TABLE pListRefRendezVous STORE AS o_patient_table_pListRefRendezVous
     NESTED TABLE pListRefConsultations STORE AS o_patient_table_pListRefConsultations
     NESTED TABLE pListRefFactures STORE AS o_patient_table_pListRefFactures
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 524K NEXT 516K MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -199,6 +198,7 @@
     -- used bytes: 409600 bytes
     -- allocated bytes: 458752 bytes
 
+    DROP TABLE O_MEDECIN CASCADE CONSTRAINTS;
     CREATE TABLE O_MEDECIN OF MEDECIN_T(
 	CONSTRAINT pk_o_medecin_id_personne PRIMARY KEY(Id_Personne),
 	Numero_Securite_Sociale CONSTRAINT o_medecin_num_secu_social_not_null NOT NULL,
@@ -213,8 +213,8 @@
     NESTED TABLE pListRefRendezVous STORE AS o_medecin_table_pListRefRendezVous
     NESTED TABLE pListRefConsultations STORE AS o_medecin_table_pListRefConsultations
     LOB(CV) STORE AS storeCV(PCTVERSION 30)
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 458K NEXT 409K MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -249,14 +249,15 @@
     -- used bytes: 794624 bytes
     -- allocated bytes: 851968 bytes
 
+    DROP TABLE O_EXAMEN CASCADE CONSTRAINTS;
     CREATE TABLE O_EXAMEN OF EXAMEN_T(
 	CONSTRAINT pk_o_examen_id_examen PRIMARY KEY(Id_Examen),
 	refConsultation CONSTRAINT o_examen_ref_consultation_not_null NOT NULL,
 	Details_Examen CONSTRAINT details_examen_not_null NOT NULL,
 	Date_Examen CONSTRAINT date_examen_not_null NOT NULL
     )
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 794K NEXT 851K MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -291,14 +292,15 @@
     -- used bytes: 794624 bytes
     -- allocated bytes: 851968 bytes    
 
+    DROP TABLE O_PRESCRIPTION CASCADE CONSTRAINTS;
     CREATE TABLE O_PRESCRIPTION OF PRESCRIPTION_T(
 	CONSTRAINT pk_o_prescription_id_prescription PRIMARY KEY(Id_Prescription),
 	refConsultation CONSTRAINT o_prescription_ref_consultation_not_null NOT NULL,
 	Details_Prescription CONSTRAINT details_prescription_not_null NOT NULL,
 	Date_Prescription CONSTRAINT date_prescription_not_null NOT NULL
     )
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 794K NEXT 851K MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -334,6 +336,7 @@
     -- used bytes: 196608 bytes
     -- allocated bytes: 196608 bytes    
 
+    DROP TABLE O_FACTURE CASCADE CONSTRAINTS;
     CREATE TABLE O_FACTURE OF FACTURE_T(	
 	CONSTRAINT pk_o_facture_id_facture PRIMARY KEY(Id_Facture),
 	refPatient CONSTRAINT o_facture_ref_patient_not_null NOT NULL,
@@ -341,8 +344,8 @@
 	Montant_Total CONSTRAINT montant_total_not_null NOT NULL,
 	Date_Facture CONSTRAINT date_facture_not_null NOT NULL
     )
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 197K NEXT 197K MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -378,6 +381,7 @@
     -- used bytes: 851968 bytes
     -- allocated bytes: 851968 bytes
 
+    DROP TABLE O_RENDEZ_VOUS CASCADE CONSTRAINTS;
     CREATE TABLE O_RENDEZ_VOUS OF RENDEZ_VOUS_T(
 	CONSTRAINT pk_o_rendez_vous_id_rendez_vous PRIMARY KEY(Id_Rendez_Vous),
 	refPatient CONSTRAINT o_rendez_vous_ref_patient_not_null NOT NULL,
@@ -385,8 +389,8 @@
 	Date_Rendez_Vous CONSTRAINT date_rendez_vous_not_null NOT NULL,
 	Motif CONSTRAINT motif_not_null NOT NULL
     )
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 852K NEXT 852K MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -423,6 +427,7 @@
     -- used bytes: 1540096 bytes
     -- allocated bytes: 2097152 bytes    
 
+    DROP TABLE O_CONSULTATION CASCADE CONSTRAINTS;
     CREATE TABLE O_CONSULTATION OF CONSULTATION_T(
 	CONSTRAINT pk_o_consultation_id_consultation PRIMARY KEY(Id_Consultation),
 	refPatient CONSTRAINT o_consultation_ref_patient_not_null NOT NULL,
@@ -432,8 +437,8 @@
     ) 
     NESTED TABLE pListRefExamens STORE AS table_pListRefExamens
     NESTED TABLE pListRefPrescriptions STORE AS table_pListRefPrescriptions
+    PCTFREE 10
     TABLESPACE DATA_TS
-    SEGMENT CREATION IMMEDIATE
     STORAGE ( INITIAL 2097K NEXT 1540K MINEXTENTS 1 MAXEXTENTS 3072 PCTINCREASE 0);
     /
 
@@ -476,7 +481,7 @@
         -- Estimation pour l'espace de l'index idx_o_patient_num_sec_social_unique
         DBMS_SPACE.CREATE_INDEX_COST (
             ddl           =>
-                'CREATE UNIQUE INDEX idx_o_patient_num_sec_social_unique ON O_PATIENT(Numero_Securite_Sociale);',
+                'CREATE UNIQUE INDEX idx_o_patient_num_sec_social_unique ON O_PATIENT(Numero_Securite_Sociale)',
             used_bytes    => used_bytes,
             alloc_bytes   => alloc_bytes);
 
@@ -823,7 +828,7 @@
     DROP INDEX IDX_O_FACTURE_refConsultation;
     ALTER TABLE O_FACTURE ADD (SCOPE FOR (refConsultation) IS O_CONSULTATION);
     CREATE INDEX IDX_O_FACTURE_refConsultation ON O_FACTURE(refConsultation)
-    TABLESPACE INDEX_TS;
+    TABLESPACE INDEX_TS
     STORAGE (INITIAL 65536 NEXT 270 MINEXTENTS 1 MAXEXTENTS 2048 PCTINCREASE 0);
     /
 
@@ -1503,7 +1508,1181 @@
     /
 
     COMMIT;
+-- <réponses et trace ici>
+    -- 0 rows deleted.
+    -- 0 rows deleted.
+    -- 0 rows deleted.
+    -- 0 rows deleted.
+    -- 0 rows deleted.
+    -- 0 rows deleted.
+    -- 0 rows deleted.
+    -- Commit complete.
+    -- PL/SQL procedure successfully completed.
+    -- Commit complete.
 
 
 
+-- 4.2  Chargement  des  données  avec  Sqlloader  (voir  le  chap.  7  du  cours 
+-- DBA1) 
+ 
+-- Ecrire un script (fichier de contrôle SQLLOADER) qui permet de charger les lignes 
+-- contenues dans un fichier CSV (ligne à construire dans EXCEL) vers une ou plusieurs de vos 
+-- tables.  Les  données  sont  à  préparer  auparavant.  Vous  pouvez  vous  appuyez  sur  des  sites  de 
+-- génération automatique des données. 
+-- <réponses et trace ici>
 
+  sqlldr hopital/pass123$@hopital control=C:\Users\pbobc\Documents\O_PATIENT.ctl
+
+
+???
+
+
+-- 4.3  Divers requêtes d’administration 
+    -- 1) Ecrire une requête  SQL  qui  permet  de  visualiser  l’ensemble  des  fichiers  qui 
+    -- composent votre base 
+    -- <réponses et trace ici>
+
+    -- Data files
+    SET PAGESIZE 2000
+    SET LINES 700
+    COL FILE_TYPE FORMAT A15
+    COL FFILE_NAME FORMAT A100
+    SELECT 'Data File' AS file_type, name AS file_name
+    FROM v$datafile
+    UNION
+    -- Control files
+    SELECT 'Control File' AS file_type, name AS file_name
+    FROM v$controlfile
+    UNION
+    -- Redo log files
+    SELECT 'Redo Log File' AS file_type, member AS file_name
+    FROM v$logfile
+    UNION
+    -- Temporary files
+    SELECT 'Temp File' AS file_type, name AS file_name
+    FROM v$tempfile;
+
+    -- <réponses et trace ici>
+    -- FILE_TYPE       FILE_NAME                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+    -- --------------- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    -- Control File    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\CONTROL01.CTL                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+    -- Control File    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\CONTROL02.CTL                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+    -- Data File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_DATA_TS.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    -- Data File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_INDEX_TS.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    -- Data File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSAUX01.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+    -- Data File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSTEM01.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+    -- Data File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\UNDOTBS01.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+    -- Data File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\USERS01.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+    -- Redo Log File   C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO01.LOG                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    -- Redo Log File   C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO02.LOG                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    -- Redo Log File   C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO03.LOG                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    -- Temp File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\TEMP012023-01-19_18-09-42-490-PM.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    -- Temp File       C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\TEMPFILE_TEMP_TS.DBF                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+
+    -- 13 rows selected.
+
+    -- 2)Ecrire  une  requête  SQL  qui  permet  de  lister  en  une  requête  l’ensembles  des 
+    -- tablespaces avec leur fichiers. La taille de chaque fichier doit apparaître,  le volume 
+    -- total de l’espace occupé par fichier ainsi que le volume total de l’espace libre par 
+    -- fichier 
+
+    /* Formatted on 03/10/2024 12:14:30 (QP5 v5.360) */
+    SET PAGESIZE 500
+    SET LINESIZE 600
+    COL tablespace_name FORMAT A15
+    COL FFILE_NAME FORMAT A30
+    COL file_size_mb FORMAT A15
+    COL used_space_mb FORMAT A15
+    COL free_space_mb FORMAT A15
+    SELECT df.tablespace_name,
+            df.file_name,
+            df.bytes / 1024 / 1024                               AS file_size_mb,
+            (df.bytes - NVL (fs.free_bytes, 0)) / 1024 / 1024    AS used_space_mb,
+            NVL (fs.free_bytes, 0) / 1024 / 1024                 AS free_space_mb
+        FROM dba_data_files df
+            LEFT JOIN (  SELECT file_id, SUM (bytes) AS free_bytes
+                            FROM dba_free_space
+                        GROUP BY file_id) fs
+                ON df.file_id = fs.file_id
+    ORDER BY df.tablespace_name, df.file_name;
+
+    --     TABLESPACE_NAME FILE_NAME                                                                     FILE_SIZE_MB   USED_SPACE_MB   FREE_SPACE_MB
+    -- --------------- ---------------------------------------------------------------------------- --------------- --------------- ---------------
+    -- DATA_TS         C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_DATA_TS.DBF        		100         10.1875         89.8125
+    -- INDEX_TS        C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_INDEX_TS.DBF             100               1              99
+    -- SYSAUX          C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSAUX01.DBF                      400        376.3125         23.6875
+    -- SYSTEM          C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSTEM01.DBF                      260        256.3125          3.6875
+    -- UNDOTBS1        C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\UNDOTBS01.DBF                     100          49.125          50.875
+    -- USERS           C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\USERS01.DBF                         5             1.5             3.5
+
+    -- 6 rows selected.
+
+
+
+    
+    --     3) Ecrire  une  requête  SQL  qui  permet  de  lister  les  segments  et  leurs  extensions  de 
+    -- chacun des segments (tables ou indexes) de votre utilisateur 
+    -- <réponses et trace ici>
+
+    /* Formatted on 03/10/2024 12:03:32 (QP5 v5.360) */
+    SET PAGESIZE 500
+    SET LINESIZE 300
+    SELECT s.segment_name,
+            s.segment_type,
+            s.tablespace_name,
+            e.extent_id,
+            e.file_id,
+            e.block_id,
+            e.bytes / 1024 / 1024     AS extent_size_mb
+        FROM dba_segments s
+            JOIN dba_extents e
+                ON s.segment_name = e.segment_name AND s.owner = e.owner
+    WHERE s.owner = UPPER ('Hopital')
+    ORDER BY s.segment_name, e.extent_id;
+
+        
+    -- SEGMENT_NAME                                                                                                                     SEGMENT_TYPE       TABLESPACE_NAME                 EXTENT_ID    FILE_ID   BLOCK_ID EXTENT_SIZE_MB
+    -- -------------------------------------------------------------------------------------------------------------------------------- ------------------ ------------------------------ ---------- ---------- ---------- --------------
+    -- IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                           INDEX              USERS                                   0         16        168          .0625
+    -- IDX_O_FACTURE_MONTANT_TOTAL                                                                                                      INDEX              USERS                                   0         16        176          .0625
+    -- IDX_O_MEDECIN_EMAIL_UNIQUE                                                                                                       INDEX              USERS                                   0         16        160          .0625
+    -- IDX_O_MEDECIN_NUM_SEC_SOCIAL_UNIQUE                                                                                              INDEX              USERS                                   0         16        152          .0625
+    -- IDX_O_MEDECIN_SPECIALITE                                                                                                         INDEX              USERS                                   0         16        144          .0625
+    -- IDX_O_PATIENT_EMAIL_UNIQUE                                                                                                       INDEX              USERS                                   0         16        136          .0625
+    -- IDX_O_PATIENT_NUM_SEC_SOCIAL_UNIQUE                                                                                              INDEX              USERS                                   0         16        128          .0625
+    -- IDX_TABLE_PLISTREFPRESCRIPTIONS_NESTED_TABLE_ID_COLUMN_VALUE                                                                     INDEX              USERS                                   0         16        184          .0625
+    -- O_CONSULTATION                                                                                                                   TABLE              DATA_TS                                 0         19        640              1
+    -- O_CONSULTATION                                                                                                                   TABLE              DATA_TS                                 1         19        768              1
+    -- O_CONSULTATION                                                                                                                   TABLE              DATA_TS                                 2         19        896              1
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 0         19       1032          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 1         19       1040          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 2         19       1048          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 3         19       1056          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 4         19       1064          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 5         19       1072          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 6         19       1080          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 7         19       1088          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 8         19       1096          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 9         19       1104          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                10         19       1112          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                11         19       1120          .0625
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                12         19       1128          .0625
+    -- O_FACTURE                                                                                                                        TABLE              DATA_TS                                 0         19        584          .0625
+    -- O_FACTURE                                                                                                                        TABLE              DATA_TS                                 1         19        592          .0625
+    -- O_FACTURE                                                                                                                        TABLE              DATA_TS                                 2         19        600          .0625
+    -- O_FACTURE                                                                                                                        TABLE              DATA_TS                                 3         19        608          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 0         19        240          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 1         19        248          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 2         19        256          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 3         19        264          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 4         19        272          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 5         19        280          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 6         19        288          .0625
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                 7         19        296          .0625
+    -- O_MEDECIN_TABLE_PLISTREFCONSULTATIONS                                                                                            NESTED TABLE       DATA_TS                                 0         19        568          .0625
+    -- O_MEDECIN_TABLE_PLISTREFRENDEZVOUS                                                                                               NESTED TABLE       DATA_TS                                 0         19        504          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 0         19        128          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 1         19        136          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 2         19        144          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 3         19        152          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 4         19        160          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 5         19        168          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 6         19        176          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 7         19        184          .0625
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                 8         19        192          .0625
+    -- O_PATIENT_TABLE_PLISTREFCONSULTATIONS                                                                                            NESTED TABLE       DATA_TS                                 0         19        552          .0625
+    -- O_PATIENT_TABLE_PLISTREFFACTURES                                                                                                 NESTED TABLE       DATA_TS                                 0         19        632          .0625
+    -- O_PATIENT_TABLE_PLISTREFRENDEZVOUS                                                                                               NESTED TABLE       DATA_TS                                 0         19        488          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 0         19       1168          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 1         19       1176          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 2         19       1184          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 3         19       1192          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 4         19       1200          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 5         19       1208          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 6         19       1216          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 7         19       1224          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 8         19       1232          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 9         19       1240          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                10         19       1248          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                11         19       1256          .0625
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                12         19       1264          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 0         19        360          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 1         19        368          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 2         19        376          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 3         19        384          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 4         19        392          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 5         19        400          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 6         19        408          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 7         19        416          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 8         19        424          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 9         19        432          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                10         19        440          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                11         19        448          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                12         19        456          .0625
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                13         19        464          .0625
+    -- PK_O_CONSULTATION_ID_CONSULTATION                                                                                                INDEX              DATA_TS                                 0         19        544          .0625
+    -- PK_O_EXAMEN_ID_EXAMEN                                                                                                            INDEX              DATA_TS                                 0         19       1144          .0625
+    -- PK_O_FACTURE_ID_FACTURE                                                                                                          INDEX              DATA_TS                                 0         19        624          .0625
+    -- PK_O_MEDECIN_ID_PERSONNE                                                                                                         INDEX              DATA_TS                                 0         19        328          .0625
+    -- PK_O_PATIENT_ID_PERSONNE                                                                                                         INDEX              DATA_TS                                 0         19        232          .0625
+    -- PK_O_PRESCRIPTION_ID_PRESCRIPTION                                                                                                INDEX              DATA_TS                                 0         19       1280          .0625
+    -- PK_O_RENDEZ_VOUS_ID_RENDEZ_VOUS                                                                                                  INDEX              DATA_TS                                 0         19        480          .0625
+    -- STORECV                                                                                                                          LOBSEGMENT         DATA_TS                                 0         19        336           .125
+    -- SYS_C007459                                                                                                                      INDEX              DATA_TS                                 0         19        224          .0625
+    -- SYS_C007460                                                                                                                      INDEX              DATA_TS                                 0         19        216          .0625
+    -- SYS_C007461                                                                                                                      INDEX              DATA_TS                                 0         19        208          .0625
+    -- SYS_C007462                                                                                                                      INDEX              DATA_TS                                 0         19        200          .0625
+    -- SYS_C007472                                                                                                                      INDEX              DATA_TS                                 0         19        320          .0625
+    -- SYS_C007473                                                                                                                      INDEX              DATA_TS                                 0         19        312          .0625
+    -- SYS_C007474                                                                                                                      INDEX              DATA_TS                                 0         19        304          .0625
+    -- SYS_C007479                                                                                                                      INDEX              DATA_TS                                 0         19       1136          .0625
+    -- SYS_C007484                                                                                                                      INDEX              DATA_TS                                 0         19       1272          .0625
+    -- SYS_C007490                                                                                                                      INDEX              DATA_TS                                 0         19        616          .0625
+    -- SYS_C007496                                                                                                                      INDEX              DATA_TS                                 0         19        472          .0625
+    -- SYS_C007502                                                                                                                      INDEX              DATA_TS                                 0         19        536          .0625
+    -- SYS_C007503                                                                                                                      INDEX              DATA_TS                                 0         19        528          .0625
+    -- SYS_C007504                                                                                                                      INDEX              DATA_TS                                 0         19        520          .0625
+    -- SYS_FK0000073626N00018$                                                                                                          INDEX              DATA_TS                                 0         19        496          .0625
+    -- SYS_FK0000073626N00020$                                                                                                          INDEX              DATA_TS                                 0         19        560          .0625
+    -- SYS_FK0000073626N00022$                                                                                                          INDEX              DATA_TS                                 0         19       1024          .0625
+    -- SYS_FK0000073638N00018$                                                                                                          INDEX              DATA_TS                                 0         19        512          .0625
+    -- SYS_FK0000073638N00020$                                                                                                          INDEX              DATA_TS                                 0         19        576          .0625
+    -- SYS_FK0000073661N00009$                                                                                                          INDEX              DATA_TS                                 0         19       1160          .0625
+    -- SYS_FK0000073661N00011$                                                                                                          INDEX              DATA_TS                                 0         19       1296          .0625
+    -- SYS_IL0000073638C00017$$                                                                                                         LOBINDEX           DATA_TS                                 0         19        352          .0625
+    -- TABLE_PLISTREFEXAMENS                                                                                                            NESTED TABLE       DATA_TS                                 0         19       1152          .0625
+    -- TABLE_PLISTREFPRESCRIPTIONS                                                                                                      NESTED TABLE       DATA_TS                                 0         19       1288          .0625
+
+    -- 109 rows selected.
+
+
+    --     4) Ecrire  une  requête  qui  permet  pour  chacun  de  vos  segments  de  donner  le  nombre 
+    -- total de blocs du segment, le nombre  de blocs utilisés et le nombre de blocs libres 
+    -- <réponses et trace ici>
+
+        /* Formatted on 03/10/2024 12:25:00 (QP5 v5.360) */
+    SET PAGESIZE 500
+    SET LINESIZE 300
+    SELECT s.segment_name,
+            s.segment_type,
+            s.tablespace_name,
+            s.blocks                        AS total_blocks,
+            SUM (e.blocks)                  AS used_blocks,
+            (s.blocks - SUM (e.blocks))     AS free_blocks
+        FROM dba_segments s
+            JOIN dba_extents e
+                ON s.segment_name = e.segment_name AND s.owner = e.owner
+    WHERE s.owner = UPPER ('Hopital')
+    GROUP BY s.segment_name,
+            s.segment_type,
+            s.tablespace_name,
+            s.blocks
+    ORDER BY s.segment_name;
+
+    
+    -- SEGMENT_NAME                                                                                                                     SEGMENT_TYPE       TABLESPACE_NAME                TOTAL_BLOCKS USED_BLOCKS FREE_BLOCKS
+    -- -------------------------------------------------------------------------------------------------------------------------------- ------------------ ------------------------------ ------------ ----------- -----------
+    -- IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                           INDEX              USERS                                     8           8           0
+    -- IDX_O_FACTURE_MONTANT_TOTAL                                                                                                      INDEX              USERS                                     8           8           0
+    -- IDX_O_MEDECIN_EMAIL_UNIQUE                                                                                                       INDEX              USERS                                     8           8           0
+    -- IDX_O_MEDECIN_NUM_SEC_SOCIAL_UNIQUE                                                                                              INDEX              USERS                                     8           8           0
+    -- IDX_O_MEDECIN_SPECIALITE                                                                                                         INDEX              USERS                                     8           8           0
+    -- IDX_O_PATIENT_EMAIL_UNIQUE                                                                                                       INDEX              USERS                                     8           8           0
+    -- IDX_O_PATIENT_NUM_SEC_SOCIAL_UNIQUE                                                                                              INDEX              USERS                                     8           8           0
+    -- IDX_TABLE_PLISTREFPRESCRIPTIONS_NESTED_TABLE_ID_COLUMN_VALUE                                                                     INDEX              USERS                                     8           8           0
+    -- O_CONSULTATION                                                                                                                   TABLE              DATA_TS                                 384         384           0
+    -- O_EXAMEN                                                                                                                         TABLE              DATA_TS                                 104         104           0
+    -- O_FACTURE                                                                                                                        TABLE              DATA_TS                                  32          32           0
+    -- O_MEDECIN                                                                                                                        TABLE              DATA_TS                                  64          64           0
+    -- O_MEDECIN_TABLE_PLISTREFCONSULTATIONS                                                                                            NESTED TABLE       DATA_TS                                   8           8           0
+    -- O_MEDECIN_TABLE_PLISTREFRENDEZVOUS                                                                                               NESTED TABLE       DATA_TS                                   8           8           0
+    -- O_PATIENT                                                                                                                        TABLE              DATA_TS                                  72          72           0
+    -- O_PATIENT_TABLE_PLISTREFCONSULTATIONS                                                                                            NESTED TABLE       DATA_TS                                   8           8           0
+    -- O_PATIENT_TABLE_PLISTREFFACTURES                                                                                                 NESTED TABLE       DATA_TS                                   8           8           0
+    -- O_PATIENT_TABLE_PLISTREFRENDEZVOUS                                                                                               NESTED TABLE       DATA_TS                                   8           8           0
+    -- O_PRESCRIPTION                                                                                                                   TABLE              DATA_TS                                 104         104           0
+    -- O_RENDEZ_VOUS                                                                                                                    TABLE              DATA_TS                                 112         112           0
+    -- PK_O_CONSULTATION_ID_CONSULTATION                                                                                                INDEX              DATA_TS                                   8           8           0
+    -- PK_O_EXAMEN_ID_EXAMEN                                                                                                            INDEX              DATA_TS                                   8           8           0
+    -- PK_O_FACTURE_ID_FACTURE                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- PK_O_MEDECIN_ID_PERSONNE                                                                                                         INDEX              DATA_TS                                   8           8           0
+    -- PK_O_PATIENT_ID_PERSONNE                                                                                                         INDEX              DATA_TS                                   8           8           0
+    -- PK_O_PRESCRIPTION_ID_PRESCRIPTION                                                                                                INDEX              DATA_TS                                   8           8           0
+    -- PK_O_RENDEZ_VOUS_ID_RENDEZ_VOUS                                                                                                  INDEX              DATA_TS                                   8           8           0
+    -- STORECV                                                                                                                          LOBSEGMENT         DATA_TS                                  16          16           0
+    -- SYS_C007459                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007460                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007461                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007462                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007472                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007473                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007474                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007479                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007484                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007490                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007496                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007502                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007503                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_C007504                                                                                                                      INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073626N00018$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073626N00020$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073626N00022$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073638N00018$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073638N00020$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073661N00009$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_FK0000073661N00011$                                                                                                          INDEX              DATA_TS                                   8           8           0
+    -- SYS_IL0000073638C00017$$                                                                                                         LOBINDEX           DATA_TS                                   8           8           0
+    -- TABLE_PLISTREFEXAMENS                                                                                                            NESTED TABLE       DATA_TS                                   8           8           0
+    -- TABLE_PLISTREFPRESCRIPTIONS                                                                                                      NESTED TABLE       DATA_TS                                   8           8           0
+
+    -- 52 rows selected.
+
+
+
+    --     5) Ecrire une requête SQL qui permet de compacter et réduire un segment 
+    -- <réponses et trace ici>
+
+    ALTER TABLE NOM_TABLE ENABLE ROW MOUVEMENT;
+    ALTER TABLE NOM_TABLE SHRINK SPACE;
+
+
+    --     6) Ecrire une requête qui permet d’afficher l’ensemble des utilisateurs de votre base et 
+    -- leurs droits 
+    -- <réponses et trace ici> 
+    SET PAGESIZE 500
+    SET LINESIZE 300
+        SELECT GRANTEE, PRIVILEGE
+            FROM DBA_SYS_PRIVS
+    ORDER BY GRANTEE;
+
+    
+
+    --     7)Proposer  trois  requêtes libres au choix de recherche d’objets dans le dictionnaire 
+    -- Oracle 
+    -- <réponses et trace ici> 
+
+    -- Affichier toutes les tables  d'un utilisateur
+    SET PAGESIZE 200
+    SET LINESIZE 300
+    COL table_name FORMAT A30
+        SELECT table_name
+            FROM dba_tables
+    WHERE owner = 'HOPITAL';
+
+    -- <réponses et trace ici>
+
+    -- TABLE_NAME                    
+    -- ------------------------------
+    -- O_PATIENT_TABLE_PLISTREFRENDEZ
+                            
+                                                                                                                                                                                                                                                                                                                
+    -- O_PATIENT_TABLE_PLISTREFCONSUL
+                        
+                                                                                                                                                                                                                                                                                                                
+    -- O_PATIENT_TABLE_PLISTREFFACTUR
+                                
+                                                                                                                                                                                                                                                                                                                
+    -- O_MEDECIN_TABLE_PLISTREFRENDEZ
+                            
+                                                                                                                                                                                                                                                                                                                
+    -- O_MEDECIN_TABLE_PLISTREFCONSUL
+                        
+                                                                                                                                                                                                                                                                                                                
+    -- TABLE_PLISTREFEXAMENS         
+    -- TABLE_PLISTREFPRESCRIPTIONS   
+
+    -- 7 rows selected.
+
+
+    -- Afficher tous les indexes 
+        SELECT index_name, table_name, owner
+            FROM dba_indexes
+    ORDER BY owner, table_name;
+
+    -- Afficher tous les vues
+        SELECT view_name, owner
+            FROM dba_views
+    ORDER BY owner, view_name;
+
+
+    -- 4.4  Mise  en  place  d'une  stratégie  de  sauvegarde  et  restauration 
+    -- (voir le chap. 6 du cours ADB1) 
+    -- Mettez  en  place  une  stratégie  de  sauvegarde  et  restauration,  basée  sur  le  mode avec 
+    -- archives. Votre stratégie doit décrire la politique de sauvegarde et restauration des fichiers 
+    -- suivant  leur  type(périodicité  des  backups  des  fichiers  de  données  /  du  spfile  /  des  fichiers 
+    -- d’archives / du fichier de contrôle, duplications des fichiers de contrôles ou rédo, etc). 
+    -- Utililser l’outil Oracle Recovery Manager pour la mettre en œuvre. 
+    
+    -- Ecrirte pour cela un script de sauvegarde qui permet sous RMAN : 
+    -- - D’arrêter la base 
+    -- - De sauvegarder les fichiers de données 
+    -- - De sauvergarder les fichiers d’archives 
+    -- - De sauvegarder le SPFILE 
+    -- - De sauvegarder les fichiers de contrôle 
+    -- <réponses et trace ici>
+
+
+    -- 1. Stratégie de Sauvegarde
+        -- a. Fichiers de données : Sauvegardes incrémentales quotidiennes, sauvegarde complète hebdomadaire.
+        -- b. Fichiers d’archives (redo logs archivés) : Sauvegarde quotidienne avec suppression automatique après la sauvegarde.
+        -- c. SPFILE : Sauvegarde automatique avec la sauvegarde complète.
+        -- d. Fichiers de contrôle : Sauvegarde quotidienne et multiplexage sur plusieurs disques.
+        -- e. Redo logs : Multiplexés sur plusieurs disques.
+
+        
+       -- Script RMAN pour la sauvegarde et l'arrêt
+
+        -- Connectez-vous à RMAN
+        RMAN TARGET /
+
+        -- Étape 1: Arrêter la base de données
+        SHUTDOWN IMMEDIATE;
+
+        -- Étape 2: Demarrez la base de données en mode montage(mount) pour effectuer une sauvegarde(backup)
+
+        STARTUP MOUNT;
+
+        -- Étape 3: Sauvegarder la base de données (fichiers de données, journaux d'archives, fichier de contrôle, SPFILE)
+
+        RUN {
+            -- Sauvegarder les fichiers de données et les journaux redo archivés
+            BACKUP DATABASE PLUS ARCHIVELOG;
+
+            -- Sauvegardez le SPFILE
+            BACKUP SPFILE;
+
+            -- Sauvegardez le fichier de contrôle
+            BACKUP CURRENT CONTROLFILE;
+        }
+
+        -- Étape 4 : Ouvrez la base de données après la sauvegarde
+        ALTER DATABASE OPEN;
+
+        -- Étape 5 : Répertorier les sauvegardes (facultatif)
+        LIST BACKUP;
+
+        -- Étape 6 : Quitter RMAN
+        EXIT;
+        
+        -- <réponses et trace ici>  
+
+        /*
+            Microsoft Windows [Version 10.0.26100.2033]
+        (c) Microsoft Corporation. All rights reserved.
+
+        C:\Users\pbobc>rman target /
+
+        Recovery Manager: Release 18.0.0.0.0 - Production on Thu Oct 17 16:17:13 2024
+        Version 18.4.0.0.0
+
+        Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+        connected to target database: XE (DBID=3007669234)
+
+        RMAN> shutdown immediate;
+
+        using target database control file instead of recovery catalog
+        database closed
+        database dismounted
+        Oracle instance shut down
+
+        RMAN> startup mount;
+
+        connected to target database (not started)
+        Oracle instance started
+        database mounted
+
+        Total System Global Area    1610610664 bytes
+
+        Fixed Size                     9029608 bytes
+        Variable Size                788529152 bytes
+        Database Buffers             805306368 bytes
+        Redo Buffers                   7745536 bytes
+
+        RMAN> run{ backup database plus archivelog; backup spifile; backup current controlfile; }
+
+        RMAN-00571: ===========================================================
+        RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+        RMAN-00571: ===========================================================
+        RMAN-00558: error encountered while parsing input commands
+        RMAN-01009: syntax error: found "identifier": expecting one of: "archivelog, as, auxiliary, backuppiece, backupset, backup, channel, check, controlfilecopy, copies, copy, cumulative, current, database, database root, datafilecopy, datafile, datapump, db_file_name_convert, db_recovery_file_dest, device, diskratio, duration, filesperset, force, format, for, from, full, incremental, keep, maxsetsize, nochecksum, noexclude, nokeep, not, passwordfile, pluggable, pool, proxy, recovery, reuse, section, skip readonly, skip, spfile, tablespace, tag, to, validate, ("
+        RMAN-01008: the bad identifier was: spifile
+        RMAN-01007: at line 1 column 46 file: standard input
+
+        RMAN> run{ backup database plus archivelog; backup spfile; backup current controlfile; }
+
+
+        Starting backup at 17-OCT-24
+        allocated channel: ORA_DISK_1
+        channel ORA_DISK_1: SID=614 device type=DISK
+        channel ORA_DISK_1: starting archived log backup set
+        channel ORA_DISK_1: specifying archived log(s) in backup set
+        input archived log thread=1 sequence=333 RECID=134 STAMP=1180441560
+        input archived log thread=1 sequence=334 RECID=135 STAMP=1180724745
+        input archived log thread=1 sequence=335 RECID=136 STAMP=1180873176
+        input archived log thread=1 sequence=336 RECID=137 STAMP=1180894702
+        input archived log thread=1 sequence=337 RECID=138 STAMP=1180955340
+        input archived log thread=1 sequence=338 RECID=139 STAMP=1180972404
+        input archived log thread=1 sequence=339 RECID=140 STAMP=1180991660
+        input archived log thread=1 sequence=340 RECID=141 STAMP=1181343641
+        input archived log thread=1 sequence=341 RECID=142 STAMP=1181386402
+        input archived log thread=1 sequence=342 RECID=143 STAMP=1181507143
+        input archived log thread=1 sequence=343 RECID=144 STAMP=1181507907
+        input archived log thread=1 sequence=344 RECID=145 STAMP=1181575970
+        input archived log thread=1 sequence=345 RECID=146 STAMP=1181592520
+        input archived log thread=1 sequence=346 RECID=147 STAMP=1181765687
+        input archived log thread=1 sequence=347 RECID=148 STAMP=1182103231
+        input archived log thread=1 sequence=348 RECID=149 STAMP=1182182424
+        input archived log thread=1 sequence=349 RECID=150 STAMP=1182197426
+        input archived log thread=1 sequence=350 RECID=151 STAMP=1182201717
+        input archived log thread=1 sequence=351 RECID=152 STAMP=1182205852
+        input archived log thread=1 sequence=352 RECID=153 STAMP=1182272083
+        input archived log thread=1 sequence=353 RECID=154 STAMP=1182284046
+        input archived log thread=1 sequence=354 RECID=155 STAMP=1182289622
+        input archived log thread=1 sequence=355 RECID=156 STAMP=1182335382
+        input archived log thread=1 sequence=356 RECID=157 STAMP=1182433676
+        input archived log thread=1 sequence=357 RECID=158 STAMP=1182440545
+        input archived log thread=1 sequence=358 RECID=159 STAMP=1182441418
+        input archived log thread=1 sequence=359 RECID=160 STAMP=1182441656
+        input archived log thread=1 sequence=360 RECID=161 STAMP=1182507808
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0A37QIAL_1_1 tag=TAG20241017T162453 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+        Finished backup at 17-OCT-24
+
+        Starting backup at 17-OCT-24
+        using channel ORA_DISK_1
+        channel ORA_DISK_1: starting full datafile backup set
+        channel ORA_DISK_1: specifying datafile(s) in backup set
+        input datafile file number=00001 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\SYSTEM01.DBF
+        input datafile file number=00003 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\SYSAUX01.DBF
+        input datafile file number=00004 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\UNDOTBS01.DBF
+        input datafile file number=00007 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\USERS01.DBF
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0B37QIAV_1_1 tag=TAG20241017T162502 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+        channel ORA_DISK_1: starting full datafile backup set
+        channel ORA_DISK_1: specifying datafile(s) in backup set
+        input datafile file number=00014 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSAUX01.DBF
+        input datafile file number=00013 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSTEM01.DBF
+        input datafile file number=00015 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\UNDOTBS01.DBF
+        input datafile file number=00019 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_DATA_TS.DBF
+        input datafile file number=00020 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_INDEX_TS.DBF
+        input datafile file number=00016 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\USERS01.DBF
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0C37QIB2_1_1 tag=TAG20241017T162502 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:04
+        channel ORA_DISK_1: starting full datafile backup set
+        channel ORA_DISK_1: specifying datafile(s) in backup set
+        input datafile file number=00010 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\SYSAUX01.DBF
+        input datafile file number=00009 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\SYSTEM01.DBF
+        input datafile file number=00011 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\UNDOTBS01.DBF
+        input datafile file number=00012 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\USERS01.DBF
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0D37QIB6_1_1 tag=TAG20241017T162502 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+        channel ORA_DISK_1: starting full datafile backup set
+        channel ORA_DISK_1: specifying datafile(s) in backup set
+        input datafile file number=00006 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\SYSAUX01.DBF
+        input datafile file number=00005 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\SYSTEM01.DBF
+        input datafile file number=00008 name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\UNDOTBS01.DBF
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0E37QIB9_1_1 tag=TAG20241017T162502 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+        Finished backup at 17-OCT-24
+
+        Starting backup at 17-OCT-24
+        using channel ORA_DISK_1
+        specification does not match any archived log in the repository
+        backup cancelled because there are no files to backup
+        Finished backup at 17-OCT-24
+
+        Starting backup at 17-OCT-24
+        using channel ORA_DISK_1
+        channel ORA_DISK_1: starting full datafile backup set
+        channel ORA_DISK_1: specifying datafile(s) in backup set
+        including current SPFILE in backup set
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0F37QIBD_1_1 tag=TAG20241017T162517 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+        Finished backup at 17-OCT-24
+
+        Starting backup at 17-OCT-24
+        using channel ORA_DISK_1
+        channel ORA_DISK_1: starting full datafile backup set
+        channel ORA_DISK_1: specifying datafile(s) in backup set
+        including current control file in backup set
+        channel ORA_DISK_1: starting piece 1 at 17-OCT-24
+        channel ORA_DISK_1: finished piece 1 at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0G37QIBE_1_1 tag=TAG20241017T162518 comment=NONE
+        channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+        Finished backup at 17-OCT-24
+
+        Starting Control File and SPFILE Autobackup at 17-OCT-24
+        piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241017-00 comment=NONE
+        Finished Control File and SPFILE Autobackup at 17-OCT-24
+
+        RMAN> alter database open;
+
+        Statement processed
+
+        RMAN> list backup;
+
+
+        List of Backup Sets
+        ===================
+
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        1       Full    1.26G      DISK        00:00:04     03-FEB-24
+                BP Key: 1   Status: AVAILABLE  Compressed: NO  Tag: TAG20240203T135004
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\012I7F0D_1_1
+        List of Datafiles in backup set 1
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        1       Full 19039777   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\SYSTEM01.DBF
+        3       Full 19039777   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\SYSAUX01.DBF
+        4       Full 19039777   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\UNDOTBS01.DBF
+        7       Full 19039777   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\USERS01.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        2       Full    620.14M    DISK        00:00:02     03-FEB-24
+                BP Key: 2   Status: AVAILABLE  Compressed: NO  Tag: TAG20240203T135004
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\022I7F0L_1_1
+        List of Datafiles in backup set 2
+        Container ID: 3, PDB Name: XEPDB1
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        9       Full 19037716   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\SYSTEM01.DBF
+        10      Full 19037716   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\SYSAUX01.DBF
+        11      Full 19037716   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\UNDOTBS01.DBF
+        12      Full 19037716   03-FEB-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\USERS01.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        3       Full    524.18M    DISK        00:00:02     03-FEB-24
+                BP Key: 3   Status: AVAILABLE  Compressed: NO  Tag: TAG20240203T135004
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\032I7F0O_1_1
+        List of Datafiles in backup set 3
+        Container ID: 2, PDB Name: PDB$SEED
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        5       Full 1448570    19-JAN-23              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\SYSTEM01.DBF
+        6       Full 1448570    19-JAN-23              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\SYSAUX01.DBF
+        8       Full 1448570    19-JAN-23              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\UNDOTBS01.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        4       Full    17.95M     DISK        00:00:01     03-FEB-24
+                BP Key: 4   Status: AVAILABLE  Compressed: NO  Tag: TAG20240203T135019
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20240203-00
+        SPFILE Included: Modification time: 03-FEB-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 19039777     Ckp time: 03-FEB-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        5       Full    17.95M     DISK        00:00:01     12-OCT-24
+                BP Key: 5   Status: AVAILABLE  Compressed: NO  Tag: TAG20241012T143006
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241012-00
+        SPFILE Included: Modification time: 12-OCT-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 34603474     Ckp time: 12-OCT-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        6       Full    17.95M     DISK        00:00:01     13-OCT-24
+                BP Key: 6   Status: AVAILABLE  Compressed: NO  Tag: TAG20241013T175439
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241013-00
+        SPFILE Included: Modification time: 13-OCT-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 35082681     Ckp time: 13-OCT-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        7       Full    17.95M     DISK        00:00:01     13-OCT-24
+                BP Key: 7   Status: AVAILABLE  Compressed: NO  Tag: TAG20241013T181943
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241013-01
+        SPFILE Included: Modification time: 13-OCT-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 35084053     Ckp time: 13-OCT-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        8       Full    17.95M     DISK        00:00:01     13-OCT-24
+                BP Key: 8   Status: AVAILABLE  Compressed: NO  Tag: TAG20241013T190952
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241013-02
+        SPFILE Included: Modification time: 13-OCT-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 35094135     Ckp time: 13-OCT-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        9       Full    17.95M     DISK        00:00:05     13-OCT-24
+                BP Key: 9   Status: AVAILABLE  Compressed: NO  Tag: TAG20241013T191954
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241013-03
+        SPFILE Included: Modification time: 13-OCT-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 35095710     Ckp time: 13-OCT-24
+
+        BS Key  Size       Device Type Elapsed Time Completion Time
+        ------- ---------- ----------- ------------ ---------------
+        10      2.45G      DISK        00:00:07     17-OCT-24
+                BP Key: 10   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162453
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0A37QIAL_1_1
+
+        List of Archived Logs in backup set 10
+        Thrd Seq     Low SCN    Low Time  Next SCN   Next Time
+        ---- ------- ---------- --------- ---------- ---------
+        1    333     32971883   22-SEP-24 33090608   23-SEP-24
+        1    334     33090608   23-SEP-24 33293994   26-SEP-24
+        1    335     33293994   26-SEP-24 33382351   28-SEP-24
+        1    336     33382351   28-SEP-24 33445813   28-SEP-24
+        1    337     33445813   28-SEP-24 33604515   29-SEP-24
+        1    338     33604515   29-SEP-24 33671248   29-SEP-24
+        1    339     33671248   29-SEP-24 33735433   29-SEP-24
+        1    340     33735433   29-SEP-24 33851686   02-OCT-24
+        1    341     33851686   02-OCT-24 33959799   03-OCT-24
+        1    342     33959799   03-OCT-24 34146235   04-OCT-24
+        1    343     34146235   04-OCT-24 34247433   04-OCT-24
+        1    344     34247433   04-OCT-24 34348618   05-OCT-24
+        1    345     34348618   05-OCT-24 34407719   05-OCT-24
+        1    346     34407719   05-OCT-24 34488001   07-OCT-24
+        1    347     34488001   07-OCT-24 34558178   11-OCT-24
+        1    348     34558178   11-OCT-24 34626616   12-OCT-24
+        1    349     34626616   12-OCT-24 34687317   12-OCT-24
+        1    350     34687317   12-OCT-24 34798306   12-OCT-24
+        1    351     34798306   12-OCT-24 34899911   12-OCT-24
+        1    352     34899911   12-OCT-24 35048259   13-OCT-24
+        1    353     35048259   13-OCT-24 35110273   13-OCT-24
+        1    354     35110273   13-OCT-24 35228244   13-OCT-24
+        1    355     35228244   13-OCT-24 35328437   14-OCT-24
+        1    356     35328437   14-OCT-24 35468610   15-OCT-24
+        1    357     35468610   15-OCT-24 35574484   15-OCT-24
+        1    358     35574484   15-OCT-24 35676101   15-OCT-24
+        1    359     35676101   15-OCT-24 35777413   15-OCT-24
+        1    360     35777413   15-OCT-24 35895962   16-OCT-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        11      Full    1.28G      DISK        00:00:03     17-OCT-24
+                BP Key: 11   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162502
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0B37QIAV_1_1
+        List of Datafiles in backup set 11
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        1       Full 36165759   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\SYSTEM01.DBF
+        3       Full 36165759   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\SYSAUX01.DBF
+        4       Full 36165759   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\UNDOTBS01.DBF
+        7       Full 36165759   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\USERS01.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        12      Full    524.13M    DISK        00:00:02     17-OCT-24
+                BP Key: 12   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162502
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0C37QIB2_1_1
+        List of Datafiles in backup set 12
+        Container ID: 4, PDB Name: HOPITALPDB
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        13      Full 36165646   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSTEM01.DBF
+        14      Full 36165646   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSAUX01.DBF
+        15      Full 36165646   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\UNDOTBS01.DBF
+        16      Full 36165646   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\USERS01.DBF
+        19      Full 36165646   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_DATA_TS.DBF
+        20      Full 36165646   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_INDEX_TS.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        13      Full    646.12M    DISK        00:00:02     17-OCT-24
+                BP Key: 13   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162502
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0D37QIB6_1_1
+        List of Datafiles in backup set 13
+        Container ID: 3, PDB Name: XEPDB1
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        9       Full 36165638   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\SYSTEM01.DBF
+        10      Full 36165638   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\SYSAUX01.DBF
+        11      Full 36165638   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\UNDOTBS01.DBF
+        12      Full 36165638   17-OCT-24              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\XEPDB1\USERS01.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        14      Full    524.18M    DISK        00:00:01     17-OCT-24
+                BP Key: 14   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162502
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0E37QIB9_1_1
+        List of Datafiles in backup set 14
+        Container ID: 2, PDB Name: PDB$SEED
+        File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+        ---- -- ---- ---------- --------- ----------- ------ ----
+        5       Full 1448570    19-JAN-23              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\SYSTEM01.DBF
+        6       Full 1448570    19-JAN-23              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\SYSAUX01.DBF
+        8       Full 1448570    19-JAN-23              NO    C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\PDBSEED\UNDOTBS01.DBF
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        15      Full    96.00K     DISK        00:00:00     17-OCT-24
+                BP Key: 15   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162517
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0F37QIBD_1_1
+        SPFILE Included: Modification time: 17-OCT-24
+        SPFILE db_unique_name: XE
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        16      Full    17.92M     DISK        00:00:01     17-OCT-24
+                BP Key: 16   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162518
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0G37QIBE_1_1
+        Control File Included: Ckp SCN: 36165759     Ckp time: 17-OCT-24
+
+        BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+        ------- ---- -- ---------- ----------- ------------ ---------------
+        17      Full    17.95M     DISK        00:00:01     17-OCT-24
+                BP Key: 17   Status: AVAILABLE  Compressed: NO  Tag: TAG20241017T162520
+                Piece Name: C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\C-3007669234-20241017-00
+        SPFILE Included: Modification time: 17-OCT-24
+        SPFILE db_unique_name: XE
+        Control File Included: Ckp SCN: 36165759     Ckp time: 17-OCT-24
+
+        RMAN> exit;
+
+
+        Recovery Manager complete.
+        */
+
+
+    -- 4.5  Provoquer au moins deux pannes et procéder à la réparation 
+    -- Provoquer  deux  pannes  au  moins  et  y  remedier  grâce  à  votre  stratégie  de  sauvegarde.  Les 
+    -- pannes peuvent être : 
+    -- - La perte de fichiers de données 
+    -- - La perte de fichiers de contrôles. 
+    -- - Perte d’un fichier Redolog 
+    -- - Perte d’un groupe de fichiers redolog 
+    
+    -- <réponses et trace ici>
+
+    -- A- La perte de fichiers de données 
+        /*    
+                Connected to:
+            Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production
+            Version 18.4.0.0.0
+
+            SQL> alter pluggable database hopitalpdb open;
+            alter pluggable database hopitalpdb open
+            *
+            ERROR at line 1:
+            ORA-01157: cannot identify/lock data file 19 - see DBWR trace file
+            ORA-01110: data file 19:
+            'C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_DATA_TS.DBF'
+
+            SQL>
+        */
+
+        rman target hopital@hopital/pass123$
+        run{restore database; recover database;}
+
+        /*
+                C:\Users\pbobc> rman target hopital@hopital/pass123$
+
+            Recovery Manager: Release 18.0.0.0.0 - Production on Sat Oct 19 13:06:00 2024
+            Version 18.4.0.0.0
+
+            Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+            connected to target database: XE:HOPITALPDB (DBID=4131533925, not open)
+
+            RMAN> run{restore database; recover database;}
+
+            Starting restore at 19-OCT-24
+            using target database control file instead of recovery catalog
+            allocated channel: ORA_DISK_1
+            channel ORA_DISK_1: SID=252 device type=DISK
+
+            channel ORA_DISK_1: starting datafile backup set restore
+            channel ORA_DISK_1: specifying datafile(s) to restore from backup set
+            channel ORA_DISK_1: restoring datafile 00013 to C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSTEM01.DBF
+            channel ORA_DISK_1: restoring datafile 00014 to C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\SYSAUX01.DBF
+            channel ORA_DISK_1: restoring datafile 00015 to C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\UNDOTBS01.DBF
+            channel ORA_DISK_1: restoring datafile 00016 to C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\USERS01.DBF
+            channel ORA_DISK_1: restoring datafile 00019 to C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_DATA_TS.DBF
+            channel ORA_DISK_1: restoring datafile 00020 to C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\HOPITALPDB\DATAFILE_INDEX_TS.DBF
+            channel ORA_DISK_1: reading from backup piece C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0C37QIB2_1_1
+            channel ORA_DISK_1: piece handle=C:\APP\PBOBC\PRODUCT\18.0.0\DBHOMEXE\DATABASE\0C37QIB2_1_1 tag=TAG20241017T162502
+            channel ORA_DISK_1: restored backup piece 1
+            channel ORA_DISK_1: restore complete, elapsed time: 00:00:03
+            Finished restore at 19-OCT-24
+
+            Starting recover at 19-OCT-24
+            using channel ORA_DISK_1
+
+            starting media recovery
+            media recovery complete, elapsed time: 00:00:04
+
+            Finished recover at 19-OCT-24
+
+            RMAN>
+
+        */
+
+        -- La perte de fichiers de contrôles. 
+        -- <réponses et trace ici>
+
+        RMAN> SET DBID 3007669234;
+        RUN {
+        RESTORE CONTROLFILE FROM AUTOBACKUP;
+        ALTER DATABASE MOUNT;
+        RECOVER DATABASE;
+        ALTER DATABASE OPEN RESETLOGS;
+        }
+
+    /* 
+        Microsoft Windows [Version 10.0.26100.2033]
+        (c) Microsoft Corporation. All rights reserved.
+
+        C:\Users\pbobc>sqlplus / as sysdba
+
+        SQL*Plus: Release 18.0.0.0.0 - Production on Sat Oct 19 15:47:43 2024
+        Version 18.4.0.0.0
+
+        Copyright (c) 1982, 2018, Oracle.  All rights reserved.
+
+
+        Connected to:
+        Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production
+        Version 18.4.0.0.0
+
+        SQL> conn hopital/pass123$@hopital
+        ERROR:
+        ORA-12514: TNS:listener does not currently know of service requested in connect
+        descriptor
+
+
+        Warning: You are no longer connected to ORACLE.
+        SQL> select * from v$database;
+        SP2-0640: Not connected
+        SQL> show pdbs;
+        SP2-0640: Not connected
+        SP2-0641: "SHOW PDBS" requires connection to server
+        SQL> rman target /
+        SP2-0734: unknown command beginning "rman targe..." - rest of line ignored.
+        SQL> exit
+
+        C:\Users\pbobc>rman target /
+
+        Recovery Manager: Release 18.0.0.0.0 - Production on Sat Oct 19 15:51:21 2024
+        Version 18.4.0.0.0
+
+        Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+        connected to target database: XE (not mounted)
+
+        RMAN> exit
+
+
+        Recovery Manager complete.
+
+        C:\Users\pbobc>rman
+
+        Recovery Manager: Release 18.0.0.0.0 - Production on Sat Oct 19 15:55:50 2024
+        Version 18.4.0.0.0
+
+        Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+        RMAN> connect target /
+
+        connected to target database: XE (not mounted)
+
+        RMAN>  RUN{ RESTORE CONTROLFILE FROM AUTOBACKUP; RECOVER DATABASE; ALTER DATABASE OPEN RESETLOGS; }
+
+        Starting restore at 19-OCT-24
+        using target database control file instead of recovery catalog
+        allocated channel: ORA_DISK_1
+        channel ORA_DISK_1: SID=1101 device type=DISK
+
+        RMAN-00571: ===========================================================
+        RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+        RMAN-00571: ===========================================================
+        RMAN-03002: failure of restore command at 10/19/2024 15:56:26
+        RMAN-06495: must explicitly specify DBID with SET DBID command
+
+        RMAN> list backup of controlfile;
+
+        RMAN-00571: ===========================================================
+        RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+        RMAN-00571: ===========================================================
+        RMAN-03002: failure of list command at 10/19/2024 15:57:51
+        ORA-01507: database not mounted
+
+        RMAN> SET DBID 3007669234;
+
+        executing command: SET DBID
+
+        RMAN> STARTUP NOMOUNT;
+
+        database is already started
+
+        RMAN> RUN {
+        2>    RESTORE CONTROLFILE FROM AUTOBACKUP;
+        3>    ALTER DATABASE MOUNT;
+        4>    RECOVER DATABASE;
+        5>    ALTER DATABASE OPEN RESETLOGS;
+        6> }
+
+        Starting restore at 19-OCT-24
+        using channel ORA_DISK_1
+
+        channel ORA_DISK_1: looking for AUTOBACKUP on day: 20241019
+        channel ORA_DISK_1: looking for AUTOBACKUP on day: 20241018
+        channel ORA_DISK_1: AUTOBACKUP found: c-3007669234-20241018-00
+        channel ORA_DISK_1: restoring control file from AUTOBACKUP c-3007669234-20241018-00
+        channel ORA_DISK_1: control file restore from AUTOBACKUP complete
+        output file name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\CONTROL01.CTL
+        output file name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\CONTROL02.CTL
+        Finished restore at 19-OCT-24
+
+        released channel: ORA_DISK_1
+        Statement processed
+
+        Starting recover at 19-OCT-24
+        allocated channel: ORA_DISK_1
+        channel ORA_DISK_1: SID=2 device type=DISK
+
+        starting media recovery
+
+        archived log for thread 1 with sequence 362 is already on disk as file C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO02.LOG
+        archived log for thread 1 with sequence 363 is already on disk as file C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO03.LOG
+        archived log file name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO02.LOG thread=1 sequence=362
+        archived log file name=C:\APP\PBOBC\PRODUCT\18.0.0\ORADATA\XE\REDO03.LOG thread=1 sequence=363
+        media recovery complete, elapsed time: 00:00:01
+        Finished recover at 19-OCT-24
+
+        Statement processed
+
+        RMAN>
+    */
+
+
+
+    --    4.6  Export / import (voir le chap. 7 du cours ADB1) 
+    -- Vous devez transporter les données d’un de vos utilisateurs d’une base vers une autre. Les 
+    -- deux bases peuvent être la même. Faire le nécessaire en utilisant export et import afin que cela 
+    -- fonctionne     
+
+    -- <réponses et trace ici> 
+
+    -- CREATE DIRECTORY
+    create directory dump_dir as 'C:\oracle_export';
+
+    -- Directory created.
+
+    -- EXPORT SCRIPT
+    expdp hopital/pass123$@hopital schemas=hopital directory=dump_dir dumpfile=hopital_exp%U.dmp logfile=hopital_exp.log
+        /*
+        C:\Windows\System32>expdp hopital/pass123$@hopital schemas=hopital directory=dump_dir dumpfile=hopital_exp%U.dmp logfile=hopital_exp.log
+
+        Export: Release 18.0.0.0.0 - Production on Fri Oct 18 20:43:15 2024
+        Version 18.4.0.0.0
+
+        Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+        Connected to: Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production
+        Starting "HOPITAL"."SYS_EXPORT_SCHEMA_01":  hopital/********@hopital schemas=hopital directory=dump_dir dumpfile=hopital_exp%U.dmp logfile=hopital_exp.log
+        Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+        Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+        Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+        Processing object type SCHEMA_EXPORT/STATISTICS/MARKER
+        Processing object type SCHEMA_EXPORT/USER
+        Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+        Processing object type SCHEMA_EXPORT/ROLE_GRANT
+        Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+        Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+        Processing object type SCHEMA_EXPORT/TYPE/INC_TYPE
+        Processing object type SCHEMA_EXPORT/TYPE/TYPE_SPEC
+        Processing object type SCHEMA_EXPORT/TABLE/TABLE
+        Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+        Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+        Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+        . . exported "HOPITAL"."TABLE_PLISTREFEXAMENS"           5.851 KB      10 rows
+        . . exported "HOPITAL"."O_CONSULTATION"                  11.43 KB      10 rows
+        . . exported "HOPITAL"."TABLE_PLISTREFPRESCRIPTIONS"     5.859 KB      10 rows
+        . . exported "HOPITAL"."O_EXAMEN"                        8.109 KB      10 rows
+        . . exported "HOPITAL"."O_FACTURE"                       8.648 KB      10 rows
+        . . exported "HOPITAL"."O_MEDECIN_TABLE_PLISTREFCONSULTATIONS"  5.867 KB      10 rows
+        . . exported "HOPITAL"."O_MEDECIN"                       17.39 KB      10 rows
+        . . exported "HOPITAL"."O_MEDECIN_TABLE_PLISTREFRENDEZVOUS"  5.867 KB      10 rows
+        . . exported "HOPITAL"."O_PATIENT_TABLE_PLISTREFFACTURES"  5.867 KB      10 rows
+        . . exported "HOPITAL"."O_PATIENT_TABLE_PLISTREFRENDEZVOUS"  5.867 KB      10 rows
+        . . exported "HOPITAL"."O_PATIENT"                       20.79 KB      20 rows
+        . . exported "HOPITAL"."O_PATIENT_TABLE_PLISTREFCONSULTATIONS"  5.867 KB      10 rows
+        . . exported "HOPITAL"."O_PRESCRIPTION"                  8.320 KB      10 rows
+        . . exported "HOPITAL"."O_RENDEZ_VOUS"                   8.804 KB      10 rows
+        Master table "HOPITAL"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+        ******************************************************************************
+        Dump file set for HOPITAL.SYS_EXPORT_SCHEMA_01 is:
+        C:\ORACLE_EXPORT\HOPITAL_EXP01.DMP
+        Job "HOPITAL"."SYS_EXPORT_SCHEMA_01" successfully completed at Fri Oct 18 20:43:59 2024 elapsed 0 00:00:41
+        */
+        */
+
+    -- Directory created.
+    create directory dump_dir as 'C:\oracle_import';
+    -- Directory created.
+    
+    -- IMPORTATION SCRIPT
+    impdp hopital/pass123$@XEPDB1 schemas=hopital directory=dump_dir dumpfile=HOPITAL_EXP01.DMP logfile=hopital_imp.log
+
+        /*   
+        C:\Windows\System32>impdp hopital/pass123$@XEPDB1 schemas=hopital directory=dump_dir dumpfile=HOPITAL_EXP01.DMP logfile=hopital_imp.log
+
+        Import: Release 18.0.0.0.0 - Production on Fri Oct 18 22:39:34 2024
+        Version 18.4.0.0.0
+
+        Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+        Connected to: Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production
+        Master table "HOPITAL"."SYS_IMPORT_SCHEMA_01" successfully loaded/unloaded
+        Starting "HOPITAL"."SYS_IMPORT_SCHEMA_01":  hopital/********@XEPDB1 schemas=hopital directory=dump_dir dumpfile=HOPITAL_EXP01.DMP logfile=hopital_imp.log
+        Processing object type SCHEMA_EXPORT/USER
+        ORA-31684: Object type USER:"HOPITAL" already exists
+
+        Processing object type SCHEMA_EXPORT/SYSTEM_GRANT
+        Processing object type SCHEMA_EXPORT/ROLE_GRANT
+        Processing object type SCHEMA_EXPORT/DEFAULT_ROLE
+        Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+        Processing object type SCHEMA_EXPORT/TYPE/INC_TYPE
+        Processing object type SCHEMA_EXPORT/TYPE/TYPE_SPEC
+        Processing object type SCHEMA_EXPORT/TABLE/TABLE
+        Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+        . . imported "HOPITAL"."TABLE_PLISTREFEXAMENS"           5.851 KB      10 rows
+        . . imported "HOPITAL"."O_CONSULTATION"                  11.43 KB      10 rows
+        . . imported "HOPITAL"."TABLE_PLISTREFPRESCRIPTIONS"     5.859 KB      10 rows
+        . . imported "HOPITAL"."O_EXAMEN"                        8.109 KB      10 rows
+        . . imported "HOPITAL"."O_FACTURE"                       8.648 KB      10 rows
+        . . imported "HOPITAL"."O_MEDECIN_TABLE_PLISTREFCONSULTATIONS"  5.867 KB      10 rows
+        . . imported "HOPITAL"."O_MEDECIN"                       17.39 KB      10 rows
+        . . imported "HOPITAL"."O_MEDECIN_TABLE_PLISTREFRENDEZVOUS"  5.867 KB      10 rows
+        . . imported "HOPITAL"."O_PATIENT_TABLE_PLISTREFFACTURES"  5.867 KB      10 rows
+        . . imported "HOPITAL"."O_PATIENT_TABLE_PLISTREFRENDEZVOUS"  5.867 KB      10 rows
+        . . imported "HOPITAL"."O_PATIENT"                       20.79 KB      20 rows
+        . . imported "HOPITAL"."O_PATIENT_TABLE_PLISTREFCONSULTATIONS"  5.867 KB      10 rows
+        . . imported "HOPITAL"."O_PRESCRIPTION"                  8.320 KB      10 rows
+        . . imported "HOPITAL"."O_RENDEZ_VOUS"                   8.804 KB      10 rows
+        Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+        Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+        Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+        Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+        Processing object type SCHEMA_EXPORT/STATISTICS/MARKER
+        Job "HOPITAL"."SYS_IMPORT_SCHEMA_01" completed with 1 error(s) at Fri Oct 18 22:40:08 2024 elapsed 0 00:00:33
+
+
+        C:\Windows\System32>
+
+        */
+        */
