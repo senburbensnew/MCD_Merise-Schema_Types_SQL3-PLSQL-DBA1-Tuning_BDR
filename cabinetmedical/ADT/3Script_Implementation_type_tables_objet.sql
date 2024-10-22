@@ -1,13 +1,3 @@
--- CREATION DE L'UTILISATEUR ORACLE ICI
-
--- CREATE USER Oracle IDENTIFIED BY PASS123;
--- ALTER USER Oracle QUOTA UNLIMITED  ON USERS;
--- GRANT CREATE SESSION TO Oracle;
--- GRANT CREATE TABLE TO Oracle WITH ADMIN OPTION;
--- GRANT CREATE  VIEW TO Oracle WITH ADMIN OPTION;
--- GRANT CREATE PROCEDURE TO Oracle WITH ADMIN OPTION;
--- GRANT CREATE TYPE TO Oracle WITH ADMIN OPTION;
-
 -- SUPPRESSION DES TABLES OBJETS
 DROP TABLE O_EXAMEN CASCADE CONSTRAINTS;
 DROP TABLE O_CONSULTATION CASCADE CONSTRAINTS;
@@ -22,6 +12,8 @@ DROP TYPE setCONSULTATIONS_T FORCE;
 DROP TYPE setFACTURES_T FORCE;
 DROP TYPE setPATIENTS_T FORCE;
 DROP TYPE setRENDEZ_VOUS_T FORCE;
+DROP TYPE setEXAMEN_T FORCE;
+DROP TYPE setPRESCRIPTION_T FORCE;
 DROP TYPE ADRESSE_T FORCE;
 DROP TYPE LIST_PRENOMS_T FORCE;
 DROP TYPE LIST_TELEPHONES_T FORCE;
@@ -38,6 +30,8 @@ DROP TYPE PRESCRIPTION_T FORCE;
 DROP TYPE FACTURE_T FORCE;
 DROP TYPE CONSULTATION_T FORCE;
 DROP TYPE RENDEZ_VOUS_T FORCE;
+DROP TYPE SETEXAMEN_T FORCE;
+DROP TYPE SETPRESCRIPTION_T FORCE;
 
 -- CREATION DES TYPES 
 CREATE OR REPLACE TYPE ADRESSE_T AS OBJECT (
@@ -90,168 +84,212 @@ CREATE OR REPLACE TYPE PATIENT_T
 CREATE OR REPLACE TYPE MEDECIN_T
 /
 
+-- Declarer le Type RENDEZ_VOUS_T
 CREATE OR REPLACE TYPE RENDEZ_VOUS_T AS OBJECT(
     Id_Rendez_Vous NUMBER(8),
-	refPatient REF PATIENT_T,
-	refMedecin REF MEDECIN_T,
-	Date_Rendez_Vous DATE,
-	Motif VARCHAR2(200),
-	MAP member FUNCTION match RETURN VARCHAR2,
-	STATIC PROCEDURE listerRendezVous,
-	STATIC PROCEDURE rechercherRendezVousParDate(date DATE),
-	STATIC PROCEDURE ajouterRendezVous(rendezVous RENDEZ_VOUS_T),
-	STATIC PROCEDURE lireRendezVous(rendezVousId NUMBER),
-	STATIC PROCEDURE modifierRendezVous(rendezVous RENDEZ_VOUS_T),
-	STATIC PROCEDURE supprimerRendezVous(rendezVousId NUMBER)
-)
+    refPatient REF PATIENT_T,
+    refMedecin REF MEDECIN_T,
+    Date_Rendez_Vous DATE,
+    Motif VARCHAR2(200),
+
+    -- Méthodes
+    MEMBER FUNCTION getId RETURN NUMBER,
+    MEMBER FUNCTION getDate RETURN DATE,
+    -- Méthode d'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
+    -- Gestion des liens
+    MEMBER PROCEDURE linkToPatient(p REF PATIENT_T),
+    -- Gestion des liens
+    MEMBER PROCEDURE linkToMedecin(m REF MEDECIN_T), 
+    -- Consultation
+    MEMBER FUNCTION getRefPatient RETURN REF PATIENT_T, 
+    -- Consultation
+    MEMBER FUNCTION getRefMedecin RETURN REF MEDECIN_T, 
+     -- Méthode CRUD (update)
+    MEMBER PROCEDURE updateMotif(newMotif VARCHAR2),
+    -- Méthode CRUD (delete)
+    MEMBER PROCEDURE deleteRendezVous                 
+);
 /
 
 CREATE OR REPLACE TYPE setRENDEZ_VOUS_T AS TABLE OF RENDEZ_VOUS_T
-/   
+/
 
+-- dEclarer le Type EXAMEN_T
 CREATE OR REPLACE TYPE EXAMEN_T AS OBJECT(
-	Id_Examen NUMBER(8),
-	refConsultation REF CONSULTATION_T,
-	Details_Examen VARCHAR2(200),
-	Date_Examen DATE,	
-	MAP MEMBER FUNCTION match RETURN VARCHAR2,
-	STATIC PROCEDURE listerExamens,
-	STATIC PROCEDURE rechercherExamenParDate(date DATE),
-	STATIC PROCEDURE ajouterExamen(examen EXAMEN_T),
-	STATIC PROCEDURE lireExamen(examenId NUMBER),
-	STATIC PROCEDURE modifierExamen(examen EXAMEN_T),
-	STATIC PROCEDURE supprimerExamen(examenId NUMBER)
-)
+    Id_Examen NUMBER(8),
+    refConsultation REF CONSULTATION_T,
+    Details_Examen VARCHAR2(200),
+    Date_Examen DATE,
+
+    -- Méthodes
+    MEMBER FUNCTION getId RETURN NUMBER,
+    MEMBER FUNCTION getDate RETURN DATE,
+    -- Méthode d'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
+    -- Gestion des liens
+    MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T), 
+    -- Consultation
+    MEMBER FUNCTION getRefConsultation RETURN REF CONSULTATION_T, 
+    -- Méthode CRUD (update)
+    MEMBER PROCEDURE updateDetails(newDetails VARCHAR2), 
+    -- Méthode CRUD (delete)
+    MEMBER PROCEDURE deleteExamen                       
+);
 /
 
+CREATE OR REPLACE TYPE setEXAMEN_T AS TABLE OF EXAMEN_T
+/ 
+
+-- Type PRESCRIPTION_T
 CREATE OR REPLACE TYPE PRESCRIPTION_T AS OBJECT(
-	Id_Prescription NUMBER(8),
-	refConsultation REF CONSULTATION_T,
-	Details_Prescription VARCHAR2(200),
-	Date_Prescription DATE,	
-	MAP MEMBER FUNCTION match RETURN VARCHAR2,
-	STATIC PROCEDURE listerPrescriptions,
-	STATIC PROCEDURE rechercherPrescriptionParConsultation(consultationId NUMBER),
-	STATIC PROCEDURE ajouterPrescription(prescription PRESCRIPTION_T),
-	STATIC PROCEDURE lirePrescription(prescriptionId NUMBER),
-	STATIC PROCEDURE modifierPrescription(prescription PRESCRIPTION_T),
-	STATIC PROCEDURE supprimerPrescription(prescriptionId NUMBER)
-)
+    Id_Prescription NUMBER(8),
+    refConsultation REF CONSULTATION_T,
+    Details_Prescription VARCHAR2(200),
+    Date_Prescription DATE,
+
+    -- Méthodes
+    MEMBER FUNCTION getId RETURN NUMBER,
+    MEMBER FUNCTION getDate RETURN DATE,
+    -- Méthode d'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
+    -- Gestion des liens
+    MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T), 
+    -- Méthode de consultation : retourne la référence de la consultation associée
+    MEMBER FUNCTION getRefConsultation RETURN REF CONSULTATION_T, 
+    -- Méthode CRUD (update) : met à jour les détails de la prescription
+    MEMBER PROCEDURE updateDetails(newDetails VARCHAR2), 
+    -- Méthode CRUD (delete) : supprime la prescription
+    MEMBER PROCEDURE deletePrescription                   
+);
 /
 
+CREATE OR REPLACE TYPE setPRESCRIPTION_T AS TABLE OF PRESCRIPTION_T
+/ 
+
+-- Type FACTURE_T
 CREATE OR REPLACE TYPE FACTURE_T AS OBJECT(
-	Id_Facture NUMBER(8),
-	refPatient REF PATIENT_T,
-	refConsultation REF CONSULTATION_T,
-	Montant_Total NUMBER(7,2),
-	Date_Facture DATE,		
-	MAP MEMBER FUNCTION match RETURN VARCHAR2,
-	STATIC FUNCTION rechercherFactureParMontant(montant NUMBER) RETURN FACTURE_T,
-	STATIC FUNCTION rechercherFactureParDate(date DATE) RETURN FACTURE_T,
-	STATIC FUNCTION lireFacture(factureId NUMBER) RETURN FACTURE_T,
-	-- STATIC FUNCTION listerFactures,
-	-- STATIC PROCEDURE ajouterFacture(facture FACTURE_T),
-	-- STATIC PROCEDURE modifierFacture(facture FACTURE_T),
-	-- STATIC PROCEDURE supprimerFacture(factureId NUMBER)
-)
+    Id_Facture NUMBER(8),
+    refPatient REF PATIENT_T,
+    refConsultation REF CONSULTATION_T,
+    Montant_Total NUMBER(7,2),
+    Date_Facture DATE,
+
+    -- Méthodes
+    MEMBER FUNCTION getId RETURN NUMBER,
+    MEMBER FUNCTION getDate RETURN DATE,
+    -- Méthode d'ordre 
+    MAP MEMBER FUNCTION compareDate RETURN DATE, 
+    -- Gestion des liens
+    MEMBER PROCEDURE linkToPatient(p REF PATIENT_T), 
+    -- Gestion des liens
+    MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T), 
+    -- Consultation : retourne LA REFERENCE du patient associé au facture
+    MEMBER FUNCTION getRefPatient RETURN REF PATIENT_T, 
+    -- Consultation : retourne LA REFERENCE de la consultation associée au facture
+    MEMBER FUNCTION getRefConsultation RETURN REF CONSULTATION_T, 
+     -- Méthode CRUD (update) : met à jour le montant de la facture
+    MEMBER PROCEDURE updateMontant(newMontant NUMBER),
+    -- Méthode CRUD (delete) : supprime la facture
+    MEMBER PROCEDURE deleteFacture                     
+);
 /
 
 CREATE OR REPLACE TYPE setFACTURES_T AS TABLE OF FACTURE_T
 / 
 
+-- Type CONSULTATION_T
 CREATE OR REPLACE TYPE CONSULTATION_T AS OBJECT(
-	Id_Consultation NUMBER(8),
-	refPatient REF PATIENT_T,
-	refMedecin REF MEDECIN_T,
-	Raison VARCHAR2(200),
-	Diagnostic VARCHAR2(200),
-	Date_Consultation DATE,
-	pListRefExamens ListRefExamens_t,
-	pListRefPrescriptions ListRefPrescriptions_t,
-	MAP MEMBER FUNCTION match RETURN VARCHAR2,
-	MEMBER PROCEDURE ajouterExamen(examen EXAMEN_T),
-	MEMBER PROCEDURE supprimerExamen(examen EXAMEN_T),
-	MEMBER PROCEDURE listerExamens,
-	MEMBER PROCEDURE ajouterPrescription(prescription PRESCRIPTION_T),
-	MEMBER PROCEDURE supprimerPrescription(prescription PRESCRIPTION_T),
-	MEMBER PROCEDURE listerPrescriptions,
-	STATIC PROCEDURE listerConsultations,
-	STATIC PROCEDURE rechercherConsultationParPatient(patientId NUMBER),
-	STATIC PROCEDURE ajouterConsultation(consultation CONSULTATION_T),
-	STATIC PROCEDURE lireConsultation(consultationId NUMBER),
-	STATIC PROCEDURE modifierConsultation(consultation CONSULTATION_T),
-	STATIC PROCEDURE supprimerConsultation(consultationId NUMBER)
-)
+    Id_Consultation NUMBER(8),
+    refPatient REF PATIENT_T,
+    refMedecin REF MEDECIN_T,
+    Raison VARCHAR2(200),
+    Diagnostic VARCHAR2(200),
+    Date_Consultation DATE,
+    pListRefExamens ListRefExamens_t,
+    pListRefPrescriptions ListRefPrescriptions_t,
+
+    -- Méthodes
+    static FUNCTION getConsultation(idConsultation in NUMBER) RETURN CONSULTATION_T,
+    static FUNCTION getExamenInfo (idConsultation in NUMBER) RETURN setEXAMEN_T,
+    static FUNCTION getPrescriptionInfo (idConsultation in NUMBER) RETURN setPRESCRIPTION_T,
+    member PROCEDURE addLinkListeExamen(refExamen1 REF EXAMEN_T),
+    member PROCEDURE deleteLinkListeExamen(refExamen1 REF EXAMEN_T),
+    member PROCEDURE updateLinkListeExamen(refExamen1 REF EXAMEN_T, refExamen2 REF EXAMEN_T),
+    member PROCEDURE addLinkListePrescription(refPrescription1 REF PRESCRIPTION_T),
+    member PROCEDURE deleteLinkListePrescription(refPrescription1 REF PRESCRIPTION_T),
+    member PROCEDURE updateLinkListePrescription(refPrescription1 REF PRESCRIPTION_T, refPrescription2 REF PRESCRIPTION_T),
+    MAP MEMBER FUNCTION compareDate RETURN DATE                  
+);
 /
 
 CREATE OR REPLACE TYPE setCONSULTATIONS_T AS TABLE OF CONSULTATION_T
-/   
+/ 
 
+-- Type PERSONNE_T
 CREATE OR REPLACE TYPE PERSONNE_T AS OBJECT(
-	 ID_PERSONNE NUMBER(8),
-	 NUMERO_SECURITE_SOCIALE VARCHAR2(12),
-	 NOM VARCHAR2(12),
-	 EMAIL VARCHAR2(30),
-	 ADRESSE ADRESSE_T,
-	 SEXE VARCHAR2(10),
-	 DATE_NAISSANCE DATE,
-	 LIST_TELEPHONES LIST_TELEPHONES_T,
-	 LIST_PRENOMS LIST_PRENOMS_T,
-	 MAP MEMBER FUNCTION MATCH RETURN VARCHAR2 
+    ID_PERSONNE NUMBER(8),
+    NUMERO_SECURITE_SOCIALE VARCHAR2(12),
+    NOM VARCHAR2(12),
+    EMAIL VARCHAR2(30),
+    ADRESSE ADRESSE_T,
+    SEXE VARCHAR2(10),
+    DATE_NAISSANCE DATE,
+    LIST_TELEPHONES LIST_TELEPHONES_T,
+    LIST_PRENOMS LIST_PRENOMS_T,
+     -- Méthode d'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE
 ) NOT INSTANTIABLE NOT FINAL;
 /
 
+
+-- Type PATIENT_T
 CREATE OR REPLACE TYPE PATIENT_T UNDER PERSONNE_T(
-	 POIDS NUMBER(8),
-	 HAUTEUR NUMBER(8),
-	 pListRefRendezVous ListRefRendezVous_t,
-	 pListRefConsultations ListRefConsultations_t,
-	 pListRefFactures ListRefFactures_t,
-	 MEMBER FUNCTION listerConsultations RETURN setCONSULTATIONS_T,
-	 MEMBER FUNCTION listerRendezVous RETURN setRENDEZ_VOUS_T,
-     MEMBER FUNCTION listerFactures RETURN setFACTURES_T,
-     -- STATIC FUNCTION listerPatients RETURN setPATIENTS_T,
-	 STATIC FUNCTION rechercherPatient(patientId IN NUMBER) RETURN PATIENT_T,
-     STATIC FUNCTION rechercherPatientParNom(nom IN VARCHAR2) RETURN PATIENT_T,
-	 STATIC FUNCTION rechercherPatientParEmail(email IN VARCHAR2) RETURN PATIENT_T,
-	 STATIC FUNCTION rechercherPatientParNumeroSecuriteSociale(numeroSecuriteSociale IN VARCHAR2) RETURN PATIENT_T,
-	 MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T),
-     MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T),
-     MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T),
-     MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T),
-	 MEMBER PROCEDURE ajouterFacture(refFacture REF FACTURE_T),
-     MEMBER PROCEDURE supprimerFacture(refFacture REF FACTURE_T),
-	 STATIC PROCEDURE ajouterPatient(patient PATIENT_T),
-     STATIC PROCEDURE modifierPatient(patientId NUMBER, patient PATIENT_T),
-     STATIC PROCEDURE supprimerPatient(patientId NUMBER)
-)
+    POIDS NUMBER(3),
+    HAUTEUR NUMBER(3),
+    pListRefRendezVous ListRefRendezVous_t,
+    pListRefConsultations ListRefConsultations_t,
+    pListRefFactures ListRefFactures_t,
+
+    -- Méthodes
+    STATIC FUNCTION  getPatient(idPersonne in number) RETURN PATIENT_T,
+    STATIC FUNCTION  getFActureInfo(idPersonne in number) RETURN setFACTURES_T,
+    STATIC FUNCTION  getConsultationInfo(idPersonne in number) RETURN setCONSULTATIONS_T,
+    member PROCEDURE addLinkListeRendezVous(refRendezVous1 REF RENDEZ_VOUS_T),
+    member PROCEDURE deleteLinkListeRendezVous(refRendezVous1 REF RENDEZ_VOUS_T),
+    member PROCEDURE updateLinkListeRendezVous(refRendezVous1 REF RENDEZ_VOUS_T, refRendezVous2 REF RENDEZ_VOUS_T),
+    member PROCEDURE addLinkListeFactures(refFacture1 REF FACTURE_T),
+    member PROCEDURE deleteLinkListeFactures(refFacture1 REF FACTURE_T),
+    member PROCEDURE updateLinkListeFactures(refFacture1 REF FACTURE_T, refFacture2 REF FACTURE_T),
+    member PROCEDURE addLinkListeConsultations(refConsultation1 REF CONSULTATION_T),
+    member PROCEDURE deleteLinkListeConsultations(refConsultation1 REF CONSULTATION_T),
+    member PROCEDURE updateLinkListeConsultations(refConsultation1 REF CONSULTATION_T, refConsultation2 REF CONSULTATION_T)                  
+);
 /
 
 CREATE OR REPLACE TYPE setPATIENTS_T AS TABLE OF PATIENT_T
-/  
-
-CREATE OR REPLACE TYPE MEDECIN_T UNDER PERSONNE_T(
-	 Specialite VARCHAR2(40),
-	 CV CLOB,
-	 pListRefRendezVous ListRefRendezVous_t,
-	 pListRefConsultations ListRefConsultations_t,
-	 MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF Rendez_Vous_T),
-	 MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF Rendez_Vous_T),
-	 STATIC PROCEDURE listerRendezVous,
-	 MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T),
-	 MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T),
-	 STATIC PROCEDURE listerConsultations,
-	 STATIC PROCEDURE listerMedecins,
-	 STATIC PROCEDURE rechercherMedecinParSpecialite(specialite VARCHAR2),
-	 STATIC PROCEDURE ajouterMedecin(medecin MEDECIN_T),
-	 STATIC PROCEDURE lireMedecin(medecinId NUMBER),
-	 STATIC PROCEDURE modifierMedecin(medecin MEDECIN_T),
-	 STATIC PROCEDURE supprimerMedecin(medecinId NUMBER)
-)
 /
 
-CREATE OR REPLACE TYPE setMEDECINS_T AS TABLE OF MEDECIN_T
-/   
+-- Type MEDECIN_T
+CREATE OR REPLACE TYPE MEDECIN_T UNDER PERSONNE_T(
+    Specialite VARCHAR2(40),
+    CV CLOB,
+    pListRefRendezVous ListRefRendezVous_t,
+    pListRefConsultations ListRefConsultations_t,
+
+    -- Méthodes
+    Static FUNCTION getMedecin(idMedecin in NUMBER) RETURN MEDECIN_T,
+    static FUNCTION getConsultationInfo(idMedecin in NUMBER) RETURN setCONSULTATIONS_T,
+    static FUNCTION getRendezVousInfo(idMedecin in NUMBER) RETURN setRENDEZ_VOUS_T,
+    member PROCEDURE addLinkListeRendezVous(refRendezVous1 REF RENDEZ_VOUS_T),
+    member PROCEDURE deleteLinkListeRendezVous(refRendezVous1 REF RENDEZ_VOUS_T),
+    member PROCEDURE updateLinkListeRendezVous(refRendezVous1 REF RENDEZ_VOUS_T, refRendezVous2 REF RENDEZ_VOUS_T),
+    member PROCEDURE addLinkListeConsultations(refConsultation1 REF CONSULTATION_T),
+    member PROCEDURE deleteLinkListeConsultations(refConsultation1 REF CONSULTATION_T),
+    member PROCEDURE updateLinkListeConsultations(refConsultation1 REF CONSULTATION_T, refConsultation2 REF CONSULTATION_T)                          
+);
+/
+
 
 -- CREATION DES TABLES OBJETS A PARTIR DES TYPES 	 
 CREATE TABLE O_PATIENT OF PATIENT_T(
@@ -833,6 +871,9 @@ END;
 
 COMMIT;
 
+
+---       Requetes pour les manipulations des données       ---
+
 -- MISE A JOUR ET CONSULTATION DES DONNEES DANS VOS TABLES OBJETS
 
 -- REQUETES DE MISE A JOUR
@@ -863,7 +904,7 @@ ROLLBACK;
 UPDATE O_RENDEZ_VOUS ORV 
 SET ORV.Date_Rendez_Vous=TO_DATE('01/03/2024', 'DD/MM/YYYY') 
 WHERE ORV.refPatient.DATE_NAISSANCE > TO_DATE('12/12/1994', 'DD/MM/YYYY') 
-AND ORV.Date_Rendez_Vous BETWEEN TO_DATE('14/02/2024', 'DD/MM/YYYY') AND TO_DATE('18/02/2024', 'DD/MM/YYYY')
+AND ORV.Date_Rendez_Vous BETWEEN TO_DATE('14/02/2024', 'DD/MM/YYYY') AND TO_DATE('18/02/2024', 'DD/MM/YYYY');
 
 ROLLBACK;
 
@@ -1031,7 +1072,7 @@ ORDER BY OFA.refPatient.ID_PERSONNE, OFA.refPatient.EMAIL DESC;
 -- Cette requete retourne toutes les colonnes des consultations et des patients, incluant tous les patients et seulement les consultations qui leur sont associ´ees, tri´ees
 -- par date de consultation croissante. Les consultations sans patients associes apparaıtront avec des valeurs NULL dans les colonnes correspondantes de la table
 -- ”CONSULTATION”.
-SELECT 
+
 
 -- 5 requetes impliquant plus de 2 tables avec jointures
 -- internes dont 1 externe + 1 group by + 1 tri
@@ -1096,234 +1137,769 @@ OFA.refConsultation.Date_Consultation;
 -- consultation est ´egalement liee a son patient correspondant. Les resultats sont tries
 -- par date de consultation croissante. Les patients pour lesquels il n’y a pas de consultation 
 -- correspondante apparaitront avec des valeurs NULL dans les colonnes correspondantes de la table ”CONSULTATION”.
-SELECT
 
 
--- IMPLEMENTATION DES CORPS DES TYPES
+-------******************* TYPE BODY ***********************-------
+
+
+-- Implémentation des méthodes du Type RENDEZ_VOUS_T
+CREATE OR REPLACE TYPE BODY RENDEZ_VOUS_T AS 
+
+    -- Méthode de consultation : retourne l'ID du rendez-vous
+    MEMBER FUNCTION getId RETURN NUMBER IS
+    BEGIN
+        RETURN Id_Rendez_Vous;
+    END getId;
+
+    -- Méthode de consultation : retourne la date du rendez-vous
+    MEMBER FUNCTION getDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Rendez_Vous;
+    END getDate;
+
+    -- Méthode d'ordre : compare deux rendez-vous par date
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Rendez_Vous;
+    END compareDate;
+
+    -- Gestion des liens : associe un rendez-vous à un patient
+    MEMBER PROCEDURE linkToPatient(p REF PATIENT_T) IS
+    BEGIN
+        SELF.refPatient := p;
+    END linkToPatient;
+
+    -- Gestion des liens : associe un rendez-vous à un médecin
+    MEMBER PROCEDURE linkToMedecin(m REF MEDECIN_T) IS
+    BEGIN
+        SELF.refMedecin := m;
+    END linkToMedecin;
+
+    -- Méthode de consultation : retourne la référence du patient associé
+    MEMBER FUNCTION getRefPatient RETURN REF PATIENT_T IS
+    BEGIN
+        RETURN SELF.refPatient;
+    END getRefPatient;
+
+    -- Méthode de consultation : retourne la référence du médecin associé
+    MEMBER FUNCTION getRefMedecin RETURN REF MEDECIN_T IS
+    BEGIN
+        RETURN SELF.refMedecin;
+    END getrefMedecin;
+
+    -- Méthode CRUD (update) : met à jour le motif du rendez-vous
+    MEMBER PROCEDURE updateMotif(newMotif VARCHAR2) IS
+    BEGIN
+        SELF.Motif := newMotif;
+    END updateMotif;
+
+    -- Méthode CRUD (delete) : supprime le rendez-vous
+    MEMBER PROCEDURE deleteRendezVous IS
+    BEGIN
+        DELETE FROM O_RENDEZ_VOUS WHERE Id_Rendez_Vous = SELF.Id_Rendez_Vous ;
+    END deleteRendezVous;
+
+END;
+/
+
+-- Implémentation des méthodes du Type EXAMEN_T
+CREATE OR REPLACE TYPE BODY EXAMEN_T AS 
+
+    -- Méthode de consultation : retourne l'ID de l'examen
+    MEMBER FUNCTION getId RETURN NUMBER IS
+    BEGIN
+        RETURN Id_Examen;
+    END getId;
+
+    -- Méthode de consultation : retourne la date de l'examen
+    MEMBER FUNCTION getDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Examen;
+    END getDate;
+
+    -- Méthode d'ordre : compare deux examens par date
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Examen;
+    END compareDate;
+
+    -- Gestion des liens : associe un examen à une consultation
+    MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T) IS
+    BEGIN
+        SELF.refConsultation := c;
+    END linkToConsultation;
+
+    -- Méthode de consultation : retourne la référence de la consultation associée
+    MEMBER FUNCTION getRefConsultation RETURN REF CONSULTATION_T IS
+    BEGIN
+        RETURN SELF.refConsultation;
+    END getRefConsultation;
+
+    -- Méthode CRUD (update) : met à jour les détails de l'examen
+    MEMBER PROCEDURE updateDetails(newDetails VARCHAR2) IS
+    BEGIN
+        SELF.Details_Examen := newDetails;
+    END updateDetails;
+
+    -- Méthode CRUD (delete) : supprime l'examen en mettant
+    MEMBER PROCEDURE deleteExamen IS
+    BEGIN
+        DELETE FROM O_EXAMEN WHERE Id_Examen = SELF.Id_Examen ;
+    END deleteExamen;
+
+END;
+/
+
+-- Implémentation des méthodes du Type PRESCRIPTION_T
+CREATE OR REPLACE TYPE BODY PRESCRIPTION_T AS 
+
+    -- Méthode de consultation : retourne l'ID de la prescription
+    MEMBER FUNCTION getId RETURN NUMBER IS
+    BEGIN
+        RETURN Id_Prescription;
+    END getId;
+
+    -- Méthode de consultation : retourne la date de la prescription
+    MEMBER FUNCTION getDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Prescription;
+    END getDate;
+
+    -- Méthode d'ordre : compare deux prescriptions par date
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Prescription;
+    END compareDate;
+
+    -- Gestion des liens : associe une prescription à une consultation
+    MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T) IS
+    BEGIN
+        SELF.refConsultation := c;
+    END linkToConsultation;
+
+    -- Méthode de consultation : retourne la référence de la consultation associée
+    MEMBER FUNCTION getRefConsultation RETURN REF CONSULTATION_T IS
+    BEGIN
+        RETURN SELF.refConsultation;
+    END getRefConsultation;
+
+    -- Méthode CRUD (update) : met à jour les détails de la prescription
+    MEMBER PROCEDURE updateDetails(newDetails VARCHAR2) IS
+    BEGIN
+        SELF.Details_Prescription := newDetails;
+    END updateDetails;
+
+    -- Méthode CRUD (delete) : supprime la prescription en mettant ses références à NULL
+    MEMBER PROCEDURE deletePrescription IS
+    BEGIN
+        DELETE FROM O_PRESCRIPTION WHERE Id_Prescription = SELF.Id_Prescription ;
+    END deletePrescription;
+
+END;
+/
+
+-- Implémentation des méthodes du Type FACTURE_T
+CREATE OR REPLACE TYPE BODY FACTURE_T AS 
+
+    -- Méthode de consultation : retourne l'ID de la facture
+    MEMBER FUNCTION getId RETURN NUMBER IS
+    BEGIN
+        RETURN Id_Facture;
+    END getId;
+
+    -- Méthode de consultation : retourne la date de la facture
+    MEMBER FUNCTION getDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Facture;
+    END getDate;
+
+    -- Méthode d'ordre : compare deux factures par date
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
+    BEGIN
+        RETURN Date_Facture;
+    END compareDate;
+
+    -- Gestion des liens : associe une facture à un patient
+    MEMBER PROCEDURE linkToPatient(p REF PATIENT_T) IS
+    BEGIN
+        SELF.refPatient := p;
+    END linkToPatient;
+
+    -- Gestion des liens : associe une facture à une consultation
+    MEMBER PROCEDURE linkToConsultation(c REF CONSULTATION_T) IS
+    BEGIN
+        SELF.refConsultation := c;
+    END linkToConsultation;
+
+    -- Méthode de consultation : retourne la référence du patient associé à la facture
+    MEMBER FUNCTION getRefPatient RETURN REF PATIENT_T IS
+    BEGIN
+        RETURN SELF.refPatient;
+    END getRefPatient;
+
+    -- Méthode de consultation : retourne la référence de la consultation associée à la facture
+    MEMBER FUNCTION getRefConsultation RETURN REF CONSULTATION_T IS
+    BEGIN
+        RETURN SELF.refConsultation;
+    END getRefConsultation;
+
+    -- Méthode CRUD (update) : met à jour le montant de la facture
+    MEMBER PROCEDURE updateMontant(newMontant NUMBER) IS
+    BEGIN
+        SELF.Montant_Total := newMontant;
+    END updateMontant;
+
+    -- Méthode CRUD (delete) : supprime la facture en mettant les références à NULL
+    MEMBER PROCEDURE deleteFacture IS
+    BEGIN
+        DELETE FROM O_FACTURE WHERE Id_Facture = SELF.Id_Facture ;
+    END deleteFacture;
+
+END;
+/
+
+-- Implémentation des méthodes du Type CONSULTATION_T
+/* Formatted on 25/09/2024 22:47:22 (QP5 v5.360) */
+CREATE OR REPLACE TYPE BODY CONSULTATION_T
+    AS
+    STATIC FUNCTION getConsultation (idConsultation IN NUMBER)
+        RETURN CONSULTATION_T
+    IS
+        vConsultation   CONSULTATION_T;
+    BEGIN
+        SELECT VALUE (oc)
+          INTO vConsultation
+          FROM o_consultation oc
+         WHERE Id_Consultation = idConsultation;
+
+        RETURN vConsultation;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getConsultation;
+
+    STATIC FUNCTION getExamenInfo (idConsultation IN NUMBER)
+        RETURN setEXAMEN_T
+    IS
+        vSetExamen   setEXAMEN_T;
+    BEGIN
+        SELECT CAST (collet (DEREF (lre.COLUMN_VALUE)) AS setEXAMEN_T)
+          INTO vSetExamen
+          FROM TABLE (SELECT oc.pListRefExamens
+                        FROM o_consultation oc
+                       WHERE oc.Id_Consultation = idConsultation) lre;
+
+        RETURN vSetExamen;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getExamenInfo;
+
+
+    STATIC FUNCTION getPrescriptionInfo (idConsultation IN NUMBER)
+        RETURN setPRESCRIPTION_T
+    IS
+        vSetPrescription   setPRESCRIPTION_T;
+    BEGIN
+        SELECT CAST (collet (DEREF (lre.COLUMN_VALUE)) AS setPRESCRIPTION_T)
+          INTO vSetPrescription
+          FROM TABLE (SELECT oc.pListRefPrescriptions
+                        FROM o_consultation oc
+                       WHERE oc.Id_Consultation = idConsultation) lre;
+
+        RETURN vSetPrescription;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getPrescriptionInfo;
+
+    -- for pListRefExamens
+    MEMBER PROCEDURE addLinkListeExamens (refExamens1 REF EXAMEN_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT oc.pListRefExamens
+                             FROM o_consultation oc
+                            WHERE oc.Id_Consultation = self.Id_Consultation)
+                    lre
+             VALUES (refExamens1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListeExamens (refExamens1 REF EXAMEN_T)
+    IS
+    BEGIN
+        DELETE FROM
+            TABLE (SELECT oc.pListRefExamens
+                     FROM o_consultation oc
+                    WHERE oc.Id_Consultation = self.Id_Consultation) lre
+              WHERE lre.COLUMN_VALUE = refExamens1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListeExamens (refExamens1   REF EXAMEN_T,
+                                             refExamens2   REF EXAMEN_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT oc.pListRefExamens
+                        FROM o_consultation oc
+                       WHERE oc.Id_Consultation = self.Id_Consultation) lre
+           SET lre.COLUMN_VALUE = refExamens2
+         WHERE lre.COLUMN_VALUE = refExamens1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+
+
+    -- for pListRefPrescriptions
+    MEMBER PROCEDURE addLinkListePrescriptions (
+        refPrescription1   REF PRESCRIPTION_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT oc.pListRefPrescriptions
+                             FROM o_consultation oc
+                            WHERE oc.Id_Consultation = self.Id_Consultation)
+                    lre
+             VALUES (refPrescription1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListePrescriptions (
+        refPrescription1   REF PRESCRIPTION_T)
+    IS
+    BEGIN
+        DELETE FROM
+            TABLE (SELECT oc.pListRefPrescriptions
+                     FROM o_consultation oc
+                    WHERE oc.Id_Consultation = self.Id_Consultation) lre
+              WHERE lre.COLUMN_VALUE = refPrescription1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListePrescriptions (
+        refPrescription1   REF PRESCRIPTION_T,
+        refPrescription2   REF PRESCRIPTION_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT oc.pListRefPrescriptions
+                        FROM o_consultation oc
+                       WHERE oc.Id_Consultation = self.Id_Consultation) lre
+           SET lre.COLUMN_VALUE = refPrescription2
+         WHERE lre.COLUMN_VALUE = refPrescription1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    -- Méthode d'ordre : compare deux consultations par date
+    MAP MEMBER FUNCTION compareDate
+        RETURN DATE
+    IS
+    BEGIN
+        RETURN SELF.Date_Consultation;
+    END compareDate;
+END;
+/
+
 CREATE OR REPLACE TYPE BODY PERSONNE_T AS
-	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
-	BEGIN
-		RETURN NOM||Sexe||Numero_Securite_Sociale;
-	END;
+ -- Méthode de comparaison pour l'ordre
+    MAP MEMBER FUNCTION compareDate RETURN DATE IS
+    BEGIN
+        RETURN SELF.DATE_NAISSANCE;
+    END compareDate;
 END;
 /
 
---	   MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T),
---     MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T),
---     MEMBER PROCEDURE listerRendezVous,
---     MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T),
---     MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T),
---     STATIC PROCEDURE listerConsultations,
---     MEMBER PROCEDURE ajouterFacture(refFacture REF FACTURE_T),
---     MEMBER PROCEDURE supprimerFacture(refFacture REF FACTURE_T),
---     STATIC PROCEDURE listerFactures,
---     STATIC PROCEDURE listerPatients,
---     STATIC PROCEDURE rechercherPatientParNom(nom VARCHAR2),
---     STATIC PROCEDURE ajouterPatient(patient PATIENT_T),
---     STATIC PROCEDURE lirePatient(patientId NUMBER),
---     STATIC PROCEDURE modifierPatient(patientId NUMBER, patient PATIENT_T),
---     STATIC PROCEDURE supprimerPatient(patientId NUMBER)
 
-CREATE OR REPLACE TYPE BODY PATIENT_T AS	
-	MEMBER PROCEDURE ajouterRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
-	BEGIN		
-		INSERT INTO TABLE(
-			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne = self.Id_Personne
-		) list_ref_rendez_vous_to_table
-        VALUES(refRendezVous);
-        EXCEPTION 
-          WHEN OTHERS THEN RAISE; 
-	END;
-	
---  MEMBER PROCEDURE supprimerRendezVous(refRendezVous REF RENDEZ_VOUS_T) IS
---	BEGIN
---		DELETE FROM TABLE(
---			SELECT op.pListRefRendezVous FROM O_PATIENT op WHERE op.Id_Personne = self.Id_Personne
---		) list_ref_rendez_vous_to_table
---        WHERE list_ref_rendez_vous_to_table.column_value = refRendezVous;
---		EXCEPTION 
---			WHEN OTHERS THEN RAISE;
---	END;
-	
---  MEMBER PROCEDURE listerRendezVous IS
---	BEGIN
---		NULL;
---	END;
-	
---  MEMBER PROCEDURE ajouterConsultation(refConsultation REF Consultation_T) IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE supprimerConsultation(refConsultation REF Consultation_T) IS
---	BEGIN
---		NULL;
---	END;
-	
---  MEMBER PROCEDURE listerConsultations IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE ajouterFacture(refFacture REF FACTURE_T) IS
---	BEGIN
---		NULL;
---	END;
-	
---   MEMBER PROCEDURE supprimerFacture(refFacture REF FACTURE_T) IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE listerFactures IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE listerPatients IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE rechercherPatientParNom(nom VARCHAR2) IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE ajouterPatient(patient PATIENT_T) IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE lirePatient(patientId NUMBER) IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE modifierPatient(patientId NUMBER, patient PATIENT_T) IS
---	BEGIN
---		NULL;
---	END;
-	
---    MEMBER PROCEDURE supprimerPatient(patientId NUMBER) IS
---	BEGIN
---		NULL;
---	END;
+/* Formatted on 25/09/2024 22:33:01 (QP5 v5.360) */
+CREATE OR REPLACE TYPE BODY PATIENT_T
+    AS
+    STATIC FUNCTION getPatient (idPersonne IN NUMBER)
+        RETURN PATIENT_T
+    IS
+        vPatient   PATIENT_T;
+    BEGIN
+        SELECT VALUE (op)
+          INTO vPatient
+          FROM patient_o op
+         WHERE id_personne = idPersonne;
+
+        RETURN vPatient;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getPatient;
+
+    STATIC FUNCTION getFActureInfo (idPersonne IN NUMBER)
+        RETURN setFACTURES_T
+    IS
+        vSetFacture   setFACTURES_T;
+    BEGIN
+        SELECT CAST (collet (DEREF (lre.COLUMN_VALUE)) AS setFACTURES_T)
+          INTO vSetFacture
+          FROM TABLE (SELECT op.pListRefFactures
+                        FROM o_patient op
+                       WHERE op.id_personne = idPersonne) lre;
+
+        RETURN vSetFacture;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getFActureInfo;
+
+
+    STATIC FUNCTION getConsultationInfo (idPersonne IN NUMBER)
+        RETURN setCONSULTATIONS_T
+    IS
+        vSetConsultation   setCONSULTATIONS_T;
+    BEGIN
+        SELECT CAST (collet (DEREF (lre.COLUMN_VALUE)) AS setCONSULTATIONS_T)
+          INTO vSetConsultation
+          FROM TABLE (SELECT op.pListRefConsultations
+                        FROM o_patient op
+                       WHERE op.id_personne = idPersonne) lre;
+
+        RETURN vSetConsultation;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getConsultationInfo;
+
+    -- for pListRefRendezVous
+    MEMBER PROCEDURE addLinkListeRendezVous (
+        refRendezVous1   REF RENDEZ_VOUS_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT op.pListRefRendezVous
+                             FROM O_PATIENT op
+                            WHERE op.id_personne = self.id_personne) lre
+             VALUES (refRendezVous1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListeRendezVous (
+        refRendezVous1   REF RENDEZ_VOUS_T)
+    IS
+    BEGIN
+        DELETE FROM TABLE (SELECT op.pListRefRendezVous
+                             FROM O_PATIENT op
+                            WHERE op.id_personne = self.id_personne) lre
+              WHERE lre.COLUMN_VALUE = refRendezVous1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListeRendezVous (
+        refRendezVous1   REF RENDEZ_VOUS_T,
+        refRendezVous2   REF RENDEZ_VOUS_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT op.pListRefRendezVous
+                        FROM O_PATIENT op
+                       WHERE op.id_personne = self.id_personne) lre
+           SET lre.COLUMN_VALUE = refRendezVous2
+         WHERE lre.COLUMN_VALUE = refRendezVous1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+
+
+    -- for pListRefConsultations
+    MEMBER PROCEDURE addLinkListeConsultations (
+        refConsultation1   REF CONSULTATION_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT op.pListRefConsultations
+                             FROM O_PATIENT op
+                            WHERE op.id_personne = self.id_personne) lre
+             VALUES (refConsultation1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListeConsultations (
+        refConsultation1   REF CONSULTATION_T)
+    IS
+    BEGIN
+        DELETE FROM TABLE (SELECT op.pListRefConsultations
+                             FROM O_PATIENT op
+                            WHERE op.id_personne = self.id_personne) lre
+              WHERE lre.COLUMN_VALUE = refConsultation1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListeConsultations (
+        refConsultation1   REF CONSULTATION_T,
+        refConsultation2   REF CONSULTATION_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT op.pListRefConsultations
+                        FROM O_PATIENT op
+                       WHERE op.id_personne = self.id_personne) lre
+           SET lre.COLUMN_VALUE = refConsultation2
+         WHERE lre.COLUMN_VALUE = refConsultation1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    -- for pListRefFactures
+    MEMBER PROCEDURE addLinkListeFactures (refFacture1 REF FACTURE_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT op.pListRefFactures
+                             FROM O_PATIENT op
+                            WHERE op.id_personne = self.id_personne) lre
+             VALUES (refFacture1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListeFactures (refFacture1 REF FACTURE_T)
+    IS
+    BEGIN
+        DELETE FROM TABLE (SELECT op.pListRefFactures
+                             FROM O_PATIENT op
+                            WHERE op.id_personne = self.id_personne) lre
+              WHERE lre.COLUMN_VALUE = refFacture1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListeFactures (refFacture1   REF FACTURE_T,
+                                              refFacture2   REF FACTURE_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT op.pListRefFactures
+                        FROM O_PATIENT op
+                       WHERE op.id_personne = self.id_personne) lre
+           SET lre.COLUMN_VALUE = refFacture2
+         WHERE lre.COLUMN_VALUE = refFacture1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
 END;
 /
 
-CREATE OR REPLACE TYPE BODY MEDECIN_T AS
+
+/* Formatted on 26/09/2024 11:04:21 (QP5 v5.360) */
+CREATE OR REPLACE TYPE BODY MEDECIN_T
+    AS
+    STATIC FUNCTION getMedecin (idMedecin IN NUMBER)
+        RETURN MEDECIN_T
+    IS
+        vMedecin   MEDECIN_T;
+    BEGIN
+        SELECT VALUE (om)
+          INTO vMedecin
+          FROM o_medecin om
+         WHERE Id_Personne = idMedecin;
+
+        RETURN vMedecin;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getMedecin;
+
+    STATIC FUNCTION getConsultationInfo (idMedecin IN NUMBER)
+        RETURN setCONSULTATIONS_T
+    IS
+        vSetCONSULTATION   setCONSULTATIONS_T;
+    BEGIN
+        SELECT CAST (collet (DEREF (lre.COLUMN_VALUE)) AS setCONSULTATIONS_T)
+          INTO vSetCONSULTATION
+          FROM TABLE (SELECT om.pListRefRendezVous
+                        FROM o_medecin om
+                       WHERE om.Id_Personne = idMedecin) lre;
+
+        RETURN vSetCONSULTATION;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getConsultationInfo;
+
+
+    STATIC FUNCTION getRendezVousInfo (idMedecin IN NUMBER)
+        RETURN setRENDEZ_VOUS_T
+    IS
+        vSetRendezVous   setRENDEZ_VOUS_T;
+    BEGIN
+        SELECT CAST (collet (DEREF (lre.COLUMN_VALUE)) AS setRENDEZ_VOUS_T)
+          INTO vSetRendezVous
+          FROM TABLE (SELECT om.pListRefRendezVous
+                        FROM o_medecin om
+                       WHERE om.Id_Personne = idMedecin) lre;
+
+        RETURN vSetRendezVous;
+    EXCEPTION
+        WHEN NO_DATA_FOUND
+        THEN
+            RAISE;
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END getRendezVousInfo;
+
+    -- for pListRefRendezVous
+    MEMBER PROCEDURE addLinkListeRendezVous (
+        refRendezVous1   REF RENDEZ_VOUS_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT om.pListRefRendezVous
+                             FROM o_medecin om
+                            WHERE om.Id_Personne = self.Id_Personne) lre
+             VALUES (refRendezVous1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListeRendezVous (
+        refRendezVous1   REF RENDEZ_VOUS_T)
+    IS
+    BEGIN
+        DELETE FROM TABLE (SELECT om.pListRefRendezVous
+                             FROM o_medecin om
+                            WHERE om.Id_Personne = self.Id_Personne) lre
+              WHERE lre.COLUMN_VALUE = refRendezVous1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListeRendezVous (
+        refRendezVous1   REF RENDEZ_VOUS_T,
+        refRendezVous2   REF RENDEZ_VOUS_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT om.pListRefRendezVous
+                        FROM o_medecin om
+                       WHERE om.Id_Personne = self.Id_Personne) lre
+           SET lre.COLUMN_VALUE = refRendezVous2
+         WHERE lre.COLUMN_VALUE = refRendezVous1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+
+
+    -- for pListRefConsultations
+    MEMBER PROCEDURE addLinkListeConsultations (
+        refConsultation1   REF CONSULTATION_T)
+    IS
+    BEGIN
+        INSERT INTO TABLE (SELECT om.pListRefConsultations
+                             FROM o_medecin om
+                            WHERE om.Id_Personne = self.Id_Personne) lre
+             VALUES (refConsultation1);
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE deleteLinkListePrescriptions (
+        refConsultation1   REF CONSULTATION_T)
+    IS
+    BEGIN
+        DELETE FROM TABLE (SELECT om.pListRefConsultations
+                             FROM o_medecin om
+                            WHERE om.Id_Personne = self.Id_Personne) lre
+              WHERE lre.COLUMN_VALUE = refConsultation1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
+
+    MEMBER PROCEDURE updateLinkListePrescriptions (
+        refConsultation1   REF CONSULTATION_T,
+        refConsultation2   REF CONSULTATION_T)
+    IS
+    BEGIN
+        UPDATE TABLE (SELECT om.pListRefConsultations
+                        FROM o_medecin om
+                       WHERE om.Id_Personne = self.Id_Personne) lre
+           SET lre.COLUMN_VALUE = refConsultation2
+         WHERE lre.COLUMN_VALUE = refConsultation1;
+    EXCEPTION
+        WHEN OTHERS
+        THEN
+            RAISE;
+    END;
 END;
 /
 
-CREATE OR REPLACE TYPE BODY CONSULTATION_T AS
-	MAP member FUNCTION match RETURN varchar2 IS
-	BEGIN
-		RETURN Date_Consultation;
-	END;
-END;
-/
+-- ************** END BODY ADT ************** --
 
-CREATE OR REPLACE TYPE BODY EXAMEN_T AS
-	MAP member FUNCTION match RETURN varchar2 IS
-	BEGIN
-		RETURN Date_Examen;
-	END;
-END;
-/
-
-CREATE OR REPLACE TYPE BODY RENDEZ_VOUS_T AS
-	MAP member FUNCTION match RETURN varchar2 IS
-	BEGIN
-		RETURN Date_Rendez_Vous;
-	END;
-END;
-/
-
-CREATE OR REPLACE TYPE BODY PRESCRIPTION_T AS
-	MAP member FUNCTION match RETURN varchar2 IS
-	BEGIN
-		NULL;
-	END;
-END;
-/
-
-/* 
-	CREATE OR REPLACE TYPE FACTURE_T AS OBJECT(
-		MAP MEMBER FUNCTION match RETURN VARCHAR2,
-		STATIC FUNCTION rechercherFactureParMontant(montant NUMBER) RETURN FACTURE_T,
-		STATIC FUNCTION rechercherFactureParDate(date DATE) RETURN FACTURE_T,
-		STATIC FUNCTION lireFacture(factureId NUMBER) RETURN FACTURE_T,
-		-- STATIC FUNCTION listerFactures,
-		-- STATIC PROCEDURE ajouterFacture(facture FACTURE_T),
-		-- STATIC PROCEDURE modifierFacture(facture FACTURE_T),
-		-- STATIC PROCEDURE supprimerFacture(factureId NUMBER)
-	)
-*/
-	
-CREATE OR REPLACE TYPE BODY FACTURE_T AS
-	MAP MEMBER FUNCTION match RETURN VARCHAR2 IS
-	BEGIN
-		RETURN Date_Facture||Montant_Total;
-	END;
-	
-	STATIC FUNCTION rechercherFactureParMontant(montant NUMBER) RETURN FACTURE_T IS
-		v_facture FACTURE_T;
-	BEGIN
-		SELECT VALUE(OFA) INTO v_facture FROM O_FACTURE OFA WHERE OFA.MONTANT_TOTAL = montant;
-		RETURN v_facture;
-	EXCEPTION 
-		WHEN no_data_found THEN
-			RAISE;
-		WHEN OTHERS THEN
-			RAISE; 
-	END;
-	
-	STATIC FUNCTION rechercherFactureParDate(date DATE) RETURN FACTURE_T IS
-		v_facture FACTURE_T;
-	BEGIN
-		SELECT VALUE(OFA) INTO v_facture FROM O_FACTURE OFA WHERE OFA.Date_Facture = date;
-		RETURN v_facture;
-	EXCEPTION 
-		WHEN no_data_found THEN
-			RAISE;
-		WHEN OTHERS THEN
-			RAISE; 
-	END;
-	
-	STATIC FUNCTION lireFacture(factureId NUMBER) RETURN FACTURE_T IS
-		v_facture FACTURE_T;
-	BEGIN
-		SELECT VALUE(OFA) INTO v_facture FROM O_FACTURE OFA WHERE OFA.Id_Facture = factureId;
-		RETURN v_facture;
-	EXCEPTION 
-		WHEN no_data_found THEN
-			RAISE;
-		WHEN OTHERS THEN
-			RAISE; 
-	END;
-	
-	/* 	STATIC FUNCTION listerFactures IS
-	BEGIN
-		NULL;
-	END;
-	
-	STATIC PROCEDURE ajouterFacture(facture FACTURE_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-	STATIC PROCEDURE modifierFacture(facture FACTURE_T) IS
-	BEGIN
-		NULL;
-	END;
-	
-	STATIC PROCEDURE supprimerFacture(factureId NUMBER) IS
-	BEGIN
-		NULL;
-	END;
-	*/
-END;
-/
-
--- TEST DES METHODES

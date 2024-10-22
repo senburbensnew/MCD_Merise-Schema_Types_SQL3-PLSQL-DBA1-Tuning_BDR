@@ -66,7 +66,7 @@
 -- précédement. Vous devez lui donner les droits appropriés. 
 
 -- 1. Création de l'utilisateur
-    CREATE USER Hopital IDENTIFIED BY PASS123;
+    CREATE USER Hopital IDENTIFIED BY pass123$
     DEFAULT TABLESPACE data_ts
     TEMPORARY TABLESPACE temp_ts
     QUOTA UNLIMITED ON data_ts;
