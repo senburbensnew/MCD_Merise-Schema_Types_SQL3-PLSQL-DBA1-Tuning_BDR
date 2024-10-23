@@ -1531,10 +1531,72 @@
 -- génération automatique des données. 
 -- <réponses et trace ici>
 
-  sqlldr hopital/pass123$@hopital control=C:\Users\pbobc\Documents\O_PATIENT.ctl
+    sqlldr hopital/pass123$@hopital control=C:\Users\pbobc\Documents\PATIENT.ctl
 
+    -- control file SCRIPT
+/*
+    LOAD DATA
+    INFILE 'C:\workspaceSQL\patient_data.csv'
+    BADFILE 'C:\workspaceSQL\PATIENT.BAD'
+    APPEND INTO TABLE PATIENT
+    Fields terminated by "#" Optionally enclosed by '"'
+    (
+    ID_PATIENT_ NULLIF (ID_PATIENT_="NULL"),
+    NOM,
+    PRENOM,
+    ADRESSE,
+    EMAIL,
+    DATE_NAISSAINCE DATE "MM/DD/YYYY HH24:MI:SS" NULLIF (DATE_NAISSAINCE="NULL")
+    )
+*/
+    -- Patients csv data loaded.
 
-???
+/*
+    1#"Dubois"#"Alice"#"123 Rue de la Paix"#"alice.dubois@email.com"#"05/15/1990 00:00:00"
+    2#"Leclerc"#"Thomas"#"456 Avenue des Roses"#"thomas.leclerc@email.com"#"08/22/1985 00:00:00"
+    3#"Moreau"#"Sophie"#"789 Boulevard du Soleil"#"sophie.moreau@email.com"#"02/10/1995 00:00:00"
+    4#"Leroy"#"Jean"#"101 Rue de la Lune"#"jean.leroy@email.com"#"12/01/1980 00:00:00"
+    5#"Girard"#"Isabelle"#"202 Avenue des ?toiles"#"isabelle.girard@email.com"#"09/18/1992 00:00:00"
+    6#"Bertrand"#"Luc"#"303 Boulevard de la Galaxie"#"luc.bertrand@email.com"#"04/25/1987 00:00:00"
+    7#"Lemoine"#"Sophie"#"404 Rue des Plan?tes"#"sophie.lemoine@email.com"#"07/03/1998 00:00:00"
+    8#"Roy"#"Pierre"#"505 Avenue de la Voie Lact?e"#"pierre.roy@email.com"#"10/12/1983 00:00:00"
+    9#"Moulin"#"Caroline"#"606 Boulevard des Com?tes"#"caroline.moulin@email.com"#"03/28/1994 00:00:00"
+    10#"Marchand"#"Alexandre"#"707 Rue des Ast?ro?des"#"alexandre.marchand@email.com"#"06/15/1988 00:00:00"
+    11#"Dubois"#"Sophie"#"123 Rue de la Paix"#"sophie.dubois@email.com"#"03/22/1990 00:00:00"
+    12#"Lefebvre"#"Pierre"#"456 Avenue des Champs-lys‚es"#"pierre.lefebvre@email.com"#"11/10/1985 00:00:00"
+    13#"Martin"#"Charlotte"#"789 Boulevard Voltaire"#"charlotte.martin@email.com"#"09/28/1995 00:00:00"
+    14#"Thomas"#"Luc"#"1010 Rue de Rivoli"#"luc.thomas@email.com"#"07/17/1977 00:00:00"
+    15#"Garcia"#"Maria"#"222 Rue du Faubourg Saint-Honor‚"#"maria.garcia@email.com"#"12/03/1983 00:00:00"
+    16#"Legrand"#"Jean"#"333 Avenue Montaigne"#"jean.legrand@email.com"#"05/20/1992 00:00:00"
+    17#"Moreau"#"Isabelle"#"444 Boulevard Haussmann"#"isabelle.moreau@email.com"#"08/12/1979 00:00:00"
+    18#"Petit"#"Philippe"#"555 Rue de la Libert‚"#"philippe.petit@email.com"#"04/25/1989 00:00:00"
+    19#"Sanchez"#"Carlos"#"666 Avenue Foch"#"carlos.sanchez@email.com"#"02/09/1980 00:00:00"
+    20#"Robert"#"milie"#"777 Boulevard des Capucines"#"emilie.robert@email.com"#"10/15/1993 00:00:00"
+*/
+
+ -- resultat du script SQLLOADER lance. 
+ /*
+    Microsoft Windows [Version 10.0.26100.2033]
+    (c) Microsoft Corporation. All rights reserved.
+
+    C:\Users\pbobc>
+    C:\Users\pbobc>sqlldr hopital/pass123$@xepdb1 control=C:\workspaceSQL\patient.ctl log=C:\workspaceSQL\patient.log
+
+    SQL*Loader: Release 18.0.0.0.0 - Production on Tue Oct 22 18:08:17 2024
+    Version 18.4.0.0.0
+
+    Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+    Path used:      Conventional
+    Commit point reached - logical record count 20
+
+    Table PATIENT:
+    20 Rows successfully loaded.
+
+    Check the log file:
+    C:\workspaceSQL\patient.log
+    for more information about the load.
+*/
 
 
 -- 4.3  Divers requêtes d’administration 
