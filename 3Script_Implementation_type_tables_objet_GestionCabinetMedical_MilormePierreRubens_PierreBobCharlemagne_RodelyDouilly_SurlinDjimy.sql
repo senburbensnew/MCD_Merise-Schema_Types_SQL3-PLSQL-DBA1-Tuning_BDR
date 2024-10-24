@@ -872,7 +872,7 @@ END;
 COMMIT;
 
 
----       Requetes pour les manipulations des données       ---
+--- Requetes pour les manipulations des données ---
 
 -- MISE A JOUR ET CONSULTATION DES DONNEES DANS VOS TABLES OBJETS
 

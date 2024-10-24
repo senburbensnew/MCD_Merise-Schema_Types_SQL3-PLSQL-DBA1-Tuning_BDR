@@ -2,7 +2,6 @@ package org.gestioncabinetmedical.service;
 
 import oracle.sql.REF;
 import org.gestioncabinetmedical.entity.Consultation;
-
 import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

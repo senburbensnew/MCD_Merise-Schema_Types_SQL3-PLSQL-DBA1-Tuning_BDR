@@ -1,88 +1,120 @@
 package org.gestioncabinetmedical;
 
 import oracle.sql.REF;
-import oracle.sql.STRUCT;
-
+import org.gestioncabinetmedical.entity.Adresse;
 import java.io.IOException;
-import java.util.Date;
 import java.sql.*;
+import oracle.jdbc.pool.OracleDataSource;
+import org.gestioncabinetmedical.entity.Examen;
+import org.gestioncabinetmedical.entity.Medecin;
+import org.gestioncabinetmedical.entity.Patient;
+import org.gestioncabinetmedical.service.ConsultationService;
+import org.gestioncabinetmedical.service.ExamenService;
+import org.gestioncabinetmedical.service.MedecinService;
+import org.gestioncabinetmedical.service.PatientService;
 
 public class Main{
-    public static void main(String[] args) throws SQLException, ClassNotFoundException{
+    public static void main(String[] args) throws SQLException {
         Connection conn = null;
+        String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe";
+        String user = "Oracle";
+        String password = "password";
 
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/xe", "Oracle", "password");
+            OracleDataSource ods = new OracleDataSource();
+            ods.setURL(jdbcUrl);
+            ods.setUser(user);
+            ods.setPassword(password);
 
-            java.util.Map mapOraObjType = conn.getTypeMap();
+            conn = ods.getConnection();
+            conn.setAutoCommit(true);
 
-            mapOraObjType.put("Adresse_T", Adresse.class);
-            mapOraObjType.put("Patient_t", Patient.class);
-            mapOraObjType.put("Medecin_T", Medecin.class);
-            mapOraObjType.put("Examen_T", Examen.class);
+            ExamenService examenService = new ExamenService(conn);
+            ConsultationService consultationService = new ConsultationService(conn);
+            PatientService patientService = new PatientService(conn);
+            MedecinService medecinService = new MedecinService(conn);
 
-            Statement stmt = conn.createStatement();
+            /** Patient test */
+            // Insert Patient
+            Adresse adresse = new Adresse();
+            adresse.setNUMERO(123);
+            adresse.setRUE("Rue de Paris");
+            adresse.setCODE_POSTAL(75000);
+            adresse.setVILLE("Paris");
 
-            String sqlAdressesPatients = "SELECT op.adresse FROM o_patient op";
-            ResultSet resultsetAdressesPatients = stmt.executeQuery(sqlAdressesPatients);
-            System.out.println("********INFOS ADRESSES PATIENTS ******************");
-            while(resultsetAdressesPatients.next()){
-                STRUCT struct = (STRUCT) resultsetAdressesPatients.getObject("ADRESSE");
-                Object[] attributes = struct.getAttributes();
-                Adresse adresse = new Adresse(
-                        "Adresse",
-                        ((Number) attributes[0]).intValue(),
-                        (String) attributes[1],
-                        ((Number) attributes[2]).intValue(),
-                        (String) attributes[3]
-                );
+            Patient patient = new Patient();
+            patient.setID_PERSONNE(2001);
+            patient.setNUMERO_SECURITE_SOCIALE("66373578");
+            patient.setSEXE("Masculin");
+            patient.setEMAIL("eami5@gmail.com");
+            patient.setDATE_NAISSANCE(Date.valueOf("2024-10-06"));
+            patient.setPOIDS(56.4F);
+            patient.setHAUTEUR(190.8F);
+            patient.setNOM("John Doe");
+            patient.setADRESSE(adresse);
 
-                System.out.println(adresse.getNUMERO() + ", " + adresse.getRUE() +  ", " + adresse.getVILLE() + ", " + adresse.getCODE_POSTAL());
-            }
-            
-            String sqlPatients = "SELECT value(op) FROM o_patient op";
-            ResultSet resultsetPatients = stmt.executeQuery(sqlPatients);
-            System.out.println("********INFOS PATIENTS ******************");
-            while(resultsetPatients.next()){
-                Patient patient = (Patient) resultsetPatients.getObject(1, mapOraObjType);
-                patient.display();
-            }
+            patientService.insertPatient(patient);
 
-            String sqlMedecins = "SELECT value(om) FROM o_medecin om";
-            ResultSet resultsetMedecins = stmt.executeQuery(sqlMedecins);
-            System.out.println("********INFOS MEDECINS ******************");
-            while(resultsetMedecins.next()){
-                // Medecin medecin = (Medecin) resultsetMedecins.getObject(1, mapOraObjType);
-                // medecin.display();
-            }
+            // Get Patient by Id
+            Patient retrievedPatient  = patientService.getPatientById(2001);
+            retrievedPatient.display();
 
-            String sqlExamens = "SELECT value(oe) AS EXAMEN FROM o_examen oe";
-            ResultSet resultsetExamens = stmt.executeQuery(sqlExamens);
-            System.out.println("******** INFOS EXAMENS ******************");
-            while(resultsetExamens.next()){
-                STRUCT struct = (STRUCT) resultsetExamens.getObject(1);
-                Examen exam = castToExamen(struct);
-                exam.display();
-            }
-        }catch(ClassNotFoundException | SQLException | IOException e){
+            // Get REF to patient by id
+            REF refPatient = patientService.getRefPatient(2001);
+            System.out.println(refPatient);
+
+            // Update patient
+            retrievedPatient.setPOIDS(140.6F);
+            patientService.updatePatient(retrievedPatient);
+
+            // Delete Patient
+            patientService.deletePatient(2001);
+
+            /** Medecin test */
+            // Insert Medecin
+            Adresse adresseMedecin = new Adresse();
+            adresseMedecin.setNUMERO(7);
+            adresseMedecin.setRUE("Rue de Marseille");
+            adresseMedecin.setCODE_POSTAL(10000);
+            adresseMedecin.setVILLE("Marseille");
+
+            Medecin medecin = new Medecin();
+            medecin.setID_PERSONNE(2001);
+            medecin.setNUMERO_SECURITE_SOCIALE("234509");
+            medecin.setSEXE("Feminin");
+            medecin.setEMAIL("medein@gmail.com");
+            medecin.setDATE_NAISSANCE(Date.valueOf("2025-09-01"));
+            medecin.setNOM("John Doe medecin");
+            medecin.setADRESSE(adresse);
+
+            medecinService.insertMedecin(medecin);
+
+            medecinService.getMedecinById(2001);
+
+            // Get REF to medecin by id
+            REF refMedecin = medecinService.getRefMedecin(2001);
+            System.out.println(refMedecin);
+
+            medecinService.updateMedecin(medecin);
+
+            medecinService.deleteMedecin(2001);
+
+            // Get REF of Consultation
+            REF refConsultation = consultationService.getRefConsultation(1);
+
+            // Insert Examen
+            Examen examen = new Examen(3000, refConsultation, "Blood Test", Date.valueOf("2024-10-06"));
+            examenService.insertExamen(examen);
+
+            // Get Examen by Id and display
+            Examen insertedExamen = examenService.getExamenById(3000);
+            insertedExamen.display();
+        }catch(SQLException | IOException e){
             System.out.println("Echec du mapping");
             System.out.println(e.getMessage());
             e.printStackTrace();
         }finally {
             conn.close();
         }
-    }
-
-    private static Examen castToExamen(STRUCT struct) throws SQLException {
-        Object[] attributes = struct.getAttributes();
-        Examen examen  = new Examen(
-                "Examen",
-                ((Number) attributes[0]).intValue(),
-                (REF) attributes[1],
-                ((String) attributes[2]),
-                (Date) attributes[3]
-        );
-        return examen;
     }
 }
