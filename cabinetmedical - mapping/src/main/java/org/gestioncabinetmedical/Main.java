@@ -5,7 +5,6 @@ import org.gestioncabinetmedical.entity.Adresse;
 import java.io.IOException;
 import java.sql.*;
 import oracle.jdbc.pool.OracleDataSource;
-import org.gestioncabinetmedical.entity.Examen;
 import org.gestioncabinetmedical.entity.Medecin;
 import org.gestioncabinetmedical.entity.Patient;
 import org.gestioncabinetmedical.service.ConsultationService;
@@ -89,26 +88,19 @@ public class Main{
 
             medecinService.insertMedecin(medecin);
 
-            medecinService.getMedecinById(2001);
 
-            // Get REF to medecin by id
-            REF refMedecin = medecinService.getRefMedecin(2001);
-            System.out.println(refMedecin);
+            /*
+                // Get REF of Consultation
+                REF refConsultation = consultationService.getRefConsultation(1);
 
-            medecinService.updateMedecin(medecin);
+                // Insert Examen
+                Examen examen = new Examen(3000, refConsultation, "Blood Test", Date.valueOf("2024-10-06"));
+                examenService.insertExamen(examen);
 
-            medecinService.deleteMedecin(2001);
-
-            // Get REF of Consultation
-            REF refConsultation = consultationService.getRefConsultation(1);
-
-            // Insert Examen
-            Examen examen = new Examen(3000, refConsultation, "Blood Test", Date.valueOf("2024-10-06"));
-            examenService.insertExamen(examen);
-
-            // Get Examen by Id and display
-            Examen insertedExamen = examenService.getExamenById(3000);
-            insertedExamen.display();
+                // Get Examen by Id and display
+                Examen insertedExamen = examenService.getExamenById(3000);
+                insertedExamen.display();
+            */
         }catch(SQLException | IOException e){
             System.out.println("Echec du mapping");
             System.out.println(e.getMessage());
