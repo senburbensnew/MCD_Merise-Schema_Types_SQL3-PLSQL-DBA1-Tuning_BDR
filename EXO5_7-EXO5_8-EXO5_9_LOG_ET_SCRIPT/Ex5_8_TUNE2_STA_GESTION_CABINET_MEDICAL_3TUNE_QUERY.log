@@ -1,0 +1,1376 @@
+SQL> 
+SQL> -- 1. Charger l'application bancaire (AppliBank.sql)
+SQL> -- dans le schéma de l'utilisateur ORS2
+SQL> 
+SQL> -- Déjà fait dans ...start.sql
+SQL> 
+SQL> -- Les index actuels sur l'application
+SQL> -- Pour l'instant seul les 3 indexes primary doivent exister
+SQL> select table_name, column_name, index_name
+  2  from user_ind_columns
+  3  where table_name in ('O_EXAMEN','O_CONSULTATION','O_PRESCRIPTION','O_FACTURE','O_RENDEZ_VOUS','O_MEDECIN','O_PATIENT')
+  4  order by table_name, index_name, column_name;
+
+TABLE_NAME                                                                                                                       COLUMN_NAME                                                            
+-------------------------------------------------------------------------------------------------------------------------------- --------------------                                                   
+INDEX_NAME                                                                                                                                                                                              
+--------------------------------------------------------------------------------------------------------------------------------                                                                        
+O_CONSULTATION                                                                                                                   REFMEDECIN                                                             
+IDX_O_CONSULTATION_REFMEDECIN                                                                                                                                                                           
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   REFPATIENT                                                             
+IDX_O_CONSULTATION_REFPATIENT                                                                                                                                                                           
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   DATE_CONSULTATION                                                      
+IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                  
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   REFMEDECIN                                                             
+IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                  
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   REFPATIENT                                                             
+IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                  
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   ID_CONSULTATION                                                        
+PK_O_CONSULTATION_ID_CONSULTATION                                                                                                                                                                       
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   PLISTREFPRESCRIPTION                                                   
+                                                                                                                                 S                                                                      
+SYS_C008735                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   PLISTREFEXAMENS                                                        
+SYS_C008736                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   SYS_NC_OID$                                                            
+SYS_C008737                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_EXAMEN                                                                                                                         REFCONSULTATION                                                        
+IDX_O_EXAMEN_REFCONSULTATION                                                                                                                                                                            
+                                                                                                                                                                                                        
+O_EXAMEN                                                                                                                         ID_EXAMEN                                                              
+PK_O_EXAMEN_ID_EXAMEN                                                                                                                                                                                   
+                                                                                                                                                                                                        
+O_EXAMEN                                                                                                                         SYS_NC_OID$                                                            
+SYS_C008712                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        MONTANT_TOTAL                                                          
+IDX_O_FACTURE_MONTANT_TOTAL                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        REFCONSULTATION                                                        
+IDX_O_FACTURE_REFCONSULTATION                                                                                                                                                                           
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        REFPATIENT                                                             
+IDX_O_FACTURE_REFPATIENT                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        ID_FACTURE                                                             
+PK_O_FACTURE_ID_FACTURE                                                                                                                                                                                 
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        SYS_NC_OID$                                                            
+SYS_C008723                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        EMAIL                                                                  
+IDX_O_MEDECIN_EMAIL_UNIQUE                                                                                                                                                                              
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        NUMERO_SECURITE_SOCI                                                   
+                                                                                                                                 ALE                                                                    
+IDX_O_MEDECIN_NUM_SEC_SOCIAL_UNIQUE                                                                                                                                                                     
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        SPECIALITE                                                             
+IDX_O_MEDECIN_SPECIALITE                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        ID_PERSONNE                                                            
+PK_O_MEDECIN_ID_PERSONNE                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        PLISTREFCONSULTATION                                                   
+                                                                                                                                 S                                                                      
+SYS_C008705                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        PLISTREFRENDEZVOUS                                                     
+SYS_C008706                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        SYS_NC_OID$                                                            
+SYS_C008707                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        EMAIL                                                                  
+IDX_O_PATIENT_EMAIL_UNIQUE                                                                                                                                                                              
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        NUMERO_SECURITE_SOCI                                                   
+                                                                                                                                 ALE                                                                    
+IDX_O_PATIENT_NUM_SEC_SOCIAL_UNIQUE                                                                                                                                                                     
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        ID_PERSONNE                                                            
+PK_O_PATIENT_ID_PERSONNE                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        PLISTREFFACTURES                                                       
+SYS_C008692                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        PLISTREFCONSULTATION                                                   
+                                                                                                                                 S                                                                      
+SYS_C008693                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        PLISTREFRENDEZVOUS                                                     
+SYS_C008694                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        SYS_NC_OID$                                                            
+SYS_C008695                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PRESCRIPTION                                                                                                                   REFCONSULTATION                                                        
+IDX_O_PRESCRIPTION_REFCONSULTATION                                                                                                                                                                      
+                                                                                                                                                                                                        
+O_PRESCRIPTION                                                                                                                   ID_PRESCRIPTION                                                        
+PK_O_PRESCRIPTION_ID_PRESCRIPTION                                                                                                                                                                       
+                                                                                                                                                                                                        
+O_PRESCRIPTION                                                                                                                   SYS_NC_OID$                                                            
+SYS_C008717                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFMEDECIN                                                             
+IDX_O_RENDEZ_VOUS_REFMEDECIN                                                                                                                                                                            
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFPATIENT                                                             
+IDX_O_RENDEZ_VOUS_REFPATIENT                                                                                                                                                                            
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    DATE_RENDEZ_VOUS                                                       
+IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                   
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFMEDECIN                                                             
+IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                   
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFPATIENT                                                             
+IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                   
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    ID_RENDEZ_VOUS                                                         
+PK_O_RENDEZ_VOUS_ID_RENDEZ_VOUS                                                                                                                                                                         
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    SYS_NC_OID$                                                            
+SYS_C008729                                                                                                                                                                                             
+                                                                                                                                                                                                        
+
+41 rows selected.
+
+SQL> 
+SQL>  /*
+SQL> 
+SQL> TABLE_NAME 		    COLUMN_NAME 			     INDEX_NAME
+SQL> ------------------------------ ---------------------------------------- --------------------------------------------------------------------------------
+SQL> O_CONSULTATION		    REFMEDECIN				     IDX_O_CONSULTATION_REFMEDECIN
+SQL> O_CONSULTATION		    REFPATIENT				     IDX_O_CONSULTATION_REFPATIENT
+SQL> O_CONSULTATION		    DATE_CONSULTATION			     IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE
+SQL> O_CONSULTATION		    REFMEDECIN				     IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE
+SQL> O_CONSULTATION		    REFPATIENT				     IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE
+SQL> O_CONSULTATION		    ID_CONSULTATION			     PK_O_CONSULTATION_ID_CONSULTATION
+SQL> O_CONSULTATION		    PLISTREFPRESCRIPTIONS		     SYS_C008613
+SQL> O_CONSULTATION		    PLISTREFEXAMENS			     SYS_C008614
+SQL> O_CONSULTATION		    SYS_NC_OID$ 			     SYS_C008615
+SQL> O_EXAMEN			    REFCONSULTATION			     IDX_O_EXAMEN_REFCONSULTATION
+SQL> O_EXAMEN			    ID_EXAMEN				     PK_O_EXAMEN_ID_EXAMEN
+SQL> O_EXAMEN			    SYS_NC_OID$ 			     SYS_C008590
+SQL> O_FACTURE			    MONTANT_TOTAL			     IDX_O_FACTURE_MONTANT_TOTAL
+SQL> O_FACTURE			    REFCONSULTATION			     IDX_O_FACTURE_REFCONSULTATION
+SQL> O_FACTURE			    REFPATIENT				     IDX_O_FACTURE_REFPATIENT
+SQL> O_FACTURE			    ID_FACTURE				     PK_O_FACTURE_ID_FACTURE
+SQL> O_FACTURE			    SYS_NC_OID$ 			     SYS_C008601
+SQL> O_MEDECIN			    EMAIL				     IDX_O_MEDECIN_EMAIL_UNIQUE
+SQL> O_MEDECIN			    NUMERO_SECURITE_SOCIALE		     IDX_O_MEDECIN_NUM_SEC_SOCIAL_UNIQUE
+SQL> O_MEDECIN			    SPECIALITE				     IDX_O_MEDECIN_SPECIALITE
+SQL> O_MEDECIN			    ID_PERSONNE 			     PK_O_MEDECIN_ID_PERSONNE
+SQL> O_MEDECIN			    PLISTREFCONSULTATIONS		     SYS_C008583
+SQL> O_MEDECIN			    PLISTREFRENDEZVOUS			     SYS_C008584
+SQL> O_MEDECIN			    SYS_NC_OID$ 			     SYS_C008585
+SQL> O_PATIENT			    EMAIL				     IDX_O_PATIENT_EMAIL_UNIQUE
+SQL> O_PATIENT			    NUMERO_SECURITE_SOCIALE		     IDX_O_PATIENT_NUM_SEC_SOCIAL_UNIQUE
+SQL> O_PATIENT			    ID_PERSONNE 			     PK_O_PATIENT_ID_PERSONNE
+SQL> O_PATIENT			    PLISTREFFACTURES			     SYS_C008570
+SQL> O_PATIENT			    PLISTREFCONSULTATIONS		     SYS_C008571
+SQL> O_PATIENT			    PLISTREFRENDEZVOUS			     SYS_C008572
+SQL> O_PATIENT			    SYS_NC_OID$ 			     SYS_C008573
+SQL> O_PRESCRIPTION		    REFCONSULTATION			     IDX_O_PRESCRIPTION_REFCONSULTATION
+SQL> O_PRESCRIPTION		    ID_PRESCRIPTION			     PK_O_PRESCRIPTION_ID_PRESCRIPTION
+SQL> O_PRESCRIPTION		    SYS_NC_OID$ 			     SYS_C008595
+SQL> O_RENDEZ_VOUS		    REFMEDECIN				     IDX_O_RENDEZ_VOUS_REFMEDECIN
+SQL> O_RENDEZ_VOUS		    REFPATIENT				     IDX_O_RENDEZ_VOUS_REFPATIENT
+SQL> O_RENDEZ_VOUS		    DATE_RENDEZ_VOUS			     IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE
+SQL> O_RENDEZ_VOUS		    REFMEDECIN				     IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE
+SQL> O_RENDEZ_VOUS		    REFPATIENT				     IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE
+SQL> O_RENDEZ_VOUS		    ID_RENDEZ_VOUS			     PK_O_RENDEZ_VOUS_ID_RENDEZ_VOUS
+SQL> O_RENDEZ_VOUS		    SYS_NC_OID$ 			     SYS_C008607
+SQL> 
+SQL> */
+SQL> 
+SQL> -- Ne pas créer les indexes ci-dessous.
+SQL> -- Ce sont les indexes qu'on aurait créés si on opérait
+SQL> -- un réglage manuel. Lorsque SQLTUNING ADVISOR aura fait
+SQL> -- des recommandations, comparez les indexes qu'ils recommandent
+SQL> -- avec ceux ci. Ces indexes sont proposées au vu des clauses
+SQL> -- WHERE des requêtes à optmiser automatiquement.
+SQL> 
+SQL> 
+SQL> 
+SQL> -- vérification du type d'optimiseur
+SQL>  show parameter optimizer_mode;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+optimizer_mode                       string      ALL_ROWS                                                                                                                                               
+SQL> 
+SQL> -- optimizer_mode			     string	 ALL_ROWS
+SQL> 
+SQL> -- passer en mode all_rows si utile
+SQL> set autotrace off
+SQL> alter session set optimizer_mode=all_rows ;
+
+Session altered.
+
+SQL> 
+SQL> -- calculer les statistiques sur les objets de l'utilisateur
+SQL> -- &MYPDBUSER
+SQL> execute dbms_stats.gather_schema_stats('&MYPDBUSER');
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Connexion avec au niveau CDB pour prendre un cliché AWR.
+SQL> -- La gestion des statistiques se fait au niveau e ma CDB
+SQL> connect &MYCDBUSER@&DBALIASCDB/&MYCDBUSERPASS
+Connected.
+SQL> 
+SQL> -- Prendre un premier cliché AWR pour délimiter
+SQL> -- l'espace de récupération des requêtes.
+SQL> set serveroutput on
+SQL> variable snapid1 number;
+SQL> 
+SQL> begin
+  2  	     :snapid1	     := dbms_workload_repository.create_snapshot;
+  3  	     dbms_output.put_line('snap_id1='||:snapid1);
+  4  end;
+  5  /
+snap_id1=38                                                                                                                                                                                             
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ReConnexion à la  PDB pour utiliser STA
+SQL> connect &MYPDBUSER@&DBALIASPDB/&MYPDBUSERPASS
+Connected.
+SQL> set arraysize 5000
+SQL> -- reporter le numéro de cliché rendu par le programme ici :
+SQL> -- snap_id1=153  ? snap_id1=743
+SQL> 
+SQL> -- 2. Provoquer de l'activité (requêtes sur l'application bancaire)
+SQL> -- dans la base entre deux clichés AWR
+SQL> 
+SQL> -- Désactiver l'affichage à l'écran des résultats des requêtes.
+SQL>  set autotrace &TRACEOPTION
+SQL> 
+SQL> 
+SQL>  col compteid format a24
+SQL>  col nom format a20
+SQL>  col prenom format a20
+SQL>  col ville format a20
+SQL>  col adresse format a30
+SQL> 
+SQL> 
+SQL>  -- Lancer plusieurs requêtes
+SQL>  -- Cette requete retourne toutes les colonnes des consultations, jointes avec les informations des patients correspondants
+SQL> -- ou les ID PATIENT sont egaux dans les deux
+SQL> -- tables. Cela permet d’obtenir des donnees combinees sur les consultations et les
+SQL> -- patients dans une seule table resultante.
+SQL> SELECT OC.*, DEREF(OC.refPatient) AS PATIENT FROM O_CONSULTATION OC;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 1511630265                                                                                                                                                                             
+                                                                                                                                                                                                        
+-------------------------------------------------------------------------------------------------------------------------------------------------------                                                 
+| Id  | Operation                    | Name                                                                   | Rows  | Bytes | Cost (%CPU)| Time     |                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------                                                 
+|   0 | SELECT STATEMENT             |                                                                        |    10 |  2590 |    36   (3)| 00:00:01 |                                                 
+|*  1 |  INDEX RANGE SCAN            | IDX_TABLE_PLISTREFEXAMENS_NESTED_TABLE_ID_COLUMN_VALUE                 |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|*  2 |  INDEX RANGE SCAN            | IDX_TABLE_PLISTREFPRESCRIPTIONS_NESTED_TABLE_ID_COLUMN_VALUE           |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|*  3 |  INDEX RANGE SCAN            | IDX_O_PATIENT_TABLE_PLISTREFRENDEZVOUS_NESTED_TABLE_ID_COLUMN_VALUE    |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|*  4 |   INDEX RANGE SCAN           | IDX_O_PATIENT_TABLE_PLISTREFCONSULTATIONS_NESTED_TABLE_ID_COLUMN_VALUE |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|*  5 |    INDEX RANGE SCAN          | IDX_O_PATIENT_TABLE_PLISTREFFACTURES_NESTED_TABLE_ID_COLUMN_VALUE      |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|   6 |  MERGE JOIN OUTER            |                                                                        |    10 |  2590 |     6  (17)| 00:00:01 |                                                 
+|   7 |   TABLE ACCESS BY INDEX ROWID| O_CONSULTATION                                                         |    10 |   890 |     2   (0)| 00:00:01 |                                                 
+|   8 |    INDEX FULL SCAN           | IDX_O_CONSULTATION_REFPATIENT                                          |    10 |       |     1   (0)| 00:00:01 |                                                 
+|*  9 |   SORT JOIN                  |                                                                        |    20 |  3400 |     4  (25)| 00:00:01 |                                                 
+|  10 |    TABLE ACCESS FULL         | O_PATIENT                                                              |    20 |  3400 |     3   (0)| 00:00:01 |                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------                                                 
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   2 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   3 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   4 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   5 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   9 - access("P000005$"."SYS_NC_OID$"(+)="OC"."REFPATIENT")                                                                                                                                            
+       filter("P000005$"."SYS_NC_OID$"(+)="OC"."REFPATIENT")                                                                                                                                            
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+         81  recursive calls                                                                                                                                                                            
+         96  db block gets                                                                                                                                                                              
+        610  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+      18780  redo size                                                                                                                                                                                  
+      52769  bytes sent via SQL*Net to client                                                                                                                                                           
+      14166  bytes received via SQL*Net from client                                                                                                                                                     
+        101  SQL*Net roundtrips to/from client                                                                                                                                                          
+          1  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> -- Cette requete retourne toutes les colonnes des factures, jointes avec les informations
+SQL> -- des patients correspondants o`u les ID PATIENT sont ´egaux dans les deux tables.
+SQL> -- Cela permet d’obtenir des donn´ees combin´ees sur les factures et les patients dans
+SQL> -- une seule table resultante.
+SQL> SELECT OFA.*, DEREF(OFA.refPatient) AS PATIENT FROM O_FACTURE OFA;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 1382575167                                                                                                                                                                             
+                                                                                                                                                                                                        
+-------------------------------------------------------------------------------------------------------------------------------------------------------                                                 
+| Id  | Operation                    | Name                                                                   | Rows  | Bytes | Cost (%CPU)| Time     |                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------                                                 
+|   0 | SELECT STATEMENT             |                                                                        |    10 |  2020 |    24   (5)| 00:00:01 |                                                 
+|*  1 |  INDEX RANGE SCAN            | IDX_O_PATIENT_TABLE_PLISTREFRENDEZVOUS_NESTED_TABLE_ID_COLUMN_VALUE    |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|*  2 |   INDEX RANGE SCAN           | IDX_O_PATIENT_TABLE_PLISTREFCONSULTATIONS_NESTED_TABLE_ID_COLUMN_VALUE |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|*  3 |    INDEX RANGE SCAN          | IDX_O_PATIENT_TABLE_PLISTREFFACTURES_NESTED_TABLE_ID_COLUMN_VALUE      |     1 |    17 |     1   (0)| 00:00:01 |                                                 
+|   4 |  MERGE JOIN OUTER            |                                                                        |    10 |  2020 |     6  (17)| 00:00:01 |                                                 
+|   5 |   TABLE ACCESS BY INDEX ROWID| O_FACTURE                                                              |    10 |   320 |     2   (0)| 00:00:01 |                                                 
+|   6 |    INDEX FULL SCAN           | IDX_O_FACTURE_REFPATIENT                                               |    10 |       |     1   (0)| 00:00:01 |                                                 
+|*  7 |   SORT JOIN                  |                                                                        |    20 |  3400 |     4  (25)| 00:00:01 |                                                 
+|   8 |    TABLE ACCESS FULL         | O_PATIENT                                                              |    20 |  3400 |     3   (0)| 00:00:01 |                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------                                                 
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   2 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   3 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   7 - access("P000003$"."SYS_NC_OID$"(+)="OFA"."REFPATIENT")                                                                                                                                           
+       filter("P000003$"."SYS_NC_OID$"(+)="OFA"."REFPATIENT")                                                                                                                                           
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+         28  recursive calls                                                                                                                                                                            
+         15  db block gets                                                                                                                                                                              
+        157  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+       2984  redo size                                                                                                                                                                                  
+      25457  bytes sent via SQL*Net to client                                                                                                                                                           
+       5895  bytes received via SQL*Net from client                                                                                                                                                     
+         45  SQL*Net roundtrips to/from client                                                                                                                                                          
+          1  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> -- Cette requete renvoie toutes les colonnes des consultations, jointes avec les informations des patients correspondants,
+SQL> -- et les ordonne par date de consultation croissante.
+SQL> -- Cela permet d’obtenir une liste de consultations associ´ees `a leurs patients, tri´ees par
+SQL> -- date de consultation.
+SQL> SELECT OC.*, DEREF(OC.refPatient) AS PATIENT
+  2  FROM O_CONSULTATION OC
+  3  ORDER BY OC.Date_Consultation ASC;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 2828688068                                                                                                                                                                             
+                                                                                                                                                                                                        
+--------------------------------------------------------------------------------------------------------------------------------------------------------                                                
+| Id  | Operation                     | Name                                                                   | Rows  | Bytes | Cost (%CPU)| Time     |                                                
+--------------------------------------------------------------------------------------------------------------------------------------------------------                                                
+|   0 | SELECT STATEMENT              |                                                                        |    10 |  2590 |    37   (6)| 00:00:01 |                                                
+|*  1 |  INDEX RANGE SCAN             | IDX_TABLE_PLISTREFEXAMENS_NESTED_TABLE_ID_COLUMN_VALUE                 |     1 |    17 |     1   (0)| 00:00:01 |                                                
+|*  2 |  INDEX RANGE SCAN             | IDX_TABLE_PLISTREFPRESCRIPTIONS_NESTED_TABLE_ID_COLUMN_VALUE           |     1 |    17 |     1   (0)| 00:00:01 |                                                
+|*  3 |  INDEX RANGE SCAN             | IDX_O_PATIENT_TABLE_PLISTREFRENDEZVOUS_NESTED_TABLE_ID_COLUMN_VALUE    |     1 |    17 |     1   (0)| 00:00:01 |                                                
+|*  4 |   INDEX RANGE SCAN            | IDX_O_PATIENT_TABLE_PLISTREFCONSULTATIONS_NESTED_TABLE_ID_COLUMN_VALUE |     1 |    17 |     1   (0)| 00:00:01 |                                                
+|*  5 |    INDEX RANGE SCAN           | IDX_O_PATIENT_TABLE_PLISTREFFACTURES_NESTED_TABLE_ID_COLUMN_VALUE      |     1 |    17 |     1   (0)| 00:00:01 |                                                
+|   6 |  SORT ORDER BY                |                                                                        |    10 |  2590 |    37   (6)| 00:00:01 |                                                
+|   7 |   MERGE JOIN OUTER            |                                                                        |    10 |  2590 |     6  (17)| 00:00:01 |                                                
+|   8 |    TABLE ACCESS BY INDEX ROWID| O_CONSULTATION                                                         |    10 |   890 |     2   (0)| 00:00:01 |                                                
+|   9 |     INDEX FULL SCAN           | IDX_O_CONSULTATION_REFPATIENT                                          |    10 |       |     1   (0)| 00:00:01 |                                                
+|* 10 |    SORT JOIN                  |                                                                        |    20 |  3400 |     4  (25)| 00:00:01 |                                                
+|  11 |     TABLE ACCESS FULL         | O_PATIENT                                                              |    20 |  3400 |     3   (0)| 00:00:01 |                                                
+--------------------------------------------------------------------------------------------------------------------------------------------------------                                                
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   2 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   3 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   4 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   5 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+  10 - access("P000005$"."SYS_NC_OID$"(+)="OC"."REFPATIENT")                                                                                                                                            
+       filter("P000005$"."SYS_NC_OID$"(+)="OC"."REFPATIENT")                                                                                                                                            
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+         22  recursive calls                                                                                                                                                                            
+          0  db block gets                                                                                                                                                                              
+        172  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+          0  redo size                                                                                                                                                                                  
+      29517  bytes sent via SQL*Net to client                                                                                                                                                           
+       6216  bytes received via SQL*Net from client                                                                                                                                                     
+         48  SQL*Net roundtrips to/from client                                                                                                                                                          
+          2  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> -- Cette requete retourne l’identifiant du patient, son adresse e-mail, et la somme des
+SQL> -- montants totaux de ses factures, regroup´es par identifiant de patient et e-mail, et
+SQL> -- tries par identifiant de patient puis par e-mail. Cela permet d’obtenir une vue agr´eg´ee
+SQL> -- des montants totaux de factures pour chaque patient avec leurs adresses email correspondantes.
+SQL> SELECT OFA.refPatient.ID_PERSONNE AS ID_PATIENT, OFA.refPatient.EMAIL AS EMAIL, SUM(OFA.Montant_Total) AS MONTANT_TOTAL
+  2  FROM O_FACTURE OFA
+  3  GROUP BY OFA.refPatient.ID_PERSONNE, OFA.refPatient.EMAIL
+  4  ORDER BY OFA.refPatient.ID_PERSONNE, OFA.refPatient.EMAIL DESC;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 238329197                                                                                                                                                                              
+                                                                                                                                                                                                        
+--------------------------------------------------------------------------------------------------------                                                                                                
+| Id  | Operation                | Name                        | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                
+--------------------------------------------------------------------------------------------------------                                                                                                
+|   0 | SELECT STATEMENT         |                             |    10 |   760 |     6  (17)| 00:00:01 |                                                                                                
+|   1 |  SORT GROUP BY           |                             |    10 |   760 |     6  (17)| 00:00:01 |                                                                                                
+|*  2 |   HASH JOIN OUTER        |                             |    10 |   760 |     5   (0)| 00:00:01 |                                                                                                
+|   3 |    VIEW                  | index$_join$_001            |    10 |   310 |     2   (0)| 00:00:01 |                                                                                                
+|*  4 |     HASH JOIN            |                             |       |       |            |          |                                                                                                
+|   5 |      INDEX FAST FULL SCAN| IDX_O_FACTURE_MONTANT_TOTAL |    10 |   310 |     1   (0)| 00:00:01 |                                                                                                
+|   6 |      INDEX FAST FULL SCAN| IDX_O_FACTURE_REFPATIENT    |    10 |   310 |     1   (0)| 00:00:01 |                                                                                                
+|   7 |    TABLE ACCESS FULL     | O_PATIENT                   |    20 |   900 |     3   (0)| 00:00:01 |                                                                                                
+--------------------------------------------------------------------------------------------------------                                                                                                
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   2 - access("P000003$"."SYS_NC_OID$"(+)="OFA"."REFPATIENT")                                                                                                                                           
+   4 - access(ROWID=ROWID)                                                                                                                                                                              
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+         10  recursive calls                                                                                                                                                                            
+          5  db block gets                                                                                                                                                                              
+         18  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+        948  redo size                                                                                                                                                                                  
+       1120  bytes sent via SQL*Net to client                                                                                                                                                           
+         52  bytes received via SQL*Net from client                                                                                                                                                     
+          2  SQL*Net roundtrips to/from client                                                                                                                                                          
+          1  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> 
+SQL> -- Cette requete retourne toutes les colonnes des consultations, des patients et des
+SQL> -- examens associes, ou chaque consultation est liee a son patient correspondant via
+SQL> -- la jointure avec la table "PATIENT", et chaque consultation est liee a ses examens
+SQL> -- correspondants via la jointure avec la table "EXAMEN".
+SQL> SELECT
+  2  OE.*,
+  3  DEREF(OE.refConsultation) AS CONSULTATION,
+  4  DEREF(DEREF(OE.refConsultation).refPatient) AS PATIENT
+  5  FROM O_EXAMEN OE;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 3479848259                                                                                                                                                                             
+                                                                                                                                                                                                        
+---------------------------------------------------------------------------------------------------------------------------------------------                                                           
+| Id  | Operation                    | Name                                                         | Rows  | Bytes | Cost (%CPU)| Time     |                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------                                                           
+|   0 | SELECT STATEMENT             |                                                              |    10 |  1310 |    30   (4)| 00:00:01 |                                                           
+|*  1 |  INDEX RANGE SCAN            | IDX_TABLE_PLISTREFEXAMENS_NESTED_TABLE_ID_COLUMN_VALUE       |     1 |    17 |     1   (0)| 00:00:01 |                                                           
+|*  2 |   INDEX RANGE SCAN           | IDX_TABLE_PLISTREFPRESCRIPTIONS_NESTED_TABLE_ID_COLUMN_VALUE |     1 |    17 |     1   (0)| 00:00:01 |                                                           
+|   3 |  MERGE JOIN OUTER            |                                                              |    10 |  1310 |     6  (17)| 00:00:01 |                                                           
+|   4 |   TABLE ACCESS BY INDEX ROWID| O_EXAMEN                                                     |    10 |   420 |     2   (0)| 00:00:01 |                                                           
+|   5 |    INDEX FULL SCAN           | IDX_O_EXAMEN_REFCONSULTATION                                 |    10 |       |     1   (0)| 00:00:01 |                                                           
+|*  6 |   SORT JOIN                  |                                                              |    10 |   890 |     4  (25)| 00:00:01 |                                                           
+|   7 |    TABLE ACCESS FULL         | O_CONSULTATION                                               |    10 |   890 |     3   (0)| 00:00:01 |                                                           
+---------------------------------------------------------------------------------------------------------------------------------------------                                                           
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   2 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   6 - access("P000003$"."SYS_NC_OID$"(+)="OE"."REFCONSULTATION")                                                                                                                                       
+       filter("P000003$"."SYS_NC_OID$"(+)="OE"."REFCONSULTATION")                                                                                                                                       
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+        176  recursive calls                                                                                                                                                                            
+         25  db block gets                                                                                                                                                                              
+        233  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+       5048  redo size                                                                                                                                                                                  
+      20092  bytes sent via SQL*Net to client                                                                                                                                                           
+       3446  bytes received via SQL*Net from client                                                                                                                                                     
+         28  SQL*Net roundtrips to/from client                                                                                                                                                          
+          1  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> -- Cette requete retourne toutes les colonnes des factures, des patients et des consultations associ´ees, o`u chaque facture est li´ee `a son patient correspondant via la jointure
+SQL> -- avec la table ”PATIENT”, et chaque facture est li´ee `a sa consultation correspondante
+SQL> -- via la jointure avec la table ”CONSULTATION”.
+SQL> SELECT
+  2  OFA.*,
+  3  OFA.refPatient AS PATIENT,
+  4  OFA.refConsultation AS CONSULTATION
+  5  FROM O_FACTURE OFA;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 343302980                                                                                                                                                                              
+                                                                                                                                                                                                        
+-------------------------------------------------------------------------------                                                                                                                         
+| Id  | Operation         | Name      | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                                         
+-------------------------------------------------------------------------------                                                                                                                         
+|   0 | SELECT STATEMENT  |           |    10 |   320 |     3   (0)| 00:00:01 |                                                                                                                         
+|   1 |  TABLE ACCESS FULL| O_FACTURE |    10 |   320 |     3   (0)| 00:00:01 |                                                                                                                         
+-------------------------------------------------------------------------------                                                                                                                         
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+          1  recursive calls                                                                                                                                                                            
+          0  db block gets                                                                                                                                                                              
+         85  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+          0  redo size                                                                                                                                                                                  
+      19049  bytes sent via SQL*Net to client                                                                                                                                                           
+       4778  bytes received via SQL*Net from client                                                                                                                                                     
+         38  SQL*Net roundtrips to/from client                                                                                                                                                          
+          0  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> -- Cette requete renvoie toutes les colonnes des consultations, des patients et des examens associes,
+SQL> -- ou chaque consultation est liee a son patient correspondant via la
+SQL> -- jointure avec la table ”PATIENT”, et chaque consultation est liee a ses examens
+SQL> -- correspondants via la jointure avec la table ”EXAMEN”. Les resultats sont ensuite
+SQL> -- tri´es par date de consultation croissante.
+SQL> SELECT
+  2  OE.*,
+  3  DEREF(OE.refConsultation) AS CONSULTATION,
+  4  DEREF(DEREF(OE.refConsultation).refPatient) AS PATIENT
+  5  FROM O_EXAMEN OE
+  6  ORDER BY OE.refConsultation.Date_Consultation ASC;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 1887234298                                                                                                                                                                             
+                                                                                                                                                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------                                                          
+| Id  | Operation                     | Name                                                         | Rows  | Bytes | Cost (%CPU)| Time     |                                                          
+----------------------------------------------------------------------------------------------------------------------------------------------                                                          
+|   0 | SELECT STATEMENT              |                                                              |    10 |  1310 |    31   (7)| 00:00:01 |                                                          
+|*  1 |  INDEX RANGE SCAN             | IDX_TABLE_PLISTREFEXAMENS_NESTED_TABLE_ID_COLUMN_VALUE       |     1 |    17 |     1   (0)| 00:00:01 |                                                          
+|*  2 |   INDEX RANGE SCAN            | IDX_TABLE_PLISTREFPRESCRIPTIONS_NESTED_TABLE_ID_COLUMN_VALUE |     1 |    17 |     1   (0)| 00:00:01 |                                                          
+|   3 |  SORT ORDER BY                |                                                              |    10 |  1310 |    31   (7)| 00:00:01 |                                                          
+|   4 |   MERGE JOIN OUTER            |                                                              |    10 |  1310 |     6  (17)| 00:00:01 |                                                          
+|   5 |    TABLE ACCESS BY INDEX ROWID| O_EXAMEN                                                     |    10 |   420 |     2   (0)| 00:00:01 |                                                          
+|   6 |     INDEX FULL SCAN           | IDX_O_EXAMEN_REFCONSULTATION                                 |    10 |       |     1   (0)| 00:00:01 |                                                          
+|*  7 |    SORT JOIN                  |                                                              |    10 |   890 |     4  (25)| 00:00:01 |                                                          
+|   8 |     TABLE ACCESS FULL         | O_CONSULTATION                                               |    10 |   890 |     3   (0)| 00:00:01 |                                                          
+----------------------------------------------------------------------------------------------------------------------------------------------                                                          
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   2 - access("NESTED_TABLE_ID"=:B1)                                                                                                                                                                    
+   7 - access("P000003$"."SYS_NC_OID$"(+)="OE"."REFCONSULTATION")                                                                                                                                       
+       filter("P000003$"."SYS_NC_OID$"(+)="OE"."REFCONSULTATION")                                                                                                                                       
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+        152  recursive calls                                                                                                                                                                            
+          0  db block gets                                                                                                                                                                              
+        191  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+          0  redo size                                                                                                                                                                                  
+      20092  bytes sent via SQL*Net to client                                                                                                                                                           
+       3446  bytes received via SQL*Net from client                                                                                                                                                     
+         28  SQL*Net roundtrips to/from client                                                                                                                                                          
+          2  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> -- Cette requete retourne l’identifiant du patient, son adresse e-mail, la somme des
+SQL> -- montants totaux de ses factures, ainsi que les dates de la facture et de la consultation
+SQL> -- correspondantes, regroup´es par identifiant de patient, adresse e-mail, date de facture
+SQL> -- et date de consultation, et tri´es dans cet ordre. Cela permet d’obtenir une vue agr´eg´ee
+SQL> -- des montants totaux de factures pour chaque patient, avec les d´etails des factures
+SQL> -- et des consultations.
+SQL> SELECT
+  2  OFA.refPatient.ID_PERSONNE AS ID_PATIENT,
+  3  OFA.refPatient.Email AS EMAIL,
+  4  OFA.Date_Facture AS Date_Facture,
+  5  OFA.refConsultation.Date_Consultation AS Date_Consultation,
+  6  SUM(OFA.MONTANT_TOTAL) AS SOMME_MONTANTS
+  7  FROM O_FACTURE OFA
+  8  GROUP BY
+  9  OFA.refPatient.ID_PERSONNE,
+ 10  OFA.refPatient.Email,
+ 11  OFA.Date_Facture,
+ 12  OFA.refConsultation.Date_Consultation
+ 13  ORDER BY
+ 14  OFA.refPatient.ID_PERSONNE,
+ 15  OFA.refPatient.Email,
+ 16  OFA.Date_Facture,
+ 17  OFA.refConsultation.Date_Consultation;
+
+10 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                                                                              
+Plan hash value: 1325209660                                                                                                                                                                             
+                                                                                                                                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------                                                               
+| Id  | Operation                      | Name                                                   | Rows  | Bytes | Cost (%CPU)| Time     |                                                               
+-----------------------------------------------------------------------------------------------------------------------------------------                                                               
+|   0 | SELECT STATEMENT               |                                                        |    10 |  1020 |     9  (23)| 00:00:01 |                                                               
+|   1 |  SORT GROUP BY                 |                                                        |    10 |  1020 |     9  (23)| 00:00:01 |                                                               
+|*  2 |   HASH JOIN OUTER              |                                                        |    10 |  1020 |     8  (13)| 00:00:01 |                                                               
+|   3 |    MERGE JOIN OUTER            |                                                        |    10 |   570 |     5  (20)| 00:00:01 |                                                               
+|   4 |     TABLE ACCESS BY INDEX ROWID| O_FACTURE                                              |    10 |   320 |     2   (0)| 00:00:01 |                                                               
+|   5 |      INDEX FULL SCAN           | IDX_O_FACTURE_REFCONSULTATION                          |    10 |       |     1   (0)| 00:00:01 |                                                               
+|*  6 |     SORT JOIN                  |                                                        |    10 |   250 |     3  (34)| 00:00:01 |                                                               
+|   7 |      VIEW                      | index$_join$_005                                       |    10 |   250 |     2   (0)| 00:00:01 |                                                               
+|*  8 |       HASH JOIN                |                                                        |       |       |            |          |                                                               
+|   9 |        INDEX FAST FULL SCAN    | IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE |    10 |   250 |     1   (0)| 00:00:01 |                                                               
+|  10 |        INDEX FAST FULL SCAN    | SYS_C008737                                            |    10 |   250 |     1   (0)| 00:00:01 |                                                               
+|  11 |    TABLE ACCESS FULL           | O_PATIENT                                              |    20 |   900 |     3   (0)| 00:00:01 |                                                               
+-----------------------------------------------------------------------------------------------------------------------------------------                                                               
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   2 - access("P000003$"."SYS_NC_OID$"(+)="OFA"."REFPATIENT")                                                                                                                                           
+   6 - access("P000005$"."SYS_NC_OID$"(+)="OFA"."REFCONSULTATION")                                                                                                                                      
+       filter("P000005$"."SYS_NC_OID$"(+)="OFA"."REFCONSULTATION")                                                                                                                                      
+   8 - access(ROWID=ROWID)                                                                                                                                                                              
+
+
+Statistics
+----------------------------------------------------------                                                                                                                                              
+         23  recursive calls                                                                                                                                                                            
+          5  db block gets                                                                                                                                                                              
+         23  consistent gets                                                                                                                                                                            
+          0  physical reads                                                                                                                                                                             
+        824  redo size                                                                                                                                                                                  
+       1450  bytes sent via SQL*Net to client                                                                                                                                                           
+         52  bytes received via SQL*Net from client                                                                                                                                                     
+          2  SQL*Net roundtrips to/from client                                                                                                                                                          
+          2  sorts (memory)                                                                                                                                                                             
+          0  sorts (disk)                                                                                                                                                                               
+         10  rows processed                                                                                                                                                                             
+
+SQL> 
+SQL> 
+SQL> 
+SQL>  set autotrace off
+SQL> 
+SQL> -- Connexion avec lau niveau CDB pour prendre un cliché AWR
+SQL> -- La gestion des statistiques se fait au niveau e ma CDB
+SQL> connect &MYCDBUSER@&DBALIASCDB/&MYCDBUSERPASS
+Connected.
+SQL> 
+SQL> 
+SQL> -- Prendre un deuxième cliché AWR pour délimiter
+SQL> -- la fin de l'espace de récupération des requêtes.
+SQL> variable snapid2 number;
+SQL> set serveroutput on
+SQL> 
+SQL> begin
+  2  	     :snapid2	     := dbms_workload_repository.create_snapshot;
+  3  	     dbms_output.put_line('snap_id2='||:snapid2);
+  4  end;
+  5  /
+snap_id2=39                                                                                                                                                                                             
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ReConnexion à la  PDB pour utiliser STA
+SQL> connect &MYPDBUSER@&DBALIASPDB/&MYPDBUSERPASS
+Connected.
+SQL> set arraysize 5000
+SQL> -- reporter le numéro de cliché rendu par le programme ici :
+SQL> -- snap_id2= 154 ? snap_id2=744
+SQL> 
+SQL> -- Supprimer la tache
+SQL> -- Supprimer 1 tache GESTION_CABINET_MEDICAL_SQL_TUNING_TASK si elle existe déjà
+SQL> execute DBMS_SQLTUNE.DROP_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER');
+BEGIN DBMS_SQLTUNE.DROP_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'); END;
+
+*
+ERROR at line 1:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 3062 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 3046 
+ORA-06512: at "SYS.DBMS_ADVISOR", line 193 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1296 
+ORA-06512: at line 1 
+
+
+SQL> execute DBMS_SQLTUNE.DROP_SQLSET('GESTION_CABINET_MEDICAL_sql_tuning_set'||'&MYPDBUSER');
+BEGIN DBMS_SQLTUNE.DROP_SQLSET('GESTION_CABINET_MEDICAL_sql_tuning_set'||'GESTION_CABINET_MEDICAL'); END;
+
+*
+ERROR at line 1:
+ORA-13755: invalid "SQL Tuning Set" name 
+ORA-06512: at "SYS.DBMS_SQLTUNE_UTIL1", line 457 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 7461 
+ORA-06512: at line 1 
+
+
+SQL> -- Si vous avez déjà exécuté ce script, il se peut qu'un
+SQL> -- qu'un profile de requête ai déjà été créé. Dans ce cas:
+SQL> -- Rechercher puis supprimer le profie s'il existe déjà
+SQL> ---
+SQL> set linesize 200
+SQL> col sql_text format A40
+SQL> select name
+  2  from dba_sql_profiles
+  3  order by name;
+
+no rows selected
+
+SQL> 
+SQL> -- Supprimer le(s) profile(s) s'ils ont été trouvés avec la requête
+SQL> -- précédente. NomProfile est le résultat de la requête
+SQL> -- ci-dessus. Répéter l'action si utile.
+SQL> execute DBMS_SQLTUNE.DROP_SQL_PROFILE('NomProfile');
+BEGIN DBMS_SQLTUNE.DROP_SQL_PROFILE('NomProfile'); END;
+
+*
+ERROR at line 1:
+ORA-13833: SQL profile or patch named NomProfile doesn't exist 
+ORA-06512: at "SYS.DBMS_SQLTUNE_INTERNAL", line 19069 
+ORA-06512: at "SYS.PRVT_SQLPROF_INFRA", line 48 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 11227 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> -- 3. Générer les recommandations
+SQL> -- Exécuter le script ci-dessous pour optimiser automatiquement
+SQL> -- les requêtes lancées entre snap_id1 et snap_id2.
+SQL> -- Le conseiller qui sera utilisé ici est SQL TUNNING ADVISOR.
+SQL> set serveroutput on
+SQL> DECLARE
+  2  my_task_name VARCHAR2(200);
+  3  nom_sqlset varchar2(200):='GESTION_CABINET_MEDICAL_sql_tuning_set'||'&MYPDBUSER';
+  4  l_cursor  DBMS_SQLTUNE.sqlset_cursor;
+  5  BEGIN
+  6  DBMS_SQLTUNE.CREATE_SQLSET(
+  7  sqlset_name => nom_sqlset,
+  8  description => 'I/O intensive workload');
+  9  
+ 10  -- Appel de la fonction DBMS_SQLTUNE.select_workload_repository
+ 11  -- pour recolter les requêtes à régler automatiquement entre
+ 12  -- snap_id1 et snap_id2.
+ 13  -- remplacer snap_id1 et snap_id2 par les valeurs capturées
+ 14  -- plus haut après les appels de:dbms_workload_repository.create_snapshot;.
+ 15  --1059 et 1174
+ 16    OPEN l_cursor FOR
+ 17  	 SELECT VALUE(p)
+ 18  	 FROM	TABLE (DBMS_SQLTUNE.select_workload_repository (
+ 19  			 :snapid1, --snap_id1,	-- begin_snap :
+ 20  			 :snapid2, --snap_id2,	-- end_snap
+ 21  			 'parsing_schema_name =''&MYPDBUSER''  and parsing_schema_name <> ''SYS''', -- basic_filter
+ 22  			 NULL, -- object_filter
+ 23  			 NULL, -- ranking_measure1
+ 24  			 NULL, -- ranking_measure2
+ 25  			 NULL, -- ranking_measure3
+ 26  			 NULL, -- result_percentage
+ 27  					     NULL, -- result_limit
+ 28  					     'ALL' -- attribute_list
+ 29  					     )
+ 30  		     --    10)	 -- result_limit
+ 31  		       ) p;
+ 32  
+ 33  -- charger les requêtes recoltées entre snap_id1 et snap_id2
+ 34  -- actuellement présente dans l_cursor dans le sql tuning
+ 35  -- set créé précédemment.
+ 36    DBMS_SQLTUNE.load_sqlset (
+ 37  	 sqlset_name	 => nom_sqlset,
+ 38  	 populate_cursor => l_cursor);
+ 39  
+ 40  -- créer une tâche de tuning pour le sql tuning set
+ 41  -- alimenté en requête dans l'action ci-dessus.
+ 42  my_task_name := DBMS_SQLTUNE.CREATE_TUNING_TASK(
+ 43  sqlset_name => nom_sqlset,
+ 44  basic_filter => 'parsing_schema_name =''&MYPDBUSER''', -- basic_filter
+ 45  scope => 'COMPREHENSIVE',
+ 46  time_limit => 60,
+ 47  task_name => 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER',
+ 48  description => 'Task to tune a query on a specified bank queries'
+ 49  );
+ 50  
+ 51  -- Exécuter le tâche de tuning
+ 52  -- le conseiller utilisé ici est STA.
+ 53  DBMS_SQLTUNE.EXECUTE_TUNING_TASK( task_name => my_task_name );
+ 54  
+ 55  END;
+ 56  /
+old   3: nom_sqlset varchar2(200):='GESTION_CABINET_MEDICAL_sql_tuning_set'||'&MYPDBUSER';
+new   3: nom_sqlset varchar2(200):='GESTION_CABINET_MEDICAL_sql_tuning_set'||'GESTION_CABINET_MEDICAL';
+old  21:                     'parsing_schema_name =''&MYPDBUSER''  and parsing_schema_name <> ''SYS''', -- basic_filter
+new  21:                     'parsing_schema_name =''GESTION_CABINET_MEDICAL''  and parsing_schema_name <> ''SYS''', -- basic_filter
+old  44: basic_filter => 'parsing_schema_name =''&MYPDBUSER''', -- basic_filter
+new  44: basic_filter => 'parsing_schema_name =''GESTION_CABINET_MEDICAL''', -- basic_filter
+old  47: task_name => 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER',
+new  47: task_name => 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL',
+DECLARE
+*
+ERROR at line 1:
+ORA-13755: invalid "SQL Tuning Set" name 
+ORA-06512: at "SYS.DBMS_SQLTUNE_UTIL1", line 457 
+ORA-06512: at "SYS.PRVT_SQLSET_INFRA", line 18 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 7421 
+ORA-06512: at line 6 
+
+
+SQL> 
+SQL> -- profile des fonctions utilisées dans le programme ci-dessus.
+SQL> -- A ne pas exécuter. Voir le manuel Oracle Oracle® Database
+SQL> -- PL/SQL Packages and Types Reference pour la description
+SQL> -- détaillée.
+SQL> /*
+SQL> DBMS_SQLTUNE.SELECT_WORKLAOD_REPOSITORY (
+SQL> begin_snap IN NUMBER,
+SQL> end_snap IN NUMBER,
+SQL> basic_filter IN VARCHAR2 := NULL,
+SQL> object_filter IN VARCHAR2 := NULL,
+SQL> ranking_measure1 IN VARCHAR2 := NULL,
+SQL> ranking_measure2 IN VARCHAR2 := NULL,
+SQL> ranking_measure3 IN VARCHAR2 := NULL,
+SQL> result_percentage IN NUMBER := 1,
+SQL> result_limit IN NUMBER := NULL
+SQL> attribute_list IN VARCHAR2 := NULL)
+SQL> RETURN sys.sqlset PIPELINED;
+SQL> 
+SQL> 
+SQL> DBMS_SQLTUNE.CREATE_TUNING_TASK(
+SQL> sqlset_name IN VARCHAR2,
+SQL> basic_filter IN VARCHAR2 := NULL,
+SQL> object_filter IN VARCHAR2 := NULL,
+SQL> rank1 IN VARCHAR2 := NULL,
+SQL> rank2 IN VARCHAR2 := NULL,
+SQL> rank3 IN VARCHAR2 := NULL,
+SQL> result_percentage IN NUMBER := NULL,
+SQL> result_limit IN NUMBER := NULL,
+SQL> scope IN VARCHAR2 := SCOPE_COMPREHENSIVE,
+SQL> time_limit IN NUMBER := TIME_LIMIT_DEFAULT,
+SQL> task_name IN VARCHAR2 := NULL,
+SQL> description IN VARCHAR2 := NULL
+SQL> plan_filter IN VARCHAR2 := 'MAX_ELAPSED_TIME',
+SQL> sqlset_owner IN VARCHAR2 := NULL)
+SQL> RETURN VARCHAR2;
+SQL> 
+SQL> */
+SQL> 
+SQL> 
+SQL> 
+SQL> -- 4. Afficher les résultats d'analyses
+SQL> 
+SQL> -- Consultation des informations sur la tache
+SQL> 
+SQL> -- Vérification de la tâche créée
+SQL> col task_name format a30
+SQL> SELECT task_name
+  2  FROM DBA_ADVISOR_LOG
+  3  WHERE owner ='ORS2' and task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER';
+old   3: WHERE owner ='ORS2' and task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   3: WHERE owner ='ORS2' and task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> 
+SQL> --?
+SQL> 
+SQL> -- La vue Advisor_tasks contient des informations
+SQL> -- sur les tâches
+SQL> 
+SQL> SELECT TASK_NAME, ADVISOR_NAME, status , RECOMMENDATION_COUNT, SOURCE
+  2  FROM USER_ADVISOR_TASKS
+  3  WHERE task_name = 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER';
+old   3: WHERE task_name = 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   3: WHERE task_name = 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> 
+SQL> --?
+SQL> 
+SQL> -- La vue V$ADVISOR_PROGRESS contient des informations
+SQL> -- sur la progression des tâches
+SQL> 
+SQL> -- Exemple de consultation de la progression
+SQL> 
+SQL> SELECT sofar, totalwork FROM
+  2  V$ADVISOR_PROGRESS  vp,
+  3  DBA_ADVISOR_LOG da
+  4  WHERE vp.username = '&MYPDBUSER'
+  5  AND vp.task_id=da.task_id
+  6  AND da.task_name = 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER';
+old   4: WHERE vp.username = '&MYPDBUSER'
+new   4: WHERE vp.username = 'GESTION_CABINET_MEDICAL'
+old   6: AND da.task_name = 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   6: AND da.task_name = 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> 
+SQL> --?
+SQL> 
+SQL> --La fonction DBMS_SQLTUNE.REPORT_TUNING_TASK permet d'afficher
+SQL> --le résultat d'une analyse
+SQL> 
+SQL> 
+SQL> SET LONG 4000
+SQL> SET LONGCHUNKSIZE 4000
+SQL> SET LINESIZE 1000
+SQL> SELECT DBMS_SQLTUNE.REPORT_TUNING_TASK( 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER')
+  2  FROM DUAL;
+old   1: SELECT DBMS_SQLTUNE.REPORT_TUNING_TASK( 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER')
+new   1: SELECT DBMS_SQLTUNE.REPORT_TUNING_TASK( 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL')
+ERROR:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1366 
+ORA-06512: at line 1 
+
+
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> --?
+SQL> 
+SQL> -- résultat du report il est conseillée de restructurer la
+SQL> -- requête.
+SQL> 
+SQL> --?
+SQL> 
+SQL> -- la ligne ci-dessous dans le rapport indique qu'il y'a une
+SQL> -- restructuration de la requete à faire.
+SQL> -- Number of SQL Restructure Findings: 1
+SQL> 
+SQL> --
+SQL> -- Type de recommandation
+SQL> -- Consulter le type de recommandation dans la vue
+SQL> -- DBA_ADVISOR_RECOMMENDATIONS
+SQL> --
+SQL> 
+SQL> col task_name format A30
+SQL> col PARENT_REC_IDS format A60
+SQL> col vs.SQL_TEXT format a80
+SQL> col reco_type format A30
+SQL> set linesize 400
+SQL> set pagesize 800
+SQL> 
+SQL> 
+SQL> select distinct dar.task_name,  vs.sql_id, vs.SQL_TEXT, dar.type reco_type  , BENEFIT
+  2  from v$sqlarea vs,
+  3  DBA_ADVISOR_SQLPLANS da,
+  4  DBA_ADVISOR_RECOMMENDATIONS dar
+  5  where vs.sql_id=da.sql_id
+  6  and da.task_id=dar.task_id
+  7  and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+  8  and sql_text not like '%EXPLAIN%'
+  9  and sql_text not like '%opt_param%'
+ 10  and sql_text not like '%insert%'
+ 11  and sql_text not like '%V_$SESSTAT%'
+ 12  and sql_text not like '%PLAN_TABLE%'
+ 13  order by dar.task_name,  vs.sql_id, reco_type;
+old   7: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   7: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> --?
+SQL> 
+SQL> --
+SQL> -- Consultation la description du problème trouvé par STA
+SQL> -- Dans la vue DBA_ADVISOR_FINDINGS
+SQL> -- Résultation de la recherche
+SQL> ---
+SQL> 
+SQL> col task_name format A20
+SQL> col message format A60
+SQL> col more_info format A60
+SQL> col impact_type format A60
+SQL> col vs.SQL_TEXT format a60
+SQL> set linesize 500
+SQL> set pagesize 600
+SQL> 
+SQL> select distinct dar.task_name,  da.object_id, vs.sql_id, vs.SQL_TEXT, MESSAGE, impact_type, more_info
+  2  from v$sqlarea vs,
+  3  DBA_ADVISOR_SQLPLANS da,
+  4  DBA_ADVISOR_FINDINGS dar
+  5  where vs.sql_id=da.sql_id
+  6  and da.task_id=dar.task_id
+  7  and da.object_id=dar.object_id
+  8  and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+  9  and sql_text not like '%EXPLAIN%'
+ 10  and sql_text not like '%opt_param%'
+ 11  and sql_text not like '%insert%'
+ 12  and sql_text not like '%V_$SESSTAT%'
+ 13  and sql_text not like '%PLAN_TABLE%'
+ 14  order by dar.task_name,  da.object_id, vs.sql_id;
+old   8: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   8: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> 
+SQL> --?
+SQL> 
+SQL> ---
+SQL> --- recommandation
+SQL> --- consulter les actions (diagnostic) recommandées par STA
+SQL> --- dans la vue DBA_ADVISOR_ACTIONS
+SQL> ---
+SQL> -- voir
+SQL> col task_name format A20
+SQL> col message format A40
+SQL> col more_info format A40
+SQL> col impact_type format A40
+SQL> col SQL_TEXT format a40
+SQL> 
+SQL> set linesize 200
+SQL> set pagesize 400
+SQL> 
+SQL> 
+SQL> select distinct dar.task_name,  da.object_id, vs.sql_id, vs.SQL_TEXT, message
+  2  from v$sqlarea vs,
+  3  DBA_ADVISOR_SQLPLANS da,
+  4  DBA_ADVISOR_ACTIONS dar
+  5  where vs.sql_id=da.sql_id
+  6  and da.task_id=dar.task_id
+  7  and da.object_id=dar.object_id
+  8  and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+  9  and sql_text not like '%EXPLAIN%'
+ 10  and sql_text not like '%opt_param%'
+ 11  and sql_text not like '%insert%'
+ 12  and sql_text not like '%V_$SESSTAT%'
+ 13  and sql_text not like '%PLAN_TABLE%'
+ 14  order by dar.task_name, da.object_id, vs.sql_id;
+old   8: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   8: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> 
+SQL> --?
+SQL> 
+SQL> -- Liste des actions possibles
+SQL> set linesize 400
+SQL> col ATTR1 format a60
+SQL> col ATTR2 format a30
+SQL> col attr3 format a30
+SQL> col ATTR4 format a30
+SQL> col attr5 format a60
+SQL> 
+SQL> select
+  2  object_id,
+  3  ATTR1,
+  4  ATTR2,
+  5  ATTR3,
+  6  ATTR4,
+  7  ATTR5
+  8  from DBA_ADVISOR_ACTIONS
+  9  where attr1!='SYS'
+ 10  and attr1 not like '%SYSMAN%'
+ 11  order by object_id;
+
+ OBJECT_ID ATTR1                                                        ATTR2                          ATTR3                          ATTR4                          ATTR5                                                                                                                                                                                                                                      
+---------- ------------------------------------------------------------ ------------------------------ ------------------------------ ------------------------------ ------------------------------------------------------------                                                                                                                                                                               
+         0 "HOPITAL"."PK_PATIENT"                                                                      "HOPITAL"."PATIENT"            BTREE                          ("ID_PATIENT_")                                                                                                                                                                                                                            
+         0 "HOPITAL"."PK_CONSULTATION"                                                                 "HOPITAL"."CONSULTATION"       BTREE                          ("ID_CONSULTATION_")                                                                                                                                                                                                                       
+         0 "HOPITAL"."EXAMEN_IDX$$_00130000"                                                           "HOPITAL"."EXAMEN"             BTREE                          ("DETAILS_EXAMEN")                                                                                                                                                                                                                         
+         0 "HOPITAL"."PK_PATIENT"                                                                      "HOPITAL"."PATIENT"            BTREE                          ("ID_PATIENT_")                                                                                                                                                                                                                            
+         0 "HOPITAL"."PK_FACTURE"                                                                      "HOPITAL"."FACTURE"            BTREE                          ("ID_FACTURE_")                                                                                                                                                                                                                            
+         0 "HOPITAL"."PK_FACTURE"                                                                      "HOPITAL"."FACTURE"            BTREE                          ("ID_FACTURE_")                                                                                                                                                                                                                            
+         1 alter table "HOPITAL"."ALLOBJECTS" shrink space              alter table "HOPITAL"."ALLOBJE alter table "HOPITAL"."ALLOBJE                                                                                                                                                                                                                                                                           
+                                                                        CTS" shrink space COMPACT      CTS" enable row movement                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                                                                                
+         1 alter table "GESTION_CABINET_MEDICAL"."ALLOBJECTS" shrink sp alter table "GESTION_CABINET_M alter table "GESTION_CABINET_M                                                                                                                                                                                                                                                                           
+           ace                                                          EDICAL"."ALLOBJECTS" shrink sp EDICAL"."ALLOBJECTS" enable ro                                                                                                                                                                                                                                                                           
+                                                                        ace COMPACT                    w movement                                                                                                                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                                                                                                                                                
+         2 alter table "HOPITAL"."ALLOBJECTS2" shrink space             alter table "HOPITAL"."ALLOBJE alter table "HOPITAL"."ALLOBJE                                                                                                                                                                                                                                                                           
+                                                                        CTS2" shrink space COMPACT     CTS2" enable row movement                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+         2 alter table "HOPITAL"."ALLOBJECTS2" shrink space             alter table "HOPITAL"."ALLOBJE alter table "HOPITAL"."ALLOBJE                                                                                                                                                                                                                                                                           
+                                                                        CTS2" shrink space COMPACT     CTS2" enable row movement                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+        28 alter table "GESTION_CABINET_MEDICAL"."ALLOBJECTS2" shrink s alter table "GESTION_CABINET_M alter table "GESTION_CABINET_M                                                                                                                                                                                                                                                                           
+           pace                                                         EDICAL"."ALLOBJECTS2" shrink s EDICAL"."ALLOBJECTS2" enable r                                                                                                                                                                                                                                                                           
+                                                                        pace COMPACT                   ow movement                                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                
+
+11 rows selected.
+
+SQL> 
+SQL> 
+SQL> ---
+SQL> --- Raisonnement
+SQL> --- Raisonnement avec des explications complémentaires sur
+SQL> --- le problème.
+SQL> --- Consulté pour cela la vue DBA_ADVISOR_RATIONALE
+SQL> ---
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> col task_name format A20
+SQL> col message format A40
+SQL> col more_info format A40
+SQL> col impact_type format A40
+SQL> col SQL_TEXT format a40
+SQL> set linesize 200
+SQL> set pagesize 400
+SQL> 
+SQL> 
+SQL> select distinct dar.task_name,  da.object_id, vs.sql_id, vs.SQL_TEXT, message
+  2  from v$sqlarea vs,
+  3  DBA_ADVISOR_SQLPLANS da,
+  4  DBA_ADVISOR_RATIONALE dar
+  5  where vs.sql_id=da.sql_id
+  6  and da.task_id=dar.task_id
+  7  and da.object_id=dar.object_id
+  8  and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+  9  and sql_text not like '%EXPLAIN%'
+ 10  and sql_text not like '%opt_param%'
+ 11  and sql_text not like '%insert%'
+ 12  and sql_text not like '%V_$SESSTAT%'
+ 13  and sql_text not like '%PLAN_TABLE%'
+ 14  order by dar.task_name,  da.object_id, vs.sql_id;
+old   8: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'
+new   8: and dar.task_name='GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'
+
+no rows selected
+
+SQL> --?
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> --
+SQL> -- Rechercher s'il y'a des scripts générés
+SQL> -- Identifier s'il ya un profile pour cette requête choisie plus
+SQL> -- haut.
+SQL> -- afficher le script complet ou partiel
+SQL> col myscript format a1000
+SQL> set long 4000
+SQL> select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'ALL') MYSCRIPT from dual;
+old   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'ALL') MYSCRIPT from dual
+new   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL', 'ALL') MYSCRIPT from dual
+ERROR:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1813 
+ORA-06512: at line 1 
+
+
+
+no rows selected
+
+SQL> 
+SQL> select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'INDEXES') MYSCRIPT from dual;
+old   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'INDEXES') MYSCRIPT from dual
+new   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL', 'INDEXES') MYSCRIPT from dual
+ERROR:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1813 
+ORA-06512: at line 1 
+
+
+
+no rows selected
+
+SQL> select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'PROFILES') MYSCRIPT from dual;
+old   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'PROFILES') MYSCRIPT from dual
+new   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL', 'PROFILES') MYSCRIPT from dual
+ERROR:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1813 
+ORA-06512: at line 1 
+
+
+
+no rows selected
+
+SQL> select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'STATISTICS') MYSCRIPT from dual;
+old   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'STATISTICS') MYSCRIPT from dual
+new   1: select dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL', 'STATISTICS') MYSCRIPT from dual
+ERROR:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1813 
+ORA-06512: at line 1 
+
+
+
+no rows selected
+
+SQL> 
+SQL> -- une autre façon d'afficher le script complet
+SQL> set serveroutput on
+SQL> begin
+  2  dbms_output.put_line(dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'ALL'));
+  3  end;
+  4  /
+old   2: dbms_output.put_line(dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', 'ALL'));
+new   2: dbms_output.put_line(dbms_sqltune.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL', 'ALL'));
+begin
+*
+ERROR at line 1:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1813 
+ORA-06512: at line 2 
+
+
+SQL> --?
+SQL> 
+SQL> -- 5. Gérer le script SQL proposé pour le réglage SQL
+SQL> -- Gérer le script SQL proposé pour le réglage SQL : Attention ce script est disponible dans le dossier %ORACLE_BASE%\admin\dpdump
+SQL> -- récupérer le script et le mettre dans votre dossier : EXO91
+SQL> -- Editer ce script de façon approprié
+SQL> declare
+  2  mydate varchar2(20):=to_char(sysdate, 'DD_MM_YYYY_HH24_MI_SS');
+  3  fname varchar2(300):='STA_Generate_action_script_on_bank_app_'
+  4  ||'&MYPDBUSER'|| '_'||mydate||'.sql';
+  5  begin
+  6  
+  7  DBMS_ADVISOR.CREATE_FILE(
+  8  DBMS_SQLTUNE.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'),
+  9  'DATA_PUMP_DIR',
+ 10  fname
+ 11  );
+ 12  end;
+ 13  /
+old   4: ||'&MYPDBUSER'|| '_'||mydate||'.sql';
+new   4: ||'GESTION_CABINET_MEDICAL'|| '_'||mydate||'.sql';
+old   8: DBMS_SQLTUNE.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER'),
+new   8: DBMS_SQLTUNE.SCRIPT_TUNING_TASK('GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'GESTION_CABINET_MEDICAL'),
+declare
+*
+ERROR at line 1:
+ORA-13608: The specified name GESTION_CABINET_MEDICAL_SQL... is invalid. 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7294 
+ORA-06512: at "SYS.DBMS_SYS_ERROR", line 86 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 68 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 6150 
+ORA-06512: at "SYS.PRVT_ADVISOR", line 7224 
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 1813 
+ORA-06512: at line 7 
+
+
+SQL> 
+SQL> -- exécuter le script pour accepter le profile de la requête choisie
+SQL> 
+SQL> -- execute dbms_sqltune.accept_sql_profile(task_name => 'GESTION_CABINET_MEDICAL_SQL_TUNING_TASK'||'&MYPDBUSER', replace => TRUE);
+SQL> 
+SQL> ---
+SQL> --- Vérifier la présence d'un profie dans la vue
+SQL> ---
+SQL> set linesize 200
+SQL> 
+SQL> col sql_text format A40
+SQL> select name ,CATEGORY,  SQL_TEXT , STATUS,FORCE_MATCHING
+  2  from dba_sql_profiles
+  3  order by name;
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> SPOOL OFF

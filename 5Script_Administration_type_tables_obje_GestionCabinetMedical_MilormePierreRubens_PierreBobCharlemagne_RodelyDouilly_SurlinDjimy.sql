@@ -72,8 +72,6 @@
     QUOTA UNLIMITED ON data_ts;
 
 -- 2. Attribution des droits
-    GRANT CONNECT, RESOURCE TO Hopital;
-    GRANT CREATE SESSION TO Hopital;
     GRANT DBA TO Hopital;
 
 -- 3. Créer le schéma de données en séparant les données des tables et les index  

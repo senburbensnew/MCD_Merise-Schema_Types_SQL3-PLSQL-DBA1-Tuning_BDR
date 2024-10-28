@@ -1,0 +1,41 @@
+          ADDM Report for Task 'TASK_23'
+          ------------------------------
+
+Analysis Period
+---------------
+AWR snapshot range from 15 to 16.
+Time period starts at 26-OCT-24 03.24.11 PM
+Time period ends at 26-OCT-24 03.37.35 PM
+
+Analysis Target
+---------------
+Database 'ORCL' with DB ID 1711079490.
+Database version 21.0.0.0.0.
+ADDM performed an analysis of instance orcl, numbered 1 and hosted at
+DESKTOP-REMILMV.
+ADDM detected that the database type is MULTITENANT DB.
+
+Activity During the Analysis Period
+-----------------------------------
+Total database time was 8 seconds.
+The average number of active sessions was .01.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are no findings to report.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+          Additional Information
+          ----------------------
+
+Miscellaneous Information
+-------------------------
+There was no significant database activity to run the ADDM.
+
+The database's maintenance windows were active during 100% of the analysis
+period.
+

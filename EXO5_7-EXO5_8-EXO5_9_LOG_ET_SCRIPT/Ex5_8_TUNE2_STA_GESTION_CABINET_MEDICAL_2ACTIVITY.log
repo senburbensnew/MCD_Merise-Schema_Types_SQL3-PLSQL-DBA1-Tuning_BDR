@@ -1,0 +1,646 @@
+Building application GESTION_CABINET_MEDICAL demonstration tables.  Please wait.
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+
+Type dropped.
+
+	DROP TYPE GESTION_CABINET_MEDICAL.setEXAMEN_T FORCE
+*
+ERROR at line 1:
+ORA-04043: object SETEXAMEN_T does not exist 
+
+
+	DROP TYPE GESTION_CABINET_MEDICAL.setPRESCRIPTION_T FORCE
+*
+ERROR at line 1:
+ORA-04043: object SETPRESCRIPTION_T does not exist 
+
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Type created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_patient_email_unique
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_patient_num_sec_social_unique
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_medecin_email_unique
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_medecin_num_sec_social_unique
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_medecin_specialite
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_facture_montant_total
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_RENDEZ_VOUS_refPatient
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_RENDEZ_VOUS_refMedecin
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_rendez_vous_ref_patient_ref_medecin_date_unique
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_FACTURE_refPatient
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_CONSULTATION_refPatient
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_CONSULTATION_refMedecin
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_O_CONSULTATION_ref_patient_ref_medecin_date_unique
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_FACTURE_refConsultation
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_PRESCRIPTION_refConsultation
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.IDX_O_EXAMEN_refConsultation
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_medecin_table_pListRefConsultations_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_medecin_table_pListRefRendezVous_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_patient_table_pListRefConsultations_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_patient_table_pListRefRendezVous_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_o_patient_table_pListRefFactures_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_table_pListRefExamens_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+	DROP INDEX GESTION_CABINET_MEDICAL.idx_table_pListRefPrescriptions_Nested_table_id_Column_value
+	                                   *
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+
+Table altered.
+
+
+Index created.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+Commit complete.
+
+
+PL/SQL procedure successfully completed.
+
+
+Commit complete.
+
+
+TABLE_NAME                                                                                                                       COLUMN_NAME                                                            
+-------------------------------------------------------------------------------------------------------------------------------- --------------------                                                   
+INDEX_NAME                                                                                                                                                                                              
+--------------------------------------------------------------------------------------------------------------------------------                                                                        
+O_CONSULTATION                                                                                                                   REFMEDECIN                                                             
+IDX_O_CONSULTATION_REFMEDECIN                                                                                                                                                                           
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   REFPATIENT                                                             
+IDX_O_CONSULTATION_REFPATIENT                                                                                                                                                                           
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   DATE_CONSULTATION                                                      
+IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                  
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   REFMEDECIN                                                             
+IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                  
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   REFPATIENT                                                             
+IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                  
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   ID_CONSULTATION                                                        
+PK_O_CONSULTATION_ID_CONSULTATION                                                                                                                                                                       
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   PLISTREFPRESCRIPTION                                                   
+                                                                                                                                 S                                                                      
+SYS_C008735                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   PLISTREFEXAMENS                                                        
+SYS_C008736                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_CONSULTATION                                                                                                                   SYS_NC_OID$                                                            
+SYS_C008737                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_EXAMEN                                                                                                                         REFCONSULTATION                                                        
+IDX_O_EXAMEN_REFCONSULTATION                                                                                                                                                                            
+                                                                                                                                                                                                        
+O_EXAMEN                                                                                                                         ID_EXAMEN                                                              
+PK_O_EXAMEN_ID_EXAMEN                                                                                                                                                                                   
+                                                                                                                                                                                                        
+O_EXAMEN                                                                                                                         SYS_NC_OID$                                                            
+SYS_C008712                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        MONTANT_TOTAL                                                          
+IDX_O_FACTURE_MONTANT_TOTAL                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        REFCONSULTATION                                                        
+IDX_O_FACTURE_REFCONSULTATION                                                                                                                                                                           
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        REFPATIENT                                                             
+IDX_O_FACTURE_REFPATIENT                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        ID_FACTURE                                                             
+PK_O_FACTURE_ID_FACTURE                                                                                                                                                                                 
+                                                                                                                                                                                                        
+O_FACTURE                                                                                                                        SYS_NC_OID$                                                            
+SYS_C008723                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        EMAIL                                                                  
+IDX_O_MEDECIN_EMAIL_UNIQUE                                                                                                                                                                              
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        NUMERO_SECURITE_SOCI                                                   
+                                                                                                                                 ALE                                                                    
+IDX_O_MEDECIN_NUM_SEC_SOCIAL_UNIQUE                                                                                                                                                                     
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        SPECIALITE                                                             
+IDX_O_MEDECIN_SPECIALITE                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        ID_PERSONNE                                                            
+PK_O_MEDECIN_ID_PERSONNE                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        PLISTREFCONSULTATION                                                   
+                                                                                                                                 S                                                                      
+SYS_C008705                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        PLISTREFRENDEZVOUS                                                     
+SYS_C008706                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_MEDECIN                                                                                                                        SYS_NC_OID$                                                            
+SYS_C008707                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        EMAIL                                                                  
+IDX_O_PATIENT_EMAIL_UNIQUE                                                                                                                                                                              
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        NUMERO_SECURITE_SOCI                                                   
+                                                                                                                                 ALE                                                                    
+IDX_O_PATIENT_NUM_SEC_SOCIAL_UNIQUE                                                                                                                                                                     
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        ID_PERSONNE                                                            
+PK_O_PATIENT_ID_PERSONNE                                                                                                                                                                                
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        PLISTREFFACTURES                                                       
+SYS_C008692                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        PLISTREFCONSULTATION                                                   
+                                                                                                                                 S                                                                      
+SYS_C008693                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        PLISTREFRENDEZVOUS                                                     
+SYS_C008694                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PATIENT                                                                                                                        SYS_NC_OID$                                                            
+SYS_C008695                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_PRESCRIPTION                                                                                                                   REFCONSULTATION                                                        
+IDX_O_PRESCRIPTION_REFCONSULTATION                                                                                                                                                                      
+                                                                                                                                                                                                        
+O_PRESCRIPTION                                                                                                                   ID_PRESCRIPTION                                                        
+PK_O_PRESCRIPTION_ID_PRESCRIPTION                                                                                                                                                                       
+                                                                                                                                                                                                        
+O_PRESCRIPTION                                                                                                                   SYS_NC_OID$                                                            
+SYS_C008717                                                                                                                                                                                             
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFMEDECIN                                                             
+IDX_O_RENDEZ_VOUS_REFMEDECIN                                                                                                                                                                            
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFPATIENT                                                             
+IDX_O_RENDEZ_VOUS_REFPATIENT                                                                                                                                                                            
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    DATE_RENDEZ_VOUS                                                       
+IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                   
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFMEDECIN                                                             
+IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                   
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    REFPATIENT                                                             
+IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                                                                                                                                                   
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    ID_RENDEZ_VOUS                                                         
+PK_O_RENDEZ_VOUS_ID_RENDEZ_VOUS                                                                                                                                                                         
+                                                                                                                                                                                                        
+O_RENDEZ_VOUS                                                                                                                    SYS_NC_OID$                                                            
+SYS_C008729                                                                                                                                                                                             
+                                                                                                                                                                                                        
+
+41 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> -- 2. Ex‚cuter les requˆtes de l'application bancaire avant leur optimisation
+SQL> -- et demander au conseiller SQL TUNING ADVISOR de les r‚gler
+SQL> -- Un script avec des recommandations de nom :
+SQL> -- 'STA_Generate_action_script_on_bank_app_'||'&MYPDBUSER'|| '_'||mydate||'.sql'
+SQL> -- sera g‚n‚rer dans le dossier : %ORACLE_BASE%\ADMIN\NOMBASE\DPDUMP\NOMPDB
+SQL> -- Un fichier log appel‚ Ex91_TUNE2_STA_BANK_3TUNE_QUERY.LOG
+SQL> -- est g‚n‚r‚ dans le dossier &scriptpath\LOG
+SQL> -- Ce fichier contient la trace d'ex‚cution avec les plans d'ex‚cution
+SQL> @&SCRIPTPATH\Ex5_8_TUNE2_STA_GESTION_CABINET_MEDICAL_3TUNE_QUERY.SQL
+SQL> set serveroutput on
+SQL> 
+SQL> 
+SQL> -- Activation du spool pour logger toutes vos actions
+SQL> -- dans ce script. Adapter le chemin en fonction de votre
+SQL> -- contexte.
+SQL> spool &SCRIPTPATH\LOG\Ex5_8_TUNE2_STA_GESTION_CABINET_MEDICAL_3TUNE_QUERY.log

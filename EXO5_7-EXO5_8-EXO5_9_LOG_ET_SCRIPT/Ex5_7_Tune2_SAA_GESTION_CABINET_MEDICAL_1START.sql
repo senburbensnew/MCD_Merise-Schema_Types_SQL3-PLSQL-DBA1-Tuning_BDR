@@ -1,0 +1,93 @@
+/*
+
+Exercice 1
+
+Travail à faire via l'API
+
+Ecrire un script qui permet d'analyser et produire des recommandations sur des requêtes SQL stockées dans une table utilisateur. Vous devez pour cela :
+0. Connexion
+1. Définir une tâche avec un template OLTP ou DWH ou mixte
+2. Définir un workload à partir d'une table Utilisateur (voir Annexe 11.1) 
+à créer à remplir avec au moins deux requêtes
+3. Attacher la tâche aux workload
+4. Fixer certains paramètres de la tâche tel que 
+EXECUTION_TYPE = INDEX_ONLY puis FULL
+MODE = COMPREHENSIVE
+5. Exécuter la tâche
+
+
+Visualiser les recommandations
+
+Et si possible accepter les recommandations
+
+Travail à faire via OEM
+
+Refaire le travail fait avec l'API via OEM
+
+	
+*/
+
+-----------------------------------------------------------------------------------
+-- 1. Définition de variables, création d'un user si utile, 
+-- Connexion à la base de données 
+-----------------------------------------------------------------------------------
+
+cmd
+-- Lancer sqlplus sans se logger
+sqlplus /nolog
+
+-- Définir la variable qui indique l'emplacement des scripts
+define SCRIPTPATH=C:\workspaceSQL\ScriptsTune2\EXO_5_7
+
+-- Définir la variable contenant le nom de l'instance
+define MYINSTANCE=ORCL
+
+-- Définir la vairiable qui va contenir le nom réseau de votre base PDB.
+-- Le nom réseau se dans le fichier tnsnames.ora
+-- Il est disponible dans le dossier : %ORACLE_HOME%\network\admin
+define DBALIASPDB=HOPITAL
+
+-- Définir la vairiable qui va contenir le nom réseau de votre base CDB.
+-- Le nom réseau se dans le fichier tnsnames.ora
+-- Il est disponible dans le dossier : %ORACLE_HOME%\network\admin
+define DBALIASCDB=ORCL
+
+-- Définir la variable contenant le nom de l'utilisateur que vous allez 
+-- créer au niveau PDB ou utiliser s'il existe déjà. 
+define MYPDBUSER=GESTION_CABINET_MEDICAL
+ 
+-- Définir la variable contenant le pass de l'utilisateur que vous allez 
+-- créer au niveau PDB ou utiliser s'il existe déjà.
+define MYPDBUSERPASS=pass123$
+
+-- Définir la variable contenant la trace que vous souhaitez :
+-- ON : si affiche résultat+plan
+-- TRACEONLY : si affichage plan uniquement
+define TRACEOPTION=TRACEONLY
+
+-- Connexion avec le nouvel utilisateur ou un utilisateur existant au niveau
+-- PDB. 
+connect &MYPDBUSER/&MYPDBUSERPASS@&DBALIASPDB
+
+---------------------------------------------------------------------------------------
+-- 2. activation du script pour exécuter le conseiller SAA
+-- Le résultat de cette exécution sera la génération dans le dossier :
+-- %ORACLE_BASE%\admin\dpdump\nomBase\nomPdb
+-- d'un fichier nommé : SAA_Generate_script_on_bank_app_'||mydate||'.sql
+@&SCRIPTPATH\Ex5_7_Tune2_SAA_GESTION_CABINET_MEDICAL_2ACTIVITY.SQL
+
+-- 3 Implémentation des recommandations
+-- Copier le contenu du fichier généré en 2 dans le dossier fichier :
+-- Ex101_Tune2_SAA_BANK_3Recommandations.sql
+-- Ce fichier se trouve dans le dossier :&SCRIPTPATH\EXO101
+-- Nettoyer les doublons puis exécutez ce script pour implémenter les recommandations
+@&SCRIPTPATH\Ex5_7_Tune2_SAA_GESTION_CABINET_MEDICAL_3Recommandations.sql
+
+
+-- 4. activation du script pour réexécuter le conseiller SAA
+-- Le résultat de cette réexécution sera la génération dans le dossier :
+-- %ORACLE_BASE%\admin\dpdump\nomBase\nomPdb
+-- d'un fichier nommé : SAA_Generate_script_on_bank_app_'||mydate||'.sql
+-- Si l'étape 3 est faite il ne doit pas avoir de recommandationn d'index
+@&SCRIPTPATH\Ex5__Tune2_SAA_GESTION_CABINET_MEDICAL_4ACTIVITYRetune.SQL
+

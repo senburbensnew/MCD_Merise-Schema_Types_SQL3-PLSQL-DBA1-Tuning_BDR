@@ -1,34 +1,21 @@
-
-	-- 5.2  Cr√©er un tablespace ayant le nom de votre projet.
-	-- Il contiendra les segments tables et indexes de votre application (commande √† mettre dans un script)  
-	
-	CREATE TABLESPACE GESTION_CABINET_MEDICAL
-	DATAFILE '%ORACLE_BASE%\oradata\ORCL\hopitalpdb\datafile_gestion_cabinet_medical_ts'
-	SIZE 100M
-	AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
-	EXTENT MANAGEMENT LOCAL
-	AUTOALLOCATE;
+-- Activiation du spool
+spool &SCRIPTPATH\LOG\Ex5_8_TUNE2_STA_GESTION_CABINET_MEDICAL_2ACTIVITY.log
 
 
-	-- 5.3  Cr√©er un utilisateur Oracle ayant le nom de votre projet.  
-	-- Lui  donner  les  droits  appropri√©s,  lui  donner  les  droits  d‚Äô√©criture  sur  le  tablespace  cr√©√© 
-	-- pr√©c√©demment.  Cet  utilisateur  sera  propri√©taire  de  vos  tables  (commande  √†  mettre  dans  un 
-	-- script) 
+-- dÈsactiver la trace
+set autotrace off
 
-	-- Suppression de l'utilisateur GESTION_CABINET_MEDICAL
-	DROP USER GESTION_CABINET_MEDICAL CASCADE;
+SET TERMOUT ON
+PROMPT Building application GESTION_CABINET_MEDICAL demonstration tables.  Please wait.
+-- EmpÍche l'affichage ‡ l'Ècran
+SET TERMOUT OFF
 
-	-- 1. Cr√©ation de l'utilisateur
-    CREATE USER GESTION_CABINET_MEDICAL IDENTIFIED BY pass123$
-    DEFAULT TABLESPACE USERS
-    TEMPORARY TABLESPACE temp
-    QUOTA UNLIMITED ON USERS;
+--set autotrace traceonly
+set linesize 700
+set pagesize 5000
 
-	-- 2. Attribution des droits
-    GRANT DBA TO GESTION_CABINET_MEDICAL;
-	
-	
-	
+
+
 	-- SUPPRESSION DES TABLES OBJETS
 	DROP TABLE GESTION_CABINET_MEDICAL.O_EXAMEN CASCADE CONSTRAINTS;
 	DROP TABLE GESTION_CABINET_MEDICAL.O_CONSULTATION CASCADE CONSTRAINTS;
@@ -123,10 +110,10 @@
 		Date_Rendez_Vous DATE,
 		Motif VARCHAR2(200),
 
-		-- M√©thodes
+		-- MÈthodes
 		MEMBER FUNCTION getId RETURN NUMBER,
 		MEMBER FUNCTION getDate RETURN DATE,
-		-- M√©thode d'ordre
+		-- MÈthode d'ordre
 		MAP MEMBER FUNCTION compareDate RETURN DATE, 
 		-- Gestion des liens
 		MEMBER PROCEDURE linkToPatient(p REF GESTION_CABINET_MEDICAL.PATIENT_T),
@@ -136,9 +123,9 @@
 		MEMBER FUNCTION getRefPatient RETURN REF GESTION_CABINET_MEDICAL.PATIENT_T, 
 		-- Consultation
 		MEMBER FUNCTION getRefMedecin RETURN REF GESTION_CABINET_MEDICAL.MEDECIN_T, 
-		 -- M√©thode CRUD (update)
+		 -- MÈthode CRUD (update)
 		MEMBER PROCEDURE updateMotif(newMotif VARCHAR2),
-		-- M√©thode CRUD (delete)
+		-- MÈthode CRUD (delete)
 		MEMBER PROCEDURE deleteRendezVous                 
 	);
 	/
@@ -153,18 +140,18 @@
 		Details_Examen VARCHAR2(200),
 		Date_Examen DATE,
 
-		-- M√©thodes
+		-- MÈthodes
 		MEMBER FUNCTION getId RETURN NUMBER,
 		MEMBER FUNCTION getDate RETURN DATE,
-		-- M√©thode d'ordre
+		-- MÈthode d'ordre
 		MAP MEMBER FUNCTION compareDate RETURN DATE, 
 		-- Gestion des liens
 		MEMBER PROCEDURE linkToConsultation(c REF GESTION_CABINET_MEDICAL.CONSULTATION_T), 
 		-- Consultation
 		MEMBER FUNCTION getRefConsultation RETURN REF GESTION_CABINET_MEDICAL.CONSULTATION_T, 
-		-- M√©thode CRUD (update)
+		-- MÈthode CRUD (update)
 		MEMBER PROCEDURE updateDetails(newDetails VARCHAR2), 
-		-- M√©thode CRUD (delete)
+		-- MÈthode CRUD (delete)
 		MEMBER PROCEDURE deleteExamen                       
 	);
 	/
@@ -179,18 +166,18 @@
 		Details_Prescription VARCHAR2(200),
 		Date_Prescription DATE,
 
-		-- M√©thodes
+		-- MÈthodes
 		MEMBER FUNCTION getId RETURN NUMBER,
 		MEMBER FUNCTION getDate RETURN DATE,
-		-- M√©thode d'ordre
+		-- MÈthode d'ordre
 		MAP MEMBER FUNCTION compareDate RETURN DATE, 
 		-- Gestion des liens
 		MEMBER PROCEDURE linkToConsultation(c REF GESTION_CABINET_MEDICAL.CONSULTATION_T), 
-		-- M√©thode de consultation : retourne la r√©f√©rence de la consultation associ√©e
+		-- MÈthode de consultation : retourne la rÈfÈrence de la consultation associÈe
 		MEMBER FUNCTION getRefConsultation RETURN REF GESTION_CABINET_MEDICAL.CONSULTATION_T, 
-		-- M√©thode CRUD (update) : met √† jour les d√©tails de la prescription
+		-- MÈthode CRUD (update) : met ‡ jour les dÈtails de la prescription
 		MEMBER PROCEDURE updateDetails(newDetails VARCHAR2), 
-		-- M√©thode CRUD (delete) : supprime la prescription
+		-- MÈthode CRUD (delete) : supprime la prescription
 		MEMBER PROCEDURE deletePrescription                   
 	);
 	/
@@ -206,22 +193,22 @@
 		Montant_Total NUMBER(7,2),
 		Date_Facture DATE,
 
-		-- M√©thodes
+		-- MÈthodes
 		MEMBER FUNCTION getId RETURN NUMBER,
 		MEMBER FUNCTION getDate RETURN DATE,
-		-- M√©thode d'ordre 
+		-- MÈthode d'ordre 
 		MAP MEMBER FUNCTION compareDate RETURN DATE, 
 		-- Gestion des liens
 		MEMBER PROCEDURE linkToPatient(p REF GESTION_CABINET_MEDICAL.PATIENT_T), 
 		-- Gestion des liens
 		MEMBER PROCEDURE linkToConsultation(c REF GESTION_CABINET_MEDICAL.CONSULTATION_T), 
-		-- Consultation : retourne LA REFERENCE du patient associ√© au facture
+		-- Consultation : retourne LA REFERENCE du patient associÈ au facture
 		MEMBER FUNCTION getRefPatient RETURN REF GESTION_CABINET_MEDICAL.PATIENT_T, 
-		-- Consultation : retourne LA REFERENCE de la consultation associ√©e au facture
+		-- Consultation : retourne LA REFERENCE de la consultation associÈe au facture
 		MEMBER FUNCTION getRefConsultation RETURN REF GESTION_CABINET_MEDICAL.CONSULTATION_T, 
-		 -- M√©thode CRUD (update) : met √† jour le montant de la facture
+		 -- MÈthode CRUD (update) : met ‡ jour le montant de la facture
 		MEMBER PROCEDURE updateMontant(newMontant NUMBER),
-		-- M√©thode CRUD (delete) : supprime la facture
+		-- MÈthode CRUD (delete) : supprime la facture
 		MEMBER PROCEDURE deleteFacture                     
 	);
 	/
@@ -240,7 +227,7 @@
 		pListRefExamens GESTION_CABINET_MEDICAL.ListRefExamens_t,
 		pListRefPrescriptions GESTION_CABINET_MEDICAL.ListRefPrescriptions_t,
 
-		-- M√©thodes
+		-- MÈthodes
 		static FUNCTION getConsultation(idConsultation in NUMBER) RETURN GESTION_CABINET_MEDICAL.CONSULTATION_T,
 		static FUNCTION getExamenInfo (idConsultation in NUMBER) RETURN GESTION_CABINET_MEDICAL.setEXAMEN_T,
 		static FUNCTION getPrescriptionInfo (idConsultation in NUMBER) RETURN GESTION_CABINET_MEDICAL.setPRESCRIPTION_T,
@@ -268,7 +255,7 @@
 		DATE_NAISSANCE DATE,
 		LIST_TELEPHONES GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T,
 		LIST_PRENOMS GESTION_CABINET_MEDICAL.LIST_PRENOMS_T,
-		 -- M√©thode d'ordre
+		 -- MÈthode d'ordre
 		MAP MEMBER FUNCTION compareDate RETURN DATE
 	) NOT INSTANTIABLE NOT FINAL;
 	/
@@ -282,7 +269,7 @@
 		pListRefConsultations GESTION_CABINET_MEDICAL.ListRefConsultations_t,
 		pListRefFactures GESTION_CABINET_MEDICAL.ListRefFactures_t,
 
-		-- M√©thodes
+		-- MÈthodes
 		STATIC FUNCTION  getPatient(idPersonne in number) RETURN GESTION_CABINET_MEDICAL.PATIENT_T,
 		STATIC FUNCTION  getFActureInfo(idPersonne in number) RETURN GESTION_CABINET_MEDICAL.setFACTURES_T,
 		STATIC FUNCTION  getConsultationInfo(idPersonne in number) RETURN GESTION_CABINET_MEDICAL.setCONSULTATIONS_T,
@@ -308,7 +295,7 @@
 		pListRefRendezVous GESTION_CABINET_MEDICAL.ListRefRendezVous_t,
 		pListRefConsultations GESTION_CABINET_MEDICAL.ListRefConsultations_t,
 
-		-- M√©thodes
+		-- MÈthodes
 		Static FUNCTION getMedecin(idMedecin in NUMBER) RETURN GESTION_CABINET_MEDICAL.MEDECIN_T,
 		static FUNCTION getConsultationInfo(idMedecin in NUMBER) RETURN GESTION_CABINET_MEDICAL.setCONSULTATIONS_T,
 		static FUNCTION getRendezVousInfo(idMedecin in NUMBER) RETURN GESTION_CABINET_MEDICAL.setRENDEZ_VOUS_T,
@@ -520,7 +507,7 @@
 
 	
 	-- 5.5  Insertion des lignes de test dans vos tables 
-	-- Donn√©es de l‚Äôapplication SQL3
+	-- DonnÈes de líapplication SQL3
 		
 	-- INSERTION DES LIGNES DANS LES TABLES OBJETS
 	DELETE FROM GESTION_CABINET_MEDICAL.O_PATIENT;
@@ -571,7 +558,7 @@
 		RETURNING REF(OP) INTO refPatient7;
 
 		INSERT INTO GESTION_CABINET_MEDICAL.O_PATIENT OP
-		VALUES(GESTION_CABINET_MEDICAL.PATIENT_T(8, '66667777888', 'Miller', 'olivia.miller@free.fr', GESTION_CABINET_MEDICAL.ADRESSE_T(8, 'Avenue de la R√©publique', 75011, 'PARIS'), 'Feminin', TO_DATE('19/09/1993', 'DD/MM/YYYY'), GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T('0611122233', '0677899001'), GESTION_CABINET_MEDICAL.LIST_PRENOMS_T('Olivia', 'Claire'), 55, 160, GESTION_CABINET_MEDICAL.ListRefRendezVous_t(), GESTION_CABINET_MEDICAL.ListRefConsultations_t(), GESTION_CABINET_MEDICAL.ListRefFactures_t())) 
+		VALUES(GESTION_CABINET_MEDICAL.PATIENT_T(8, '66667777888', 'Miller', 'olivia.miller@free.fr', GESTION_CABINET_MEDICAL.ADRESSE_T(8, 'Avenue de la RÈpublique', 75011, 'PARIS'), 'Feminin', TO_DATE('19/09/1993', 'DD/MM/YYYY'), GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T('0611122233', '0677899001'), GESTION_CABINET_MEDICAL.LIST_PRENOMS_T('Olivia', 'Claire'), 55, 160, GESTION_CABINET_MEDICAL.ListRefRendezVous_t(), GESTION_CABINET_MEDICAL.ListRefConsultations_t(), GESTION_CABINET_MEDICAL.ListRefFactures_t())) 
 		RETURNING REF(OP) INTO refPatient8;
 		
 		INSERT INTO GESTION_CABINET_MEDICAL.O_PATIENT OP
@@ -640,7 +627,7 @@
 		RETURNING REF(OM) INTO refMedecin4;
 
 		INSERT INTO GESTION_CABINET_MEDICAL.O_MEDECIN OM
-		VALUES(GESTION_CABINET_MEDICAL.MEDECIN_T(5, '56789012345', 'Garcia', 'carlos.garcia@outlook.com', GESTION_CABINET_MEDICAL.ADRESSE_T(5, 'Avenue des Champs-√âlys√©es', 75008, 'PARIS'), 'Masculin', TO_DATE('15/09/1982', 'DD/MM/YYYY'), GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T('0677889900', '0655443322'), GESTION_CABINET_MEDICAL.LIST_PRENOMS_T('Carlos', 'Javier'), 'Pediatre', NULL, GESTION_CABINET_MEDICAL.ListRefRendezVous_t(), GESTION_CABINET_MEDICAL.ListRefConsultations_t())) 
+		VALUES(GESTION_CABINET_MEDICAL.MEDECIN_T(5, '56789012345', 'Garcia', 'carlos.garcia@outlook.com', GESTION_CABINET_MEDICAL.ADRESSE_T(5, 'Avenue des Champs-…lysÈes', 75008, 'PARIS'), 'Masculin', TO_DATE('15/09/1982', 'DD/MM/YYYY'), GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T('0677889900', '0655443322'), GESTION_CABINET_MEDICAL.LIST_PRENOMS_T('Carlos', 'Javier'), 'Pediatre', NULL, GESTION_CABINET_MEDICAL.ListRefRendezVous_t(), GESTION_CABINET_MEDICAL.ListRefConsultations_t())) 
 		RETURNING REF(OM) INTO refMedecin5;
 
 		INSERT INTO GESTION_CABINET_MEDICAL.O_MEDECIN OM
@@ -660,7 +647,7 @@
 		RETURNING REF(OM) INTO refMedecin9;
 
 		INSERT INTO GESTION_CABINET_MEDICAL.O_MEDECIN OM
-		VALUES(GESTION_CABINET_MEDICAL.MEDECIN_T(10, '55667788990', 'Bernard', 'lucie.bernard@sfr.fr', GESTION_CABINET_MEDICAL.ADRESSE_T(14, 'Rue du Faubourg Saint-Honor√©', 75008, 'PARIS'), 'Feminin', TO_DATE('06/04/1983', 'DD/MM/YYYY'), GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T('0644332211', '0611223344'), GESTION_CABINET_MEDICAL.LIST_PRENOMS_T('Lucie', 'Catherine'), 'Pediatre', NULL, GESTION_CABINET_MEDICAL.ListRefRendezVous_t(), GESTION_CABINET_MEDICAL.ListRefConsultations_t())) 
+		VALUES(GESTION_CABINET_MEDICAL.MEDECIN_T(10, '55667788990', 'Bernard', 'lucie.bernard@sfr.fr', GESTION_CABINET_MEDICAL.ADRESSE_T(14, 'Rue du Faubourg Saint-HonorÈ', 75008, 'PARIS'), 'Feminin', TO_DATE('06/04/1983', 'DD/MM/YYYY'), GESTION_CABINET_MEDICAL.LIST_TELEPHONES_T('0644332211', '0611223344'), GESTION_CABINET_MEDICAL.LIST_PRENOMS_T('Lucie', 'Catherine'), 'Pediatre', NULL, GESTION_CABINET_MEDICAL.ListRefRendezVous_t(), GESTION_CABINET_MEDICAL.ListRefConsultations_t())) 
 		RETURNING REF(OM) INTO refMedecin10;
 	   
 	   -- INSERTION DES RENDEZ_VOUS   
@@ -938,62 +925,145 @@
 	COMMIT;
 
 
-	--	5.6  Requ√™tes de consultation  
-	-- Requ√™tes de l‚Äôapplication SQL3. 
-			
-	-- Cette requete retourne toutes les colonnes des consultations, des patients et des
-	-- examens associes, ou chaque consultation est liee a son patient correspondant via
-	-- la jointure avec la table "PATIENT", et chaque consultation est liee a ses examens
-	-- correspondants via la jointure avec la table "EXAMEN".
-	SELECT 
-	OE.*, 
-	DEREF(OE.refConsultation) AS CONSULTATION, 
-	DEREF(DEREF(OE.refConsultation).refPatient) AS PATIENT
-	FROM GESTION_CABINET_MEDICAL.O_EXAMEN OE;
 
-	-- Cette requete retourne toutes les colonnes des factures, des patients et des consultations associ¬¥ees, o`u chaque facture est li¬¥ee `a son patient correspondant via la jointure
-	-- avec la table ‚ÄùPATIENT‚Äù, et chaque facture est li¬¥ee `a sa consultation correspondante
-	-- via la jointure avec la table ‚ÄùCONSULTATION‚Äù.
-	SELECT 
-	OFA.*, 
-	OFA.refPatient AS PATIENT, 
-	OFA.refConsultation AS CONSULTATION 
-	FROM GESTION_CABINET_MEDICAL.O_FACTURE OFA;
 
-	-- Cette requete renvoie toutes les colonnes des consultations, des patients et des examens associes, 
-	-- ou chaque consultation est liee a son patient correspondant via la
-	-- jointure avec la table ‚ÄùPATIENT‚Äù, et chaque consultation est liee a ses examens
-	-- correspondants via la jointure avec la table ‚ÄùEXAMEN‚Äù. Les resultats sont ensuite
-	-- tri¬¥es par date de consultation croissante.
-	SELECT 
-	OE.*, 
-	DEREF(OE.refConsultation) AS CONSULTATION, 
-	DEREF(DEREF(OE.refConsultation).refPatient) AS PATIENT
-	FROM GESTION_CABINET_MEDICAL.O_EXAMEN OE 
-	ORDER BY OE.refConsultation.Date_Consultation ASC;
 
-	-- Cette requete retourne l‚Äôidentifiant du patient, son adresse e-mail, la somme des
-	-- montants totaux de ses factures, ainsi que les dates de la facture et de la consultation
-	-- correspondantes, regroup¬¥es par identifiant de patient, adresse e-mail, date de facture
-	-- et date de consultation, et tri¬¥es dans cet ordre. Cela permet d‚Äôobtenir une vue agr¬¥eg¬¥ee
-	-- des montants totaux de factures pour chaque patient, avec les d¬¥etails des factures
-	-- et des consultations.
-	SELECT 
-	OFA.refPatient.ID_PERSONNE AS ID_PATIENT,
-	OFA.refPatient.Email AS EMAIL,
-	OFA.Date_Facture AS Date_Facture,
-	OFA.refConsultation.Date_Consultation AS Date_Consultation,
-	SUM(OFA.MONTANT_TOTAL) AS SOMME_MONTANTS
-	FROM GESTION_CABINET_MEDICAL.O_FACTURE OFA
-	GROUP BY 
-	OFA.refPatient.ID_PERSONNE,
-	OFA.refPatient.Email,
-	OFA.Date_Facture,
-	OFA.refConsultation.Date_Consultation
-	ORDER BY 
-	OFA.refPatient.ID_PERSONNE,
-	OFA.refPatient.Email,
-	OFA.Date_Facture,
-	OFA.refConsultation.Date_Consultation;
-	
-	
+
+-- VÈrification de la structure des tables
+/*
+TABLE O_CONSULTATION
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_CONSULTATION                           NOT NULL NUMBER(8)                   
+ REFPATIENT                                NOT NULL PATIENT_T                   
+ REFMEDECIN                                NOT NULL MEDECIN_T                   
+ RAISON                                    NOT NULL VARCHAR2(200)               
+ DIAGNOSTIC                                         VARCHAR2(200)               
+ DATE_CONSULTATION                         NOT NULL DATE                        
+ PLISTREFEXAMENS                                    LISTREFEXAMENS_T            
+ PLISTREFPRESCRIPTIONS                              LISTREFPRESCRIPTIONS_T      
+TABLE O_EXAMEN
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_EXAMEN                                 NOT NULL NUMBER(8)                   
+ REFCONSULTATION                           NOT NULL CONSULTATION_T              
+ DETAILS_EXAMEN                            NOT NULL VARCHAR2(200)               
+ DATE_EXAMEN                               NOT NULL DATE                        
+TABLE O_FACTURE
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_FACTURE                                NOT NULL NUMBER(8)                   
+ REFPATIENT                                NOT NULL PATIENT_T                   
+ REFCONSULTATION                           NOT NULL CONSULTATION_T              
+ MONTANT_TOTAL                             NOT NULL NUMBER(7,2)                 
+ DATE_FACTURE                              NOT NULL DATE                        
+TABLE O_MEDECIN
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_PERSONNE                               NOT NULL NUMBER(8)                   
+ NUMERO_SECURITE_SOCIALE                   NOT NULL VARCHAR2(12)                
+ NOM                                       NOT NULL VARCHAR2(12)                
+ EMAIL                                     NOT NULL VARCHAR2(30)                
+ ADRESSE                                            ADRESSE_T                   
+ SEXE                                      NOT NULL VARCHAR2(10)                
+ DATE_NAISSANCE                            NOT NULL DATE                        
+ LIST_TELEPHONES                                    LIST_TELEPHONES_T           
+ LIST_PRENOMS                                       LIST_PRENOMS_T              
+ SPECIALITE                                NOT NULL VARCHAR2(40)                
+ CV                                                 CLOB                        
+ PLISTREFRENDEZVOUS                                 LISTREFRENDEZVOUS_T         
+ PLISTREFCONSULTATIONS                              LISTREFCONSULTATIONS_T      
+TABLE O_PATIENT
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_PERSONNE                               NOT NULL NUMBER(8)                   
+ NUMERO_SECURITE_SOCIALE                   NOT NULL VARCHAR2(12)                
+ NOM                                       NOT NULL VARCHAR2(12)                
+ EMAIL                                     NOT NULL VARCHAR2(30)                
+ ADRESSE                                            ADRESSE_T                   
+ SEXE                                      NOT NULL VARCHAR2(10)                
+ DATE_NAISSANCE                            NOT NULL DATE                        
+ LIST_TELEPHONES                                    LIST_TELEPHONES_T           
+ LIST_PRENOMS                                       LIST_PRENOMS_T              
+ POIDS                                     NOT NULL NUMBER(3)                   
+ HAUTEUR                                   NOT NULL NUMBER(3)                   
+ PLISTREFRENDEZVOUS                                 LISTREFRENDEZVOUS_T         
+ PLISTREFCONSULTATIONS                              LISTREFCONSULTATIONS_T      
+ PLISTREFFACTURES                                   LISTREFFACTURES_T           
+TABLE O_PRESCRIPTION
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_PRESCRIPTION                           NOT NULL NUMBER(8)                   
+ REFCONSULTATION                           NOT NULL CONSULTATION_T              
+ DETAILS_PRESCRIPTION                      NOT NULL VARCHAR2(200)               
+ DATE_PRESCRIPTION                         NOT NULL DATE                        
+TABLE O_RENDEZ_VOUS
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ID_RENDEZ_VOUS                            NOT NULL NUMBER(8)                   
+ REFPATIENT                                NOT NULL PATIENT_T                   
+ REFMEDECIN                                NOT NULL MEDECIN_T                   
+ DATE_RENDEZ_VOUS                          NOT NULL DATE                        
+ MOTIF                                     NOT NULL VARCHAR2(200)               
+                                         VARCHAR2(12)
+*/
+ -- vÈrification de la prÈsence d'index
+ 
+set linesize 200
+col column_name format a20
+ 
+select table_name, column_name, index_name 
+from user_ind_columns
+where table_name in ('O_EXAMEN','O_CONSULTATION','O_PRESCRIPTION','O_FACTURE','O_RENDEZ_VOUS','O_MEDECIN','O_PATIENT')
+order by table_name, index_name, column_name;
+
+/*
+
+TABLE_NAME                     COLUMN_NAME                              INDEX_NAME                                                                      
+------------------------------ ---------------------------------------- --------------------------------------------------------------------------------
+O_CONSULTATION                 REFMEDECIN                               IDX_O_CONSULTATION_REFMEDECIN                                                   
+O_CONSULTATION                 REFPATIENT                               IDX_O_CONSULTATION_REFPATIENT                                                   
+O_CONSULTATION                 DATE_CONSULTATION                        IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                          
+O_CONSULTATION                 REFMEDECIN                               IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                          
+O_CONSULTATION                 REFPATIENT                               IDX_O_CONSULTATION_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                          
+O_CONSULTATION                 ID_CONSULTATION                          PK_O_CONSULTATION_ID_CONSULTATION                                               
+O_CONSULTATION                 PLISTREFPRESCRIPTIONS                    SYS_C008613                                                                     
+O_CONSULTATION                 PLISTREFEXAMENS                          SYS_C008614                                                                     
+O_CONSULTATION                 SYS_NC_OID$                              SYS_C008615                                                                     
+O_EXAMEN                       REFCONSULTATION                          IDX_O_EXAMEN_REFCONSULTATION                                                    
+O_EXAMEN                       ID_EXAMEN                                PK_O_EXAMEN_ID_EXAMEN                                                           
+O_EXAMEN                       SYS_NC_OID$                              SYS_C008590                                                                     
+O_FACTURE                      MONTANT_TOTAL                            IDX_O_FACTURE_MONTANT_TOTAL                                                     
+O_FACTURE                      REFCONSULTATION                          IDX_O_FACTURE_REFCONSULTATION                                                   
+O_FACTURE                      REFPATIENT                               IDX_O_FACTURE_REFPATIENT                                                        
+O_FACTURE                      ID_FACTURE                               PK_O_FACTURE_ID_FACTURE                                                         
+O_FACTURE                      SYS_NC_OID$                              SYS_C008601                                                                     
+O_MEDECIN                      EMAIL                                    IDX_O_MEDECIN_EMAIL_UNIQUE                                                      
+O_MEDECIN                      NUMERO_SECURITE_SOCIALE                  IDX_O_MEDECIN_NUM_SEC_SOCIAL_UNIQUE                                             
+O_MEDECIN                      SPECIALITE                               IDX_O_MEDECIN_SPECIALITE                                                        
+O_MEDECIN                      ID_PERSONNE                              PK_O_MEDECIN_ID_PERSONNE                                                        
+O_MEDECIN                      PLISTREFCONSULTATIONS                    SYS_C008583                                                                     
+O_MEDECIN                      PLISTREFRENDEZVOUS                       SYS_C008584                                                                     
+O_MEDECIN                      SYS_NC_OID$                              SYS_C008585                                                                     
+O_PATIENT                      EMAIL                                    IDX_O_PATIENT_EMAIL_UNIQUE                                                      
+O_PATIENT                      NUMERO_SECURITE_SOCIALE                  IDX_O_PATIENT_NUM_SEC_SOCIAL_UNIQUE                                             
+O_PATIENT                      ID_PERSONNE                              PK_O_PATIENT_ID_PERSONNE                                                        
+O_PATIENT                      PLISTREFFACTURES                         SYS_C008570                                                                     
+O_PATIENT                      PLISTREFCONSULTATIONS                    SYS_C008571                                                                     
+O_PATIENT                      PLISTREFRENDEZVOUS                       SYS_C008572                                                                     
+O_PATIENT                      SYS_NC_OID$                              SYS_C008573                                                                     
+O_PRESCRIPTION                 REFCONSULTATION                          IDX_O_PRESCRIPTION_REFCONSULTATION                                              
+O_PRESCRIPTION                 ID_PRESCRIPTION                          PK_O_PRESCRIPTION_ID_PRESCRIPTION                                               
+O_PRESCRIPTION                 SYS_NC_OID$                              SYS_C008595                                                                     
+O_RENDEZ_VOUS                  REFMEDECIN                               IDX_O_RENDEZ_VOUS_REFMEDECIN                                                    
+O_RENDEZ_VOUS                  REFPATIENT                               IDX_O_RENDEZ_VOUS_REFPATIENT                                                    
+O_RENDEZ_VOUS                  DATE_RENDEZ_VOUS                         IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                           
+O_RENDEZ_VOUS                  REFMEDECIN                               IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                           
+O_RENDEZ_VOUS                  REFPATIENT                               IDX_O_RENDEZ_VOUS_REF_PATIENT_REF_MEDECIN_DATE_UNIQUE                           
+O_RENDEZ_VOUS                  ID_RENDEZ_VOUS                           PK_O_RENDEZ_VOUS_ID_RENDEZ_VOUS                                                 
+O_RENDEZ_VOUS                  SYS_NC_OID$                              SYS_C008607                                                                     
+
+41 rows selected.
+
+
+*/
